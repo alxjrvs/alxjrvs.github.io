@@ -9,27 +9,6 @@ layout: default
 
 <section class="columns">
   <div class="col">
-    <h2>things i made</h2>
-    <ul class="linklist">
-      {%- assign shown = 0 -%}
-      {%- for group in site.data.work.groups -%}
-      {%- for slug in group.projects -%}
-      {%- if shown < 4 -%}
-      {%- assign proj = site.data.work.projects[slug] -%}
-      <li>
-        <a href="{{ '/work/' | append: slug | append: '/' | relative_url }}">
-          <span class="bul" aria-hidden="true"></span>
-          <span class="t">{{ proj.name }}</span>
-        </a>
-      </li>
-      {%- assign shown = shown | plus: 1 -%}
-      {%- endif -%}
-      {%- endfor -%}
-      {%- endfor -%}
-    </ul>
-  </div>
-
-  <div class="col">
     <h2>things i said</h2>
     <ul class="linklist">
       {%- for post in site.posts limit: 4 -%}
@@ -41,6 +20,29 @@ layout: default
         </a>
       </li>
       {%- endfor -%}
+    </ul>
+  </div>
+
+  <div class="col">
+    <h2>things i made</h2>
+    <ul class="linklist">
+      {%- for group in site.data.work.groups -%}
+      {%- assign s = site.data.work.sites[group.flagship] -%}
+      <li>
+        <a href="{{ '/work/' | append: group.flagship | append: '/' | relative_url }}">
+          <span class="bul" aria-hidden="true"></span>
+          <span class="t">{{ s.name }}</span>
+          <span class="d">{{ group.name }}</span>
+        </a>
+      </li>
+      {%- endfor -%}
+      <li>
+        <a href="{{ '/work/' | relative_url }}">
+          <span class="bul" aria-hidden="true"></span>
+          <span class="t">all work</span>
+          <span class="d">→</span>
+        </a>
+      </li>
     </ul>
   </div>
 </section>
