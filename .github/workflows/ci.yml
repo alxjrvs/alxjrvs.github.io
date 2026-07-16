@@ -1,0 +1,44 @@
+name: CI
+
+# Preview == prod: build the site with the same github-pages gem set that
+# GitHub Pages uses server-side, then link-check the output. Runs on PRs (the
+# gate) and on pushes to main (a post-merge canary).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# One in-flight run per ref; a newer push cancels the older one.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Build site
+        run: bundle exec jekyll build --trace
+        env:
+          JEKYLL_ENV: production
+
+      - name: Link-check the built site
+        run: |
+          gem install html-proofer -v "~> 5.0"
+          htmlproofer ./_site \
+            --disable-external \
+            --allow-hash-href \
+            --ignore-empty-alt \
+            --no-enforce-https
