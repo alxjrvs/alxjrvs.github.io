@@ -89,20 +89,20 @@ sites:
   boom:
     name: boom
     blurb: A declarative engine that provisions your machine and code workspaces from one config.
-    url: https://github.com/alxjrvs/boom
+    url: https://alxjrvs.github.io/boom/
     code: https://github.com/alxjrvs/boom
-    shot: boom-github.png
+    shot: boom-site.png
 
   vellum:
     name: vellum
-    blurb: A quiet, local-first home for your Daggerheart character — on stream or at the table.
+    blurb: A quiet, local-first home for your Daggerheart character — an OBS-friendly sheet overlay.
     url: https://github.com/alxjrvs/vellum
     code: https://github.com/alxjrvs/vellum
-    shot: vellum-github.png
+    shot:
 
   dotfiles:
     name: dotFiles
     blurb: This machine's config — small, exemplary, boom's first consumer.
     url: https://github.com/alxjrvs/dotFiles
     code: https://github.com/alxjrvs/dotFiles
-    shot: dotfiles-github.png
+    shot:

@@ -233,6 +233,33 @@ a { color: inherit; }
 .workgroup-blurb { font-family: var(--serif); font-size: 15px; color: var(--mute); margin: 11px 0 0; max-width: 58ch; }
 .workgroup .projects { margin-top: 6px; }
 
+/* work index — grid of site cards */
+.workgrid {
+  list-style: none; margin: clamp(14px, 2.5vw, 22px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 258px), 1fr));
+  gap: clamp(16px, 2.2vw, 24px);
+}
+.workcard-link {
+  display: flex; flex-direction: column; height: 100%;
+  text-decoration: none; color: var(--ink);
+  border: 1px solid var(--hair); background: var(--code-bg);
+}
+.workcard-link:hover { border-color: var(--red); }
+.workcard-thumb {
+  display: block; aspect-ratio: 16 / 10; overflow: hidden;
+  border-bottom: 1px solid var(--hair); background: var(--paper);
+}
+.workcard-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+.workcard-thumb--none { display: flex; align-items: center; justify-content: center; background: var(--code-bg); }
+.workcard-thumb--none .sq { width: 14px; height: 14px; }
+.workcard-body { display: block; padding: 13px 15px 15px; }
+.workcard-name {
+  display: block; font-family: var(--grot); font-weight: 700; font-size: 16px;
+  letter-spacing: -.01em; color: var(--ink);
+}
+.workcard-link:hover .workcard-name { color: var(--red); }
+.workcard-blurb { display: block; font-family: var(--serif); font-size: 14px; line-height: 1.4; color: var(--mute); margin: 5px 0 0; }
+
 /* site detail page */
 .backlink { color: var(--mute); text-decoration: none; }
 .backlink:hover { color: var(--red); }

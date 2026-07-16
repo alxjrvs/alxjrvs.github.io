@@ -13,12 +13,23 @@ description: The sites and tools alxjrvs has made — each its own thing.
 <section class="workgroup">
   <h2 class="workgroup-name">{{ group.name }}</h2>
   <p class="workgroup-blurb">{{ group.blurb }}</p>
-  <ul class="projects">
+  <ul class="workgrid">
     {%- for slug in group.sites -%}
     {%- assign s = site.data.work.sites[slug] -%}
-    <li>
-      <a class="pname" href="{{ '/work/' | append: slug | append: '/' | relative_url }}"><span class="sq" aria-hidden="true"></span>{{ s.name }}</a>
-      <p class="pblurb">{{ s.blurb }}</p>
+    <li class="workcard">
+      <a class="workcard-link" href="{{ '/work/' | append: slug | append: '/' | relative_url }}">
+        {%- if s.shot -%}
+        <span class="workcard-thumb">
+          <img src="{{ '/assets/work/' | append: s.shot | relative_url }}" alt="{{ s.name }} — screenshot" loading="lazy" width="1280" height="800">
+        </span>
+        {%- else -%}
+        <span class="workcard-thumb workcard-thumb--none" aria-hidden="true"><span class="sq"></span></span>
+        {%- endif -%}
+        <span class="workcard-body">
+          <span class="workcard-name">{{ s.name }}</span>
+          <span class="workcard-blurb">{{ s.blurb }}</span>
+        </span>
+      </a>
     </li>
     {%- endfor -%}
   </ul>

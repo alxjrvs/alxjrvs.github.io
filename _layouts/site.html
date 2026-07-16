@@ -7,6 +7,12 @@ layout: default
   <h1>{{ s.name }}</h1>
 </header>
 
+{%- if s.shot -%}
+<a class="site-shot" href="{{ s.url }}" aria-label="Visit {{ s.name }}">
+  <img src="{{ '/assets/work/' | append: s.shot | relative_url }}" alt="{{ s.name }} — screenshot" width="1280" height="800">
+</a>
+{%- endif -%}
+
 <p class="lede">{{ s.blurb }}</p>
 
 <div class="site-actions">
@@ -15,9 +21,3 @@ layout: default
   <a class="btn" href="{{ s.code }}">View the code <span aria-hidden="true">↗</span></a>
   {%- endif -%}
 </div>
-
-{%- if s.shot -%}
-<a class="site-shot" href="{{ s.url }}" aria-label="Visit {{ s.name }}">
-  <img src="{{ '/assets/work/' | append: s.shot | relative_url }}" alt="{{ s.name }} — screenshot" width="1280" height="800">
-</a>
-{%- endif -%}
