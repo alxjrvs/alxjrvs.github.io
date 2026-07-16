@@ -11,13 +11,20 @@ layout: default
   <div class="col">
     <h2>things i made</h2>
     <ul class="linklist">
-      {%- for p in site.projects limit: 4 -%}
+      {%- assign shown = 0 -%}
+      {%- for group in site.data.work.groups -%}
+      {%- for slug in group.projects -%}
+      {%- if shown < 4 -%}
+      {%- assign proj = site.data.work.projects[slug] -%}
       <li>
-        <a href="{{ p.url }}">
+        <a href="{{ '/work/' | append: slug | append: '/' | relative_url }}">
           <span class="bul" aria-hidden="true"></span>
-          <span class="t">{{ p.name }}</span>
+          <span class="t">{{ proj.name }}</span>
         </a>
       </li>
+      {%- assign shown = shown | plus: 1 -%}
+      {%- endif -%}
+      {%- endfor -%}
       {%- endfor -%}
     </ul>
   </div>

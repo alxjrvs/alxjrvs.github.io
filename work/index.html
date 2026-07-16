@@ -2,18 +2,25 @@
 layout: default
 title: work
 permalink: /work/
-description: Things alxjrvs has made.
+description: Things alxjrvs has made — grouped by project and org.
 ---
 <header class="pagehead">
-  <p class="eyebrow">things i made</p>
+  <p class="eyebrow">the end results</p>
   <h1>work</h1>
 </header>
 
-<ul class="projects">
-  {%- for p in site.projects -%}
-  <li>
-    <a class="pname" href="{{ p.url }}"><span class="sq" aria-hidden="true"></span>{{ p.name }}</a>
-    <p class="pblurb">{{ p.blurb }}</p>
-  </li>
-  {%- endfor -%}
-</ul>
+{%- for group in site.data.work.groups -%}
+<section class="workgroup">
+  <h2 class="workgroup-name">{{ group.name }}</h2>
+  <p class="workgroup-blurb">{{ group.blurb }}</p>
+  <ul class="projects">
+    {%- for slug in group.projects -%}
+    {%- assign proj = site.data.work.projects[slug] -%}
+    <li>
+      <a class="pname" href="{{ '/work/' | append: slug | append: '/' | relative_url }}"><span class="sq" aria-hidden="true"></span>{{ proj.name }}</a>
+      <p class="pblurb">{{ proj.blurb }}</p>
+    </li>
+    {%- endfor -%}
+  </ul>
+</section>
+{%- endfor -%}

@@ -1,0 +1,93 @@
+# ─────────────────────────────────────────────────────────────
+# The "things i made" data model.
+#
+# `groups` drives /work/ — ordered sections by org/topic, each
+# listing project slugs. `projects` holds the per-project detail
+# rendered by _layouts/project.html at /work/<slug>/.
+#
+# Screenshots live in assets/work/ and are captured from the live
+# properties. A property with no `shot` renders as a link card.
+# ─────────────────────────────────────────────────────────────
+
+groups:
+  - name: Salvage Union
+    blurb: A tabletop RPG toolkit — the SRD as a fast reference, plus the API, bot, and apps around it.
+    projects: [salvage-union]
+
+  - name: RANDSUM
+    blurb: Dice as a properly-typed library — and the playground, spec, and bot built on the notation.
+    projects: [randsum]
+
+  - name: Tools
+    blurb: Small, sharp things I build for myself.
+    projects: [boom, vellum, dotfiles]
+
+projects:
+  salvage-union:
+    name: Salvage Union
+    blurb: Everything I've built around Salvage Union, the mech-salvage TTRPG — one SRD, read a dozen ways.
+    properties:
+      - name: SalvageUnion.io
+        url: https://salvageunion.io
+        blurb: The full SRD as a fast, searchable reference, with a pilot & mech builder.
+        shot: salvageunion-io.png
+      - name: InTheUnionNow
+        url: https://intheunionnow.com
+        blurb: A local-first character manager — your pilots and mechs, saved right in your browser.
+        shot: intheunionnow.png
+      - name: The Salvage Union API
+        url: https://salvageunion.io/api/
+        blurb: The SRD as structured JSON — the data layer every other tool reads from.
+        shot: salvageunion-api.png
+      - name: The Discord Bot
+        url: https://salvageunion.io/discord/
+        blurb: Roll and reference the SRD without leaving your table's Discord server.
+        shot:
+
+  randsum:
+    name: RANDSUM
+    blurb: Dice, as a properly-typed library. Roll anything, notation-first — and everything the notation makes possible.
+    properties:
+      - name: randsum.dev
+        url: https://randsum.dev
+        blurb: The library's home — a zero-dependency, TypeScript-first, Bun-native rolling engine (@randsum/roller).
+        shot: randsum-dev.png
+      - name: randsum.io
+        url: https://randsum.io
+        blurb: The dice-notation playground — type any RANDSUM notation and roll it live, with the full modifier cheatsheet.
+        shot: randsum-io.png
+      - name: notation.randsum.dev
+        url: https://notation.randsum.dev
+        blurb: RANDSUM Dice Notation (RDN) — the formal specification for the notation the whole library speaks.
+        shot: notation-randsum-dev.png
+      - name: The Discord Bot
+        url: https://randsum.dev/discord
+        blurb: Roll RANDSUM notation straight from Discord.
+        shot:
+
+  boom:
+    name: boom
+    blurb: A declarative engine that provisions your machine and code workspaces from one config.
+    properties:
+      - name: alxjrvs/boom
+        url: https://github.com/alxjrvs/boom
+        blurb: Source, docs, and releases on GitHub.
+        shot:
+
+  vellum:
+    name: vellum
+    blurb: A quiet, local-first home for your Daggerheart character — on stream or at the table.
+    properties:
+      - name: alxjrvs/vellum
+        url: https://github.com/alxjrvs/vellum
+        blurb: Source, docs, and releases on GitHub.
+        shot:
+
+  dotfiles:
+    name: dotFiles
+    blurb: This machine's config — small, exemplary, boom's first consumer.
+    properties:
+      - name: alxjrvs/dotFiles
+        url: https://github.com/alxjrvs/dotFiles
+        blurb: Source and configuration on GitHub.
+        shot:

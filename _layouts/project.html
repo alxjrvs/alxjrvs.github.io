@@ -1,0 +1,28 @@
+---
+layout: default
+---
+{%- assign proj = site.data.work.projects[page.slug] -%}
+<header class="pagehead">
+  <p class="eyebrow"><a class="backlink" href="{{ '/work/' | relative_url }}">← things i made</a></p>
+  <h1>{{ proj.name }}</h1>
+</header>
+
+<p class="lede">{{ proj.blurb }}</p>
+
+<ul class="properties">
+  {%- for prop in proj.properties -%}
+  <li class="property{% unless prop.shot %} property--flat{% endunless %}">
+    <a class="property-link" href="{{ prop.url }}">
+      {%- if prop.shot -%}
+      <span class="shot">
+        <img src="{{ '/assets/work/' | append: prop.shot | relative_url }}" alt="{{ prop.name }} — screenshot" loading="lazy" width="1280" height="800">
+      </span>
+      {%- endif -%}
+      <span class="property-body">
+        <span class="pname"><span class="sq" aria-hidden="true"></span>{{ prop.name }}<span class="arrow" aria-hidden="true">↗</span></span>
+        <span class="pblurb">{{ prop.blurb }}</span>
+      </span>
+    </a>
+  </li>
+  {%- endfor -%}
+</ul>
