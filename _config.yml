@@ -27,9 +27,10 @@ plugins:
 
 # ── navigation (rendered by _layouts/default.html) ─────
 nav:
-  - { name: index, url: / }
-  - { name: work,  url: /work/ }
-  - { name: about, url: /about/ }
+  - { name: index,   url: / }
+  - { name: writing, url: /writing/ }
+  - { name: work,    url: /work/ }
+  - { name: about,   url: /about/ }
 
 # The "things i made" data now lives in _data/work.yml — grouped by
 # org/topic, with a page per project at /work/<slug>/. Rendered on / and /work/.

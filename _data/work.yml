@@ -72,7 +72,7 @@ projects:
       - name: alxjrvs/boom
         url: https://github.com/alxjrvs/boom
         blurb: Source, docs, and releases on GitHub.
-        shot:
+        shot: boom-github.png
 
   vellum:
     name: vellum
@@ -81,7 +81,7 @@ projects:
       - name: alxjrvs/vellum
         url: https://github.com/alxjrvs/vellum
         blurb: Source, docs, and releases on GitHub.
-        shot:
+        shot: vellum-github.png
 
   dotfiles:
     name: dotFiles
@@ -90,4 +90,4 @@ projects:
       - name: alxjrvs/dotFiles
         url: https://github.com/alxjrvs/dotFiles
         blurb: Source and configuration on GitHub.
-        shot:
+        shot: dotfiles-github.png
