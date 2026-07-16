@@ -9,21 +9,6 @@ layout: default
 
 <section class="columns">
   <div class="col">
-    <h2>latest writing</h2>
-    <ul class="linklist">
-      {%- for post in site.posts limit: 3 -%}
-      <li>
-        <a href="{{ post.url | relative_url }}">
-          <span class="bul" aria-hidden="true"></span>
-          <span class="t">{{ post.title }}</span>
-          <span class="d">{{ post.date | date: "%Y·%m" }}</span>
-        </a>
-      </li>
-      {%- endfor -%}
-    </ul>
-  </div>
-
-  <div class="col">
     <h2>things i made</h2>
     <ul class="linklist">
       {%- for p in site.projects limit: 4 -%}
