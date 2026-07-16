@@ -1,0 +1,19 @@
+---
+layout: default
+---
+<article class="post">
+  <p class="kicker">writing</p>
+  <h1>{{ page.title }}</h1>
+  <p class="byline">
+    {{ page.date | date: "%B %-d, %Y" }} <span class="sep">·</span> {{ content | number_of_words | divided_by: 200 | plus: 1 }} min read
+  </p>
+
+  <div class="prose reading">
+    {{ content }}
+    <span class="fin" aria-hidden="true" title="the end"></span>
+  </div>
+
+  <nav class="postnav">
+    <a href="{{ '/writing/' | relative_url }}"><span class="sq" aria-hidden="true"></span> all writing</a>
+  </nav>
+</article>

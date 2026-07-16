@@ -1,0 +1,39 @@
+---
+layout: default
+---
+<section class="hero">
+  <h1 class="wordmark">alxjrvs</h1>
+  <div class="rule" aria-hidden="true"></div>
+  <p class="tagline">Software engineer. I build <em>small, sharp tools</em> — and roll too many dice.</p>
+</section>
+
+<section class="columns">
+  <div class="col">
+    <h2>latest writing</h2>
+    <ul class="linklist">
+      {%- for post in site.posts limit: 3 -%}
+      <li>
+        <a href="{{ post.url | relative_url }}">
+          <span class="bul" aria-hidden="true"></span>
+          <span class="t">{{ post.title }}</span>
+          <span class="d">{{ post.date | date: "%Y·%m" }}</span>
+        </a>
+      </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+
+  <div class="col">
+    <h2>things i made</h2>
+    <ul class="linklist">
+      {%- for p in site.projects limit: 4 -%}
+      <li>
+        <a href="{{ p.url }}">
+          <span class="bul" aria-hidden="true"></span>
+          <span class="t">{{ p.name }}</span>
+        </a>
+      </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>

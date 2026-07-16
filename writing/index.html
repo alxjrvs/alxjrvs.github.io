@@ -1,0 +1,22 @@
+---
+layout: default
+title: writing
+permalink: /writing/
+description: Essays and notes by alxjrvs.
+---
+<header class="pagehead">
+  <p class="eyebrow">the archive</p>
+  <h1>writing</h1>
+</header>
+
+<ul class="archive">
+  {%- for post in site.posts -%}
+  <li>
+    <a href="{{ post.url | relative_url }}">
+      <span class="bul" aria-hidden="true"></span>
+      <span class="t">{{ post.title }}</span>
+      <span class="d">{{ post.date | date: "%Y·%m" }}</span>
+    </a>
+  </li>
+  {%- endfor -%}
+</ul>

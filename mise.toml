@@ -1,0 +1,4 @@
+# GitHub Pages builds on Ruby 3.3; pin it here so local preview == prod.
+# (System Ruby 4.0 is too new for the Pages / Jekyll 3.9 gem set.)
+[tools]
+ruby = "3.3"

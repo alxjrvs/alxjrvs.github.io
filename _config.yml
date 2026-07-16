@@ -1,0 +1,56 @@
+title: alxjrvs
+tagline: Software engineer. I build small, sharp tools.
+description: >-
+  The personal site of alxjrvs — software engineer. Writing, work, and
+  marginalia from a terminal.
+author: alxjrvs
+url: "https://alxjrvs.github.io"
+baseurl: ""
+lang: en
+timezone: America/New_York
+
+# ── build ──────────────────────────────────────────────
+markdown: kramdown
+highlighter: rouge
+permalink: /writing/:title/
+
+# Fully custom design — no theme. (github-pages bundles minima; we don't use it.)
+theme:
+
+sass:
+  style: compressed
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# ── navigation (rendered by _layouts/default.html) ─────
+nav:
+  - { name: index,    url: / }
+  - { name: writing,  url: /writing/ }
+  - { name: work,     url: /work/ }
+  - { name: colophon, url: /colophon/ }
+
+# ── the "things i made" list (rendered on / and /work/) ─
+projects:
+  - name: boom
+    blurb: A declarative engine that rebuilds a dev machine from one config.
+    url: https://github.com/alxjrvs/boom
+  - name: RANDSUM
+    blurb: Dice, as a properly-typed library. Roll anything, notation-first.
+    url: https://github.com/RANDSUM
+  - name: vellum
+    blurb: A quiet workspace for characters and worlds.
+    url: https://github.com/alxjrvs
+  - name: dotFiles
+    blurb: This machine's config — small, exemplary, boom's first consumer.
+    url: https://github.com/alxjrvs/dotFiles
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - mise.toml
+  - vendor
+  - .jekyll-cache
