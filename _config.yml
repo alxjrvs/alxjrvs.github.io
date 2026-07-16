@@ -27,10 +27,9 @@ plugins:
 
 # ── navigation (rendered by _layouts/default.html) ─────
 nav:
-  - { name: index,    url: / }
-  - { name: writing,  url: /writing/ }
-  - { name: work,     url: /work/ }
-  - { name: colophon, url: /colophon/ }
+  - { name: index, url: / }
+  - { name: work,  url: /work/ }
+  - { name: about, url: /about/ }
 
 # ── the "things i made" list (rendered on / and /work/) ─
 projects:
