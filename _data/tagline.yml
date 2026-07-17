@@ -1,0 +1,30 @@
+# The rollable hero tagline: "<subject>. I build <object>."
+#
+# Clicking the die spins both labels (slot-machine style) and lands on a
+# random pair. The FIRST item of each list is what renders before any roll
+# (and with JS off).
+#
+# ⤵ alxjrvs: these are SAMPLE lists to show the effect — replace with yours.
+subjects:
+  - Enthusiast
+  - Engineer
+  - Tinkerer
+  - Generalist
+  - Optimist
+  - Dabbler
+  - Hobbyist
+  - Craftsman
+  - Nerd
+  - Romantic
+
+objects:
+  - stuff
+  - things
+  - tools
+  - games
+  - dice
+  - systems
+  - worlds
+  - toys
+  - trouble
+  - too much

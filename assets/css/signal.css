@@ -158,10 +158,23 @@ a { color: inherit; }
   line-height: 1.4; max-width: 34ch; margin: 0;
 }
 .hero .tagline em { font-style: normal; color: var(--red); }
-/* the dice that ends the sentence — a die face as the full stop */
-.die { width: .23em; height: .23em; vertical-align: baseline; margin-left: .04em; }
+/* the dice that ends the sentence — a die face as the full stop, click to roll */
+.die-btn {
+  appearance: none; -webkit-appearance: none; background: none; border: 0;
+  padding: 0; margin: 0 0 0 .04em; line-height: 0; cursor: pointer;
+  vertical-align: baseline; color: inherit;
+}
+.die-btn:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.die { width: .23em; height: .23em; vertical-align: baseline; transform-origin: center; transition: transform .15s ease; }
 .die .die-face { fill: var(--red); }
 .die .die-pips circle { fill: var(--paper); }
+.die-btn:hover .die { transform: rotate(14deg) scale(1.25); }
+.die-btn.rolling .die { animation: dieroll .42s linear infinite; }
+@keyframes dieroll { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .die { transition: none; }
+  .die-btn:hover .die, .die-btn.rolling .die { animation: none; transform: none; }
+}
 
 .columns {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
