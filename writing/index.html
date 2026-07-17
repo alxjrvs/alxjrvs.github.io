@@ -9,6 +9,7 @@ description: Essays and notes by alxjrvs.
   <h1>writing</h1>
 </header>
 
+{%- if site.posts.size > 0 -%}
 <ul class="archive">
   {%- for post in site.posts -%}
   <li>
@@ -20,3 +21,6 @@ description: Essays and notes by alxjrvs.
   </li>
   {%- endfor -%}
 </ul>
+{%- else -%}
+<p class="empty empty--page">no entries yet</p>
+{%- endif -%}

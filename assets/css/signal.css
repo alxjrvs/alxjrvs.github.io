@@ -201,6 +201,8 @@ a { color: inherit; }
 .linklist a:hover .bul { visibility: visible; }
 .linklist .bul { width: 8px; height: 8px; background: var(--red); flex: none; transform: translateY(-1px); visibility: hidden; }
 .linklist.always .bul { visibility: visible; }
+.empty { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--mute); margin: 10px 0 0; }
+.empty--page { margin-top: clamp(20px, 4vw, 36px); }
 
 /* =====================================================================
    PAGE HEADERS (writing, work, colophon)

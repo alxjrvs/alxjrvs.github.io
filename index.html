@@ -60,6 +60,7 @@ layout: default
 <section class="columns">
   <div class="col">
     <h2>things i said</h2>
+    {%- if site.posts.size > 0 -%}
     <ul class="linklist">
       {%- for post in site.posts limit: 4 -%}
       <li>
@@ -71,6 +72,9 @@ layout: default
       </li>
       {%- endfor -%}
     </ul>
+    {%- else -%}
+    <p class="empty">no entries yet</p>
+    {%- endif -%}
   </div>
 
   <div class="col">
