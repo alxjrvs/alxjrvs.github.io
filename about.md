@@ -13,7 +13,7 @@ description: About alxjrvs.
 
 I was raised in Central Connecticut as a third-generation Norman Rockwell painting. As a
 precocious boy who didn't like to sleep, my parents made one of several key mistakes when
-they decided to allow me to purchase a copy of "The Mask" starring Jim Carey. I've
+they decided to allow me to purchase a copy of "The Mask" starring Jim Carrey. I've
 considered myself a hacker ever since the age of 9, when I correctly guessed that my
 father's AOL password was "MenInBlack". Despite this clear aptitude for computer science,
 I spent most of my young life trying to be an actor, followed up by a temporary stint as
