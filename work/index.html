@@ -2,18 +2,36 @@
 layout: default
 title: work
 permalink: /work/
-description: Things alxjrvs has made.
+description: The sites and tools alxjrvs has made — each its own thing.
 ---
 <header class="pagehead">
-  <p class="eyebrow">things i made</p>
+  <p class="eyebrow">the end results</p>
   <h1>work</h1>
 </header>
 
-<ul class="projects">
-  {%- for p in site.projects -%}
-  <li>
-    <a class="pname" href="{{ p.url }}"><span class="sq" aria-hidden="true"></span>{{ p.name }}</a>
-    <p class="pblurb">{{ p.blurb }}</p>
-  </li>
-  {%- endfor -%}
-</ul>
+{%- for group in site.data.work.groups -%}
+<section class="workgroup">
+  <h2 class="workgroup-name">{{ group.name }}</h2>
+  <p class="workgroup-blurb">{{ group.blurb }}</p>
+  <ul class="workgrid">
+    {%- for slug in group.sites -%}
+    {%- assign s = site.data.work.sites[slug] -%}
+    <li class="workcard">
+      <a class="workcard-link" href="{{ '/work/' | append: slug | append: '/' | relative_url }}">
+        {%- if s.shot -%}
+        <span class="workcard-thumb">
+          <img src="{{ '/assets/work/' | append: s.shot | relative_url }}" alt="{{ s.name }} — screenshot" loading="lazy" width="1280" height="800">
+        </span>
+        {%- else -%}
+        <span class="workcard-thumb workcard-thumb--none" aria-hidden="true"><span class="sq"></span></span>
+        {%- endif -%}
+        <span class="workcard-body">
+          <span class="workcard-name">{{ s.name }}</span>
+          <span class="workcard-blurb">{{ s.blurb }}</span>
+        </span>
+      </a>
+    </li>
+    {%- endfor -%}
+  </ul>
+</section>
+{%- endfor -%}

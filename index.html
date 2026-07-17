@@ -4,21 +4,99 @@ layout: default
 <section class="hero">
   <h1 class="wordmark">alxjrvs</h1>
   <div class="rule" aria-hidden="true"></div>
-  <p class="tagline">Software engineer. I build <em>small, sharp tools</em> — and roll too many dice.</p>
+  <p class="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><button type="button" class="die-btn" aria-label="Roll for a new tagline"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="1.5"/><g class="die-pips"><circle cx="4" cy="4" r="2.5"/><circle cx="12" cy="4" r="2.5"/><circle cx="8" cy="8" r="2.5"/><circle cx="4" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/></g></svg></button></p>
 </section>
+
+<script>
+  (function () {
+    var SUBJECTS = {{ site.data.tagline.subjects | jsonify }};
+    var OBJECTS  = {{ site.data.tagline.objects | jsonify }};
+    var btn  = document.querySelector('.die-btn');
+    var subj = document.querySelector('.roll-subject');
+    var obj  = document.querySelector('.roll-object');
+    if (!btn || !subj || !obj) return;
+
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var rolling = false;
+
+    // One reel: cycles a label through random options, decelerating to a stop.
+    // `ticks` and `curve` differ per reel so the two never land together.
+    function spin(el, opts, finalVal, ticks, base, curve, done) {
+      var i = 0;
+      (function step() {
+        i++;
+        el.textContent = i < ticks ? pick(opts) : finalVal;
+        if (!reduce) {
+          el.animate(
+            [{ transform: 'translateY(-0.55em)', opacity: 0.25 }, { transform: 'none', opacity: 1 }],
+            { duration: 95, easing: 'ease-out' }
+          );
+        }
+        if (i < ticks) setTimeout(step, base + i * i * curve);
+        else done();
+      })();
+    }
+
+    function roll() {
+      if (rolling) return;
+      var finalS = pick(SUBJECTS), finalO = pick(OBJECTS);
+
+      if (reduce) { subj.textContent = finalS; obj.textContent = finalO; return; }
+
+      rolling = true;
+      btn.classList.add('rolling');
+      var pending = 2;
+      function settled() { if (--pending === 0) { btn.classList.remove('rolling'); rolling = false; } }
+
+      // Subject reel stops first; object reel runs about half a second longer.
+      spin(subj, SUBJECTS, finalS, 14, 30, 1.8, settled);
+      spin(obj,  OBJECTS,  finalO, 15, 30, 1.9, settled);
+    }
+    btn.addEventListener('click', roll);
+  })();
+</script>
 
 <section class="columns">
   <div class="col">
-    <h2>things i made</h2>
+    <h2>things i said</h2>
+    {%- if site.posts.size > 0 -%}
     <ul class="linklist">
-      {%- for p in site.projects limit: 4 -%}
+      {%- for post in site.posts limit: 4 -%}
       <li>
-        <a href="{{ p.url }}">
+        <a href="{{ post.url | relative_url }}">
           <span class="bul" aria-hidden="true"></span>
-          <span class="t">{{ p.name }}</span>
+          <span class="t">{{ post.title }}</span>
+          <span class="d">{{ post.date | date: "%Y·%m" }}</span>
         </a>
       </li>
       {%- endfor -%}
+    </ul>
+    {%- else -%}
+    <p class="empty">no entries yet</p>
+    {%- endif -%}
+  </div>
+
+  <div class="col">
+    <h2>things i made</h2>
+    <ul class="linklist">
+      {%- for group in site.data.work.groups -%}
+      {%- assign s = site.data.work.sites[group.flagship] -%}
+      <li>
+        <a href="{{ '/work/' | append: group.flagship | append: '/' | relative_url }}">
+          <span class="bul" aria-hidden="true"></span>
+          <span class="t">{{ s.name }}</span>
+          <span class="d">{{ group.name }}</span>
+        </a>
+      </li>
+      {%- endfor -%}
+      <li>
+        <a href="{{ '/work/' | relative_url }}">
+          <span class="bul" aria-hidden="true"></span>
+          <span class="t">all work</span>
+          <span class="d">→</span>
+        </a>
+      </li>
     </ul>
   </div>
 </section>

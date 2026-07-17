@@ -27,27 +27,13 @@ plugins:
 
 # ── navigation (rendered by _layouts/default.html) ─────
 nav:
-  - { name: index, url: / }
-  - { name: work,  url: /work/ }
-  - { name: about, url: /about/ }
+  - { name: index,   url: / }
+  - { name: writing, url: /writing/ }
+  - { name: work,    url: /work/ }
+  - { name: about,   url: /about/ }
 
-# ── the "things i made" list (rendered on / and /work/) ─
-projects:
-  - name: boom
-    blurb: A declarative engine that provisions your machine and code workspaces from one config.
-    url: https://github.com/alxjrvs/boom
-  - name: SUSRD
-    blurb: The Salvage Union rules, as a fast reference and character/mech builder.
-    url: https://salvageunion.io
-  - name: RANDSUM
-    blurb: Dice, as a properly-typed library. Roll anything, notation-first.
-    url: https://github.com/RANDSUM/randsum
-  - name: vellum
-    blurb: A quiet, local-first home for your Daggerheart character — on stream or at the table.
-    url: https://github.com/alxjrvs/vellum
-  - name: dotFiles
-    blurb: This machine's config — small, exemplary, boom's first consumer.
-    url: https://github.com/alxjrvs/dotFiles
+# The "things i made" data now lives in _data/work.yml — grouped by
+# org/topic, with a page per project at /work/<slug>/. Rendered on / and /work/.
 
 exclude:
   - Gemfile
