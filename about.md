@@ -2,7 +2,7 @@
 layout: default
 title: about
 permalink: /about/
-description: About alxjrvs and this site.
+description: About alxjrvs.
 ---
 <header class="pagehead">
   <p class="eyebrow">who and what</p>
@@ -11,11 +11,18 @@ description: About alxjrvs and this site.
 
 <div class="prose reading" markdown="1">
 
-I'm alxjrvs — a software engineer. I build small, sharp tools, and I roll too many dice.
+I was raised in Central Connecticut as a third-generation Norman Rockwell painting. As a
+precocious boy who didn't like to sleep, my parents made one of several key mistakes when
+they decided to allow me to purchase a copy of "The Mask" starring Jim Carey. I've
+considered myself a hacker ever since the age of 9, when I correctly guessed that my
+father's AOL password was "MenInBlack". Despite this clear aptitude for computer science,
+I spent most of my young life trying to be an actor, followed up by a temporary stint as
+an academic. After "Graduating" "College", I set out to make a life for myself in a field
+that went nowhere before packing all my things, moving to Boston, and sleeping on a
+friend's couch. That friend taught me to code, and things have worked out since.
 
-This site is deliberately small. It's a static [Jekyll](https://jekyllrb.com) site, built
-by GitHub Pages straight from the default branch — no framework, no build pipeline, no
-`node_modules`. The same principle I hold for everything else: **native over special.**
+I like board games, "Weird" Al Yankovic, and the 2010 DreamWorks animated picture film
+"Megamind".
 
 ### Elsewhere
 
