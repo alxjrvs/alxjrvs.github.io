@@ -54,7 +54,7 @@ sites:
     blurb: Roll and reference the SRD without leaving your table's Discord server.
     url: https://salvageunion.io/discord/
     code: https://github.com/alxjrvs/salvageunion-reference
-    shot:
+    shot: salvage-union-discord.png
 
   # ── RANDSUM ───────────────────────────────────────────────
   randsum-dev:
@@ -81,9 +81,9 @@ sites:
   randsum-discord:
     name: The RANDSUM Discord Bot
     blurb: Roll RANDSUM notation straight from Discord.
-    url: https://randsum.dev/discord
+    url: https://randsum.dev/discord/
     code: https://github.com/RANDSUM/randsum
-    shot:
+    shot: randsum-discord.png
 
   # ── Tools ─────────────────────────────────────────────────
   boom:
@@ -96,13 +96,13 @@ sites:
   vellum:
     name: vellum
     blurb: A quiet, local-first home for your Daggerheart character — an OBS-friendly sheet overlay.
-    url: https://github.com/alxjrvs/vellum
+    url: https://alxjrvs.github.io/vellum/
     code: https://github.com/alxjrvs/vellum
-    shot:
+    shot: vellum-site.png
 
   dotfiles:
     name: dotFiles
     blurb: This machine's config — small, exemplary, boom's first consumer.
     url: https://github.com/alxjrvs/dotFiles
     code: https://github.com/alxjrvs/dotFiles
-    shot:
+    shot: dotfiles-github.png
