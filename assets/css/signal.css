@@ -158,6 +158,10 @@ a { color: inherit; }
   line-height: 1.4; max-width: 34ch; margin: 0;
 }
 .hero .tagline em { font-style: normal; color: var(--red); }
+/* the dice that ends the sentence — a die face as the full stop */
+.die { width: .74em; height: .74em; vertical-align: baseline; margin-left: .05em; }
+.die .die-face { fill: var(--red); }
+.die .die-pips circle { fill: var(--paper); }
 
 .columns {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
