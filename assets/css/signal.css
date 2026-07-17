@@ -159,7 +159,7 @@ a { color: inherit; }
 }
 .hero .tagline em { font-style: normal; color: var(--red); }
 /* the dice that ends the sentence — a die face as the full stop */
-.die { width: .74em; height: .74em; vertical-align: baseline; margin-left: .05em; }
+.die { width: .46em; height: .46em; vertical-align: baseline; margin-left: .04em; }
 .die .die-face { fill: var(--red); }
 .die .die-pips circle { fill: var(--paper); }
 
