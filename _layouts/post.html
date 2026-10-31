@@ -12,7 +12,7 @@ layout: default
     <p class="meta label">
       <span>{{ page.date | date: "%B %-d, %Y" }}</span>
       <span>{{ content | number_of_words | divided_by: 220 | plus: 1 }} min read</span>
-      {%- if proj -%}<a href="{{ proj.link }}">On {{ proj.title }} ↗</a>{%- endif -%}
+      {%- if proj -%}<a href="{{ proj.link }}">On {{ proj.title }} <span aria-hidden="true">↗</span></a>{%- endif -%}
     </p>
   </header>
 

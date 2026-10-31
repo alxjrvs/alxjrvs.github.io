@@ -20,9 +20,7 @@
   </script>
 
   <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}?v={{ site.time | date: '%s' }}" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="preload" href="{{ '/assets/fonts/familjen-grotesk-latin.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   {%- comment -%} the ?v= changes on every build, so a deploy's CSS is never served from a stale cache {%- endcomment %}
   <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {%- feed_meta -%}
@@ -65,7 +63,7 @@
   {%- unless page.url == '/' -%}
   <footer class="foot wrap">
     <span>© {{ site.time | date: '%Y' }} <span class="alx">alx</span><span class="jrvs">jrvs</span></span>
-    <a href="https://github.com/alxjrvs">GitHub ↗</a>
+    <a href="https://github.com/alxjrvs">GitHub <span aria-hidden="true">↗</span></a>
   </footer>
   {%- endunless -%}
 
