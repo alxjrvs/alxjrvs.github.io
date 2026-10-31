@@ -39,7 +39,7 @@
     <div class="bar-id">
       <a class="brand" href="{{ '/' | relative_url }}"><span class="alx">alx</span><span class="jrvs">jrvs</span></a>
       {%- if page.url == '/' -%}
-      <p class="bar-tag" aria-hidden="true"><span class="roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
+      <p class="bar-tag" aria-hidden="true"><span class="roll-subject" data-suffix=".">{{ site.data.tagline.subjects | first }}.</span> I build <em class="roll-object" data-suffix=".">{{ site.data.tagline.objects | first }}.</em></p>
       {%- endif -%}
     </div>
     <nav class="nav" aria-label="Primary">
@@ -88,6 +88,28 @@
         fab.blur();
       });
       fab.addEventListener('mouseleave', function () { idle = setTimeout(function () { fab.classList.remove('show'); }, 800); });
+    })();
+
+    // Header links follow the scroll: the link for the section you're in
+    // is marked current (aria-current), which brightens and underlines it.
+    (function () {
+      var links = [].slice.call(document.querySelectorAll('.nav a[href*="#"]'));
+      var pairs = links.map(function (a) { return { a: a, s: document.getElementById(a.hash.slice(1)) }; })
+        .filter(function (p) { return p.s; });
+      if (!pairs.length) return;
+      var queued = false;
+      function update() {
+        queued = false;
+        var line = innerHeight * 0.4, cur = null;
+        pairs.forEach(function (p) { if (p.s.getBoundingClientRect().top <= line) cur = p; });
+        pairs.forEach(function (p) {
+          if (p === cur) p.a.setAttribute('aria-current', 'location');
+          else p.a.removeAttribute('aria-current');
+        });
+      }
+      addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+      addEventListener('resize', update);
+      update();
     })();
 
     // Theme: follows the visitor's system light/dark setting, live. The

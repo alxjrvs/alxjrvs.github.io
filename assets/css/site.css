@@ -16,7 +16,7 @@
      fg-muted   secondary UI text (nav, card summaries, deks)
      fg-subtle  labels, dates, footer, "I build", hover borders
    brand    the signature colour: "jrvs", the tagline's subject, focus rings.
-   brand-2  the pop: only the die and the tagline's full stops.
+   brand-2  the pop: only the die.
    Project cards and posts also get --accent from their project. */
 :root {
   --sans: 'Familjen Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -42,12 +42,13 @@
   /* roles */
   --mark-first: var(--fg);       /* "alx" */
   --mark-last: var(--brand);     /* "jrvs" */
+  --mark-ghost: var(--fg-subtle); /* the rest of "alex jarvis", splash only */
   --tag-subject: var(--brand);   /* "Enthusiast" */
   --tag-verb: var(--fg-subtle);  /* "I build" */
   --tag-object: var(--fg);       /* "stuff" */
-  --stop: var(--brand-2);        /* the tagline's full stops */
   --die: var(--brand-2);
   --focus: var(--brand);
+  --nav-active: var(--brand);    /* underline under the current section's link */
 }
 [data-theme="light"] {
   color-scheme: light;
@@ -146,8 +147,15 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .js .home .bar-tag, .js .home .die-bar { opacity: 0; pointer-events: none; }
 .js .home.docked .bar-tag, .js .home.docked .die-bar { opacity: 1; pointer-events: auto; }
 .nav { display: flex; align-items: center; gap: clamp(12px, 3vw, 28px); font-size: 1rem; }
-.nav a { text-decoration: none; color: var(--fg-muted); }
+.nav a { position: relative; text-decoration: none; color: var(--fg-muted); transition: color .25s; }
 .nav a:hover { color: var(--fg); }
+/* the section you're in: its link brightens and gets an underline */
+.nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 1px;
+  background: var(--nav-active); transform: scaleX(0); transform-origin: left; transition: transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.nav a[aria-current] { color: var(--fg); }
+.nav a[aria-current]::after { transform: none; }
 .theme {
   width: 36px; height: 36px;
   display: grid; place-items: center;
@@ -212,12 +220,16 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   z-index: 60;
   align-self: flex-start;
   margin-left: -.045em;
-  font-size: clamp(96px, min(23vw, 36vh), 300px);
+  font-size: clamp(64px, min(23vw, 36vh), 300px);
   line-height: .8;
   letter-spacing: -.065em;
   transform-origin: 0 0;
   will-change: transform;
 }
+/* the letters that turn "alxjrvs" into "alex jarvis": grey, and folded away
+   (width and opacity follow --g, set by the recede script) as you scroll */
+.mark .ghost { display: inline-block; overflow: clip; color: var(--mark-ghost); }
+.js .mark .ghost { width: calc(var(--w) * (1 - var(--g, 0))); opacity: calc(1 - var(--g, 0) * 1.6); }
 .tagline {
   position: relative;
   z-index: 60;
@@ -234,7 +246,6 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .tagline, .bar-tag { color: var(--tag-verb); }
 .tagline .roll-subject, .bar-tag .roll-subject { color: var(--tag-subject); }
 .tagline em, .bar-tag em { font-style: normal; color: var(--tag-object); }
-.tagline .stop, .bar-tag .stop { color: var(--stop); }
 .roll { display: inline-block; }
 /* once docked, the header's own copies take over from the splash */
 .docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
@@ -258,7 +269,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .die-pips { fill: var(--surface); }
 .die-pips circle { opacity: 0; }
 .die-pips circle.on { opacity: 1; }
-.die-btn:hover .die { transform: rotate(-12deg); }
+.die-btn:hover .die, .die-btn:focus-visible .die { transform: scale(1.12); }
 
 /* projects */
 #projects h2 { margin-bottom: clamp(24px, 4vh, 40px); }

@@ -5,7 +5,7 @@ This is the source of truth for how the site looks, moves and reads. The CSS
 
 **In one line:** professional, with something a little wrong. The page is
 mostly calm navy and canary yellow, like a legal pad. One bruise-purple pop is
-saved for the die and the tagline's full stops: the things you can roll.
+saved for the die: the thing you roll.
 
 ---
 
@@ -13,8 +13,7 @@ saved for the die and the tagline's full stops: the things you can roll.
 
 1. **Projects first.** Everything else frames the four projects.
 2. **One loud thing at a time.** `brand` carries the identity. `brand-2` is the
-   pop, and it appears in exactly two places: the die and the tagline's full
-   stops. Never use it for text.
+   pop, and it appears in exactly one place: the die. Never use it for text.
 3. **Roles, not colours.** Components use role tokens (`--tag-subject`,
    `--die`…), never raw palette tokens or hex. Changing the palette means
    editing the palette block and nothing else.
@@ -64,12 +63,13 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | -------------- | ----------- | --------------------------------------------- |
 | `mark-first`   | `fg`        | "alx" in every wordmark (splash, header, footer) |
 | `mark-last`    | `brand`     | "jrvs" in every wordmark                      |
+| `mark-ghost`   | `fg-subtle` | the letters that spell out "alex jarvis" on the splash |
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
 | `tag-verb`     | `fg-subtle` | "I build"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
-| `stop`         | `brand-2`   | the tagline's two full stops                  |
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
+| `nav-active`   | `brand`     | underline under the current section's header link |
 | `accent`       | project     | card kicker, "Visit" underline, post links    |
 
 ### 2.4 Contrast (WCAG, against `surface`)
@@ -96,7 +96,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 | Style           | Size                                    | Weight | Tracking |
 | --------------- | --------------------------------------- | ------ | -------- |
-| Wordmark        | `clamp(96px, min(23vw, 36vh), 300px)`   | 700    | very tight |
+| Wordmark        | `clamp(64px, min(23vw, 36vh), 300px)`   | 700    | very tight |
 | Tagline         | `clamp(30px, 4.7vw, 60px)`              | 500    | `-.02em` |
 | Section heading | `clamp(2.5rem, 6vw, 3.5rem)` (phones 2.25rem) | 700 | `-.04em` |
 | Card title      | `clamp(1.75rem, 3.6vw, 2.25rem)`        | 700    | tight    |
@@ -109,7 +109,9 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 **Copy rules**
 
 - The tagline is always "*Subject*. I build *object*." with real full stops.
-- Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled.
+  Each full stop belongs to the word before it: same colour, and it rolls with it.
+- Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
+  splash spells out "alex jarvis", with the extra letters ghosted.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.
 - In "I like …", items read mid-sentence. They're lowercase unless they're a
   proper noun, and they're listed as "a, b, and c".
@@ -145,7 +147,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | ----------------- | ------------------------------------------------------------- |
 | Splash recede     | The wordmark, tagline and die shrink and travel into the header over the first 60% of the splash, with smoothstep easing. The die stays pinned on screen while it travels. |
 | Section snap      | Desktop: scrolling is free. Once it settles, a spring (stiffness 110, damping 0.78) goes to the next section if you moved past 10% of a screen, otherwise back. Touch: CSS snapping, mandatory once every section fits. |
-| Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. The die doesn't spin: its pips flick through random die faces (each with a small press), slow down, and land last, back on the favicon's "j". |
+| Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
 | Card shuffle      | About 7 shuffles, each slower than the last. Each move is a FLIP slide with `cubic-bezier(.2,.8,.2,1)`. The last one takes 700ms. |
 | Theme change      | 0.25s background/colour fade.                                 |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |
@@ -158,13 +160,23 @@ animations and the pip flicker. The content still changes, but instantly.
 ## 7. Components
 
 - **Wordmark:** "alx" uses `mark-first`, "jrvs" uses `mark-last`, everywhere
-  it appears.
-- **Tagline:** subject, `stop`, verb, object, `stop`. A copy of it lives in the
+  it appears. On the splash it reads as the full name, "alex jarvis". The
+  extra letters (e, the space, a, i) are in `mark-ghost`. They fold away (width
+  and opacity) over the first 40% of the recede, so only "alxjrvs" reaches the
+  header. Without JS they simply stay.
+- **Tagline:** "subject." (`tag-subject`), verb (`tag-verb`), "object."
+  (`tag-object`), with each full stop part of its rolling word. A copy of it lives in the
   header (hidden on narrow screens).
 - **Die:** a rounded square in the `die` colour, with a 3×3 grid of pips cut
   out of `surface`. At rest, the lit pips spell the favicon's "j". There's one
   in the splash corner and one as the header's rightmost button. Either one
-  re-rolls the page, and its pips roll too.
+  re-rolls the page, and its pips roll too. On hover it grows slightly
+  (12%, 0.2s).
+- **Header nav:** links are `fg-muted`, and `fg` on hover. The link for the
+  section you're scrolled into is marked `aria-current`. It turns `fg` and a
+  2px `nav-active` underline draws in from the left (0.3s). The current section
+  is the last one whose top has passed 40% of the screen. On the splash, no
+  link is current.
 - **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
   theme toggle and the die. On the home page it's hidden until the splash
   recedes into it.

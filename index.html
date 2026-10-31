@@ -3,8 +3,8 @@ layout: default
 ---
 <section class="screen intro" aria-label="Introduction">
   <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="8" cy="4.5" r="1.35"/><circle class="on" cx="11.5" cy="4.5" r="1.35"/><circle class="on" cx="4.5" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle class="on" cx="11.5" cy="8" r="1.35"/><circle cx="4.5" cy="11.5" r="1.35"/><circle class="on" cx="8" cy="11.5" r="1.35"/><circle cx="11.5" cy="11.5" r="1.35"/></g></svg></button>
-  <h1 class="mark" id="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
-  <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
+  <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
+  <p class="tagline" id="tagline"><span class="roll roll-subject" data-suffix=".">{{ site.data.tagline.subjects | first }}.</span> I build <em class="roll roll-object" data-suffix=".">{{ site.data.tagline.objects | first }}.</em></p>
 </section>
 
 {%- assign projects = site.projects | sort: "order" -%}
@@ -80,14 +80,17 @@ layout: default
 
     // One reel: cycles a label through random options, decelerating to a stop.
     // `ticks` and `curve` differ per reel so the two never land together.
+    // a reel's label, plus any punctuation that rides along with it (the
+    // tagline's full stops are part of their word)
+    function setText(el, v) { el.textContent = v + (el.getAttribute('data-suffix') || ''); }
     function spin(els, opts, finalVal, ticks, base, curve, done) {
-      if (opts.length < 2) { els.forEach(function (el) { el.textContent = finalVal; }); return done(); }
+      if (opts.length < 2) { els.forEach(function (el) { setText(el, finalVal); }); return done(); }
       var i = 0;
       (function step() {
         i++;
         var v = i < ticks ? pick(opts) : finalVal;
         els.forEach(function (el) {
-          el.textContent = v;
+          setText(el, v);
           if (!reduce.matches) {
             el.animate(
               [{ transform: 'translateY(-0.55em)', opacity: 0.25 }, { transform: 'none', opacity: 1 }],
@@ -167,9 +170,6 @@ layout: default
           var f; do { f = Math.floor(Math.random() * FACES.length); } while (f === last);
           last = f;
           showPips(FACES[f]);
-          dice.forEach(function (d) {
-            d.firstElementChild.animate([{ transform: 'scale(.86)' }, { transform: 'none' }], { duration: 90, easing: 'ease-out' });
-          });
           setTimeout(step, 35 + i * i * 2.2);
         } else {
           showPips(J);
@@ -184,9 +184,9 @@ layout: default
       var finalL = likes.map(function (el, i) { return nextLike(i); });
 
       if (reduce.matches) {
-        subjs.forEach(function (el) { el.textContent = finalS; });
-        objs.forEach(function (el) { el.textContent = finalO; });
-        likes.forEach(function (el, i) { el.textContent = finalL[i]; });
+        subjs.forEach(function (el) { setText(el, finalS); });
+        objs.forEach(function (el) { setText(el, finalO); });
+        likes.forEach(function (el, i) { setText(el, finalL[i]); });
         rollCards(function () {});
         return;
       }
@@ -227,8 +227,15 @@ layout: default
     ].filter(function (p) { return p[0] && p[1]; }).map(function (p) { return { el: p[0], to: p[1], pin: p[2] }; });
     var span;
 
+    // the full name's extra letters ("alex jarvis"), which fold away early
+    // in the recede so only "alxjrvs" reaches the header
+    var mark = document.getElementById('mark');
+    var ghosts = mark ? [].slice.call(mark.querySelectorAll('.ghost')) : [];
+
     function measure() {
       pairs.forEach(function (p) { p.el.style.transform = 'none'; p.el.style.opacity = ''; });
+      ghosts.forEach(function (g) { g.style.removeProperty('--w'); });
+      ghosts.forEach(function (g) { g.style.setProperty('--w', g.getBoundingClientRect().width + 'px'); });
       bar.style.setProperty('--p', 1);
       pairs.forEach(function (p) {
         var a = p.el.getBoundingClientRect(), b = p.to.getBoundingClientRect();
@@ -253,6 +260,7 @@ layout: default
         q.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
       });
       bar.style.setProperty('--p', e);
+      if (mark) mark.style.setProperty('--g', Math.min(e * 2.5, 1));
       bar.classList.toggle('off', e < 0.02);
       document.body.classList.toggle('docked', p >= 1);
     }
