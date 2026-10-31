@@ -90,6 +90,28 @@
       fab.addEventListener('mouseleave', function () { idle = setTimeout(function () { fab.classList.remove('show'); }, 800); });
     })();
 
+    // Header links follow the scroll: the link for the section you're in
+    // is marked current (aria-current), which brightens and underlines it.
+    (function () {
+      var links = [].slice.call(document.querySelectorAll('.nav a[href*="#"]'));
+      var pairs = links.map(function (a) { return { a: a, s: document.getElementById(a.hash.slice(1)) }; })
+        .filter(function (p) { return p.s; });
+      if (!pairs.length) return;
+      var queued = false;
+      function update() {
+        queued = false;
+        var line = innerHeight * 0.4, cur = null;
+        pairs.forEach(function (p) { if (p.s.getBoundingClientRect().top <= line) cur = p; });
+        pairs.forEach(function (p) {
+          if (p === cur) p.a.setAttribute('aria-current', 'location');
+          else p.a.removeAttribute('aria-current');
+        });
+      }
+      addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+      addEventListener('resize', update);
+      update();
+    })();
+
     // Theme: follows the visitor's system light/dark setting, live. The
     // toggle overrides it; picking the same mode as the system clears the
     // override, so the site goes back to following the system.

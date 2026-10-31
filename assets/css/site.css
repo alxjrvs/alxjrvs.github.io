@@ -48,6 +48,7 @@
   --stop: var(--brand-2);        /* the tagline's full stops */
   --die: var(--brand-2);
   --focus: var(--brand);
+  --nav-active: var(--brand);    /* underline under the current section's link */
 }
 [data-theme="light"] {
   color-scheme: light;
@@ -146,8 +147,15 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .js .home .bar-tag, .js .home .die-bar { opacity: 0; pointer-events: none; }
 .js .home.docked .bar-tag, .js .home.docked .die-bar { opacity: 1; pointer-events: auto; }
 .nav { display: flex; align-items: center; gap: clamp(12px, 3vw, 28px); font-size: 1rem; }
-.nav a { text-decoration: none; color: var(--fg-muted); }
+.nav a { position: relative; text-decoration: none; color: var(--fg-muted); transition: color .25s; }
 .nav a:hover { color: var(--fg); }
+/* the section you're in: its link brightens and gets an underline */
+.nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 1px;
+  background: var(--nav-active); transform: scaleX(0); transform-origin: left; transition: transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.nav a[aria-current] { color: var(--fg); }
+.nav a[aria-current]::after { transform: none; }
 .theme {
   width: 36px; height: 36px;
   display: grid; place-items: center;

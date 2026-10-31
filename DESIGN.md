@@ -70,6 +70,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `stop`         | `brand-2`   | the tagline's two full stops                  |
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
+| `nav-active`   | `brand`     | underline under the current section's header link |
 | `accent`       | project     | card kicker, "Visit" underline, post links    |
 
 ### 2.4 Contrast (WCAG, against `surface`)
@@ -166,6 +167,11 @@ animations and the pip flicker. The content still changes, but instantly.
   in the splash corner and one as the header's rightmost button. Either one
   re-rolls the page, and its pips roll too. On hover it grows slightly
   (12%, 0.2s).
+- **Header nav:** links are `fg-muted`, and `fg` on hover. The link for the
+  section you're scrolled into is marked `aria-current`. It turns `fg` and a
+  2px `nav-active` underline draws in from the left (0.3s). The current section
+  is the last one whose top has passed 40% of the screen. On the splash, no
+  link is current.
 - **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
   theme toggle and the die. On the home page it's hidden until the splash
   recedes into it.
