@@ -4,7 +4,7 @@ layout: default
 <section class="screen intro" aria-label="Introduction">
   <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="8" cy="4.5" r="1.35"/><circle class="on" cx="11.5" cy="4.5" r="1.35"/><circle class="on" cx="4.5" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle class="on" cx="11.5" cy="8" r="1.35"/><circle cx="4.5" cy="11.5" r="1.35"/><circle class="on" cx="8" cy="11.5" r="1.35"/><circle cx="11.5" cy="11.5" r="1.35"/></g></svg></button>
   <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
-  <p class="tagline" id="tagline"><span class="roll roll-subject" data-suffix=".">{{ site.data.tagline.subjects | first }}.</span> I build <em class="roll roll-object" data-suffix=".">{{ site.data.tagline.objects | first }}.</em></p>
+  <p class="tagline" id="tagline"><span class="roll roll-subject" data-suffix=".">{{ site.data.tagline.subjects | first }}.</span> I make <em class="roll roll-object" data-suffix=".">{{ site.data.tagline.objects | first }}.</em></p>
 </section>
 
 {%- assign projects = site.projects | sort: "order" -%}
@@ -60,6 +60,8 @@ layout: default
   (function () {
     var SUBJECTS = {{ site.data.tagline.subjects | jsonify }};
     var OBJECTS  = {{ site.data.tagline.objects | jsonify }};
+    var RARE     = {{ site.data.tagline.rare_subject | jsonify }};
+    var RARE_ODDS = {{ site.data.tagline.rare_odds | default: 50 }};
     var LIKES    = {{ site.data.likes | jsonify }};
     var dice  = [].slice.call(document.querySelectorAll('.die-btn'));
     var subjs = [].slice.call(document.querySelectorAll('.roll-subject'));
@@ -81,7 +83,11 @@ layout: default
     // `ticks` and `curve` differ per reel so the two never land together.
     // a reel's label, plus any punctuation that rides along with it (the
     // tagline's full stops are part of their word)
-    function setText(el, v) { el.textContent = v + (el.getAttribute('data-suffix') || ''); }
+    // (a word that already ends in its punctuation, like the rare roll, keeps it)
+    function setText(el, v) {
+      var sfx = el.getAttribute('data-suffix') || '';
+      el.textContent = sfx && v.slice(-sfx.length) === sfx ? v : v + sfx;
+    }
     function spin(els, opts, finalVal, ticks, base, curve, done) {
       if (opts.length < 2) { els.forEach(function (el) { setText(el, finalVal); }); return done(); }
       var i = 0;
@@ -179,7 +185,9 @@ layout: default
 
     function roll() {
       if (rolling) return;
-      var finalS = pick(SUBJECTS), finalO = pick(OBJECTS);
+      // now and then the subject lands on the rare roll instead
+      var finalS = RARE && Math.random() * RARE_ODDS < 1 ? RARE : pick(SUBJECTS);
+      var finalO = pick(OBJECTS);
       var finalL = likes.map(function (el, i) { return nextLike(i); });
 
       if (reduce.matches) {

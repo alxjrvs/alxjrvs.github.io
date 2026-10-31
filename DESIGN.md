@@ -55,7 +55,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `fg`        | headings, links, "alx", the tagline's object ("stuff")          |
 | `fg-body`   | paragraphs: bio, posts                                          |
 | `fg-muted`  | nav links, card summaries, deks, empty states, header buttons   |
-| `fg-subtle` | mono labels, dates, footer, "I build", hover borders            |
+| `fg-subtle` | mono labels, dates, footer, "I make", hover borders            |
 
 ### 2.3 Roles
 
@@ -65,7 +65,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `mark-last`    | `brand`     | "jrvs" in every wordmark                      |
 | `mark-ghost`   | `fg-subtle` | the letters that spell out "alex jarvis" on hover |
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
-| `tag-verb`     | `fg-subtle` | "I build"                                     |
+| `tag-verb`     | `fg-subtle` | "I make"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
@@ -108,8 +108,10 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 **Copy rules**
 
-- The tagline is always "*Subject*. I build *object*." with real full stops.
+- The tagline is always "*Subject*. I make *object*." with real full stops.
   Each full stop belongs to the word before it: same colour, and it rolls with it.
+  About 1 roll in 50 lands the subject on the rare "Undiagnosed, but, come on."
+  (`_data/tagline.yml`), which brings its own full stop.
 - Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
   splash wordmark spells out "alex jarvis" on hover, with the extra letters in grey.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.

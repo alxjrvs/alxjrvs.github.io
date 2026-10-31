@@ -14,7 +14,7 @@
      fg         headings, links, "alx", the tagline's object
      fg-body    running text (bio, posts)
      fg-muted   secondary UI text (nav, card summaries, deks)
-     fg-subtle  labels, dates, footer, "I build", hover borders
+     fg-subtle  labels, dates, footer, "I make", hover borders
    brand    the signature colour: "jrvs", the tagline's subject, focus rings.
    brand-2  the pop: only the die.
    Project cards and posts also get --accent from their project. */
@@ -44,7 +44,7 @@
   --mark-last: var(--brand);     /* "jrvs" */
   --mark-ghost: var(--fg-subtle); /* the rest of "alex jarvis", on hover */
   --tag-subject: var(--brand);   /* "Enthusiast" */
-  --tag-verb: var(--fg-subtle);  /* "I build" */
+  --tag-verb: var(--fg-subtle);  /* "I make" */
   --tag-object: var(--fg);       /* "stuff" */
   --die: var(--brand-2);
   --focus: var(--brand);
@@ -250,7 +250,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   line-height: 1.1;
   letter-spacing: -.02em;
 }
-/* tagline: subject, verb ("I build") and object each have a role (see tokens) */
+/* tagline: subject, verb ("I make") and object each have a role (see tokens) */
 .tagline, .bar-tag { color: var(--tag-verb); }
 .tagline .roll-subject, .bar-tag .roll-subject { color: var(--tag-subject); }
 .tagline em, .bar-tag em { font-style: normal; color: var(--tag-object); }
