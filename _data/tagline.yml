@@ -1,4 +1,4 @@
-# The rollable hero tagline: "<subject>. I build <object>."
+# The rollable hero tagline: "<subject>. I make <object>."
 #
 # Clicking the die spins both labels (slot-machine style) and lands on a
 # random pair. The FIRST item of each list is what renders before any roll
@@ -13,9 +13,29 @@ subjects:
   - Optimist
   - Dabbler
   - Hobbyist
-  - Craftsman
+  - Craftsperson
   - Nerd
   - Romantic
+  - Completionist
+  - Maximalist
+  - Game Master
+  - Overthinker
+  - Collector
+  - Archivist
+  - Goblin
+  - Superfan
+  - Night owl
+  - Homebrewer
+  - Daydreamer
+  - Weirdo
+  - Contrarian
+  - Fiddler
+  - Grungler
+
+# a rare first-slot roll (about 1 in 50), never shown while the reel spins.
+# It brings its own full stop.
+rare_subject: "Undiagnosed, but, come on."
+rare_odds: 50
 
 objects:
   - stuff
@@ -28,3 +48,18 @@ objects:
   - toys
   - trouble
   - too much
+  - side projects
+  - rabbit holes
+  - little machines
+  - contraptions
+  - companion apps
+  - rules engines
+  - spreadsheets
+  - shortcuts
+  - excuses
+  - inside jokes
+  - bad ideas
+  - weird websites
+  - side quests
+  - card tools
+  - my own fun

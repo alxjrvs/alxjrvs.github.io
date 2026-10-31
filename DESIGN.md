@@ -55,7 +55,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `fg`        | headings, links, "alx", the tagline's object ("stuff")          |
 | `fg-body`   | paragraphs: bio, posts                                          |
 | `fg-muted`  | nav links, card summaries, deks, empty states, header buttons   |
-| `fg-subtle` | mono labels, dates, footer, "I build", hover borders            |
+| `fg-subtle` | mono labels, dates, footer, "I make", hover borders            |
 
 ### 2.3 Roles
 
@@ -65,12 +65,12 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `mark-last`    | `brand`     | "jrvs" in every wordmark                      |
 | `mark-ghost`   | `fg-subtle` | the letters that spell out "alex jarvis" on hover |
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
-| `tag-verb`     | `fg-subtle` | "I build"                                     |
+| `tag-verb`     | `fg-subtle` | "I make"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
 | `nav-active`   | `brand`     | underline under the current section's header link |
-| `accent`       | project     | card kicker, "Visit" underline, post links    |
+| `accent`       | project     | "Visit" underline, post links                 |
 
 ### 2.4 Contrast (WCAG, against `surface`)
 
@@ -91,7 +91,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 - **Familjen Grotesk** (400–700) for everything. Display sizes use weight
   700 with tight negative tracking.
-- **IBM Plex Mono** (400/500) for kickers, labels, dates and code. Labels are
+- **IBM Plex Mono** (400/500) for labels, dates and code. Labels are
   uppercase with `.08em` tracking.
 
 | Style           | Size                                    | Weight | Tracking |
@@ -108,8 +108,10 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 **Copy rules**
 
-- The tagline is always "*Subject*. I build *object*." with real full stops.
+- The tagline is always "*Subject*. I make *object*." with real full stops.
   Each full stop belongs to the word before it: same colour, and it rolls with it.
+  About 1 roll in 50 lands the subject on the rare "Undiagnosed, but, come on."
+  (`_data/tagline.yml`), which brings its own full stop.
 - Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
   splash wordmark spells out "alex jarvis" on hover, with the extra letters in grey.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.
@@ -180,9 +182,9 @@ animations and the pip flicker. The content still changes, but instantly.
 - **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
   theme toggle and the die. On the home page it's hidden until the splash
   recedes into it.
-- **Project card:** screenshot (16:10, or 4:3 on phones), mono kicker in the
-  project accent, title, summary in `fg-muted`, and a "Visit … ↗" link with an
-  accent underline.
+- **Project card:** screenshot (16:10, or 4:3 on phones), title, summary in
+  `fg-muted`, and a "Visit … ↗" link with an accent underline. No category
+  label above the title.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** a curved "j" spelled in die pips on a 3×3 grid: only the four
   pips that form the j, in `brand`, on a dark `surface` tile. It's
