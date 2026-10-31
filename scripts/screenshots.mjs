@@ -6,7 +6,12 @@
 // .github/workflows/screenshots.yml; locally: `npm i --no-save
 // playwright@1.48.2 sharp@0.33 && npx playwright install chromium && node
 // scripts/screenshots.mjs`.
-import { readdir, readFile } from "node:fs/promises";
+//
+// With ONLY_MISSING=1 (how PR runs call it) it skips projects that already
+// have a screenshot, so a PR only gains shots for new projects. Re-captures
+// never match byte for byte, and a bot commit on a PR leaves its head with no
+// CI run, which blocks the merge.
+import { access, readdir, readFile } from "node:fs/promises";
 import { chromium } from "playwright";
 import sharp from "sharp";
 
@@ -16,7 +21,9 @@ for (const file of await readdir(dir)) {
   if (!file.endsWith(".md")) continue;
   const text = await readFile(`${dir}/${file}`, "utf8");
   const link = text.match(/^link:\s*(\S+)/m)?.[1];
-  if (link) projects.push({ name: file.replace(/\.md$/, ""), link });
+  const name = file.replace(/\.md$/, "");
+  if (process.env.ONLY_MISSING && (await access(`assets/work/${name}.webp`).then(() => true, () => false))) continue;
+  if (link) projects.push({ name, link });
 }
 
 const browser = await chromium.launch();

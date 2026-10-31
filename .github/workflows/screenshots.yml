@@ -1,8 +1,9 @@
 name: Screenshots
 
 # Re-captures each project's live site into assets/work/ and commits the result
-# when anything changed. Runs on demand, weekly, and on PRs that touch the
-# project list or this tooling (committing back to the PR branch).
+# when anything changed. Runs on demand and weekly. On PRs that touch the
+# project list or this tooling it only captures projects with no screenshot
+# yet, committing those back to the PR branch.
 on:
   workflow_dispatch:
   schedule:
@@ -41,6 +42,9 @@ jobs:
 
       - name: Capture
         run: node scripts/screenshots.mjs
+        env:
+          # On PRs, only capture projects that have no screenshot yet (see the script).
+          ONLY_MISSING: ${{ github.event_name == 'pull_request' && '1' || '' }}
 
       - name: Commit changed screenshots
         run: |
