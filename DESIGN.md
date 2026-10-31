@@ -64,6 +64,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | -------------- | ----------- | --------------------------------------------- |
 | `mark-first`   | `fg`        | "alx" in every wordmark (splash, header, footer) |
 | `mark-last`    | `brand`     | "jrvs" in every wordmark                      |
+| `mark-ghost`   | `fg-subtle` | the letters that spell out "alex jarvis" on the splash |
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
 | `tag-verb`     | `fg-subtle` | "I build"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
@@ -97,7 +98,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 | Style           | Size                                    | Weight | Tracking |
 | --------------- | --------------------------------------- | ------ | -------- |
-| Wordmark        | `clamp(96px, min(23vw, 36vh), 300px)`   | 700    | very tight |
+| Wordmark        | `clamp(64px, min(23vw, 36vh), 300px)`   | 700    | very tight |
 | Tagline         | `clamp(30px, 4.7vw, 60px)`              | 500    | `-.02em` |
 | Section heading | `clamp(2.5rem, 6vw, 3.5rem)` (phones 2.25rem) | 700 | `-.04em` |
 | Card title      | `clamp(1.75rem, 3.6vw, 2.25rem)`        | 700    | tight    |
@@ -110,7 +111,8 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 **Copy rules**
 
 - The tagline is always "*Subject*. I build *object*." with real full stops.
-- Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled.
+- Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
+  splash spells out "alex jarvis", with the extra letters ghosted.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.
 - In "I like …", items read mid-sentence. They're lowercase unless they're a
   proper noun, and they're listed as "a, b, and c".
@@ -159,7 +161,10 @@ animations and the pip flicker. The content still changes, but instantly.
 ## 7. Components
 
 - **Wordmark:** "alx" uses `mark-first`, "jrvs" uses `mark-last`, everywhere
-  it appears.
+  it appears. On the splash it reads as the full name, "alex jarvis". The
+  extra letters (e, the space, a, i) are in `mark-ghost`. They fold away (width
+  and opacity) over the first 40% of the recede, so only "alxjrvs" reaches the
+  header. Without JS they simply stay.
 - **Tagline:** subject, `stop`, verb, object, `stop`. A copy of it lives in the
   header (hidden on narrow screens).
 - **Die:** a rounded square in the `die` colour, with a 3×3 grid of pips cut

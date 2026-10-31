@@ -3,7 +3,7 @@ layout: default
 ---
 <section class="screen intro" aria-label="Introduction">
   <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="8" cy="4.5" r="1.35"/><circle class="on" cx="11.5" cy="4.5" r="1.35"/><circle class="on" cx="4.5" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle class="on" cx="11.5" cy="8" r="1.35"/><circle cx="4.5" cy="11.5" r="1.35"/><circle class="on" cx="8" cy="11.5" r="1.35"/><circle cx="11.5" cy="11.5" r="1.35"/></g></svg></button>
-  <h1 class="mark" id="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
+  <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
   <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
 </section>
 
@@ -224,8 +224,15 @@ layout: default
     ].filter(function (p) { return p[0] && p[1]; }).map(function (p) { return { el: p[0], to: p[1], pin: p[2] }; });
     var span;
 
+    // the full name's extra letters ("alex jarvis"), which fold away early
+    // in the recede so only "alxjrvs" reaches the header
+    var mark = document.getElementById('mark');
+    var ghosts = mark ? [].slice.call(mark.querySelectorAll('.ghost')) : [];
+
     function measure() {
       pairs.forEach(function (p) { p.el.style.transform = 'none'; p.el.style.opacity = ''; });
+      ghosts.forEach(function (g) { g.style.removeProperty('--w'); });
+      ghosts.forEach(function (g) { g.style.setProperty('--w', g.getBoundingClientRect().width + 'px'); });
       bar.style.setProperty('--p', 1);
       pairs.forEach(function (p) {
         var a = p.el.getBoundingClientRect(), b = p.to.getBoundingClientRect();
@@ -250,6 +257,7 @@ layout: default
         q.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
       });
       bar.style.setProperty('--p', e);
+      if (mark) mark.style.setProperty('--g', Math.min(e * 2.5, 1));
       bar.classList.toggle('off', e < 0.02);
       document.body.classList.toggle('docked', p >= 1);
     }

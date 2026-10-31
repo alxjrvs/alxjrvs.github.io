@@ -42,6 +42,7 @@
   /* roles */
   --mark-first: var(--fg);       /* "alx" */
   --mark-last: var(--brand);     /* "jrvs" */
+  --mark-ghost: var(--fg-subtle); /* the rest of "alex jarvis", splash only */
   --tag-subject: var(--brand);   /* "Enthusiast" */
   --tag-verb: var(--fg-subtle);  /* "I build" */
   --tag-object: var(--fg);       /* "stuff" */
@@ -220,12 +221,16 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   z-index: 60;
   align-self: flex-start;
   margin-left: -.045em;
-  font-size: clamp(96px, min(23vw, 36vh), 300px);
+  font-size: clamp(64px, min(23vw, 36vh), 300px);
   line-height: .8;
   letter-spacing: -.065em;
   transform-origin: 0 0;
   will-change: transform;
 }
+/* the letters that turn "alxjrvs" into "alex jarvis": grey, and folded away
+   (width and opacity follow --g, set by the recede script) as you scroll */
+.mark .ghost { display: inline-block; overflow: clip; color: var(--mark-ghost); }
+.js .mark .ghost { width: calc(var(--w) * (1 - var(--g, 0))); opacity: calc(1 - var(--g, 0) * 1.6); }
 .tagline {
   position: relative;
   z-index: 60;
