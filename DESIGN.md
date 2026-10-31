@@ -42,7 +42,7 @@ is re-skinned.
 | `fg`           | `#f3f0dc` | `#14193a` | loudest text                                 |
 | `fg-body`      | `#e6e3ce` | `#212647` | running text                                 |
 | `fg-muted`     | `#c7c4ad` | `#3f4466` | secondary text                               |
-| `fg-subtle`    | `#8f96b3` | `#5b6285` | quietest text ("navy slate", faded ink)      |
+| `fg-subtle`    | `#aea57a` | `#75693a` | quietest text ("khaki pad", from the paper)  |
 | `brand`        | `#ffe45c` | `#1f3cb8` | signature colour (canary / ballpoint blue)   |
 | `brand-2`      | `#a986d6` | `#6b3fa0` | the pop (bruise purple)                      |
 
@@ -80,7 +80,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `fg`        | 15.7:1 | 15.2:1 |
 | `fg-body`   | 14.0:1 | 13.1:1 |
 | `fg-muted`  | 10.2:1 | 8.4:1  |
-| `fg-subtle` | 6.2:1  | 5.3:1  |
+| `fg-subtle` | 7.3:1  | 4.9:1  |
 | `brand`     | 14.2:1 | 7.8:1  |
 | `brand-2`   | 6.1:1  | 6.6:1  |
 
@@ -149,7 +149,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | Motion            | Behaviour                                                     |
 | ----------------- | ------------------------------------------------------------- |
 | Splash recede     | The wordmark, tagline and die shrink and travel into the header over the first 60% of the splash, with smoothstep easing. The die stays pinned on screen while it travels. |
-| Section snap      | Desktop: scrolling is free. Once it settles, a spring (stiffness 110, damping 0.78) goes to the next section if you moved past 10% of a screen, otherwise back. Touch: CSS snapping, mandatory once every section fits. |
+| Section snap      | Desktop: scrolling is free. Once it has slowed right down, a soft, critically damped spring (stiffness 42, damping 1, so no bounce) picks up from the scroll's own speed and eases to the next section if you moved past 10% of a screen, otherwise back. Touch: the browser's proximity snapping, so a swipe can pass sections and only eases on when it ends near one. The splash recede updates in the same frame as the scroll, so it never lags a frame behind. |
 | Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
 | Card shuffle      | About 7 shuffles, each slower than the last. Each move is a FLIP slide with `cubic-bezier(.2,.8,.2,1)`. The last one takes 700ms. |
 | Theme change      | 0.25s background/colour fade.                                 |
