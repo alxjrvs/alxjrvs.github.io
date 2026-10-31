@@ -4,7 +4,7 @@ layout: default
 <section class="screen intro" aria-label="Introduction">
   <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button>
   <h1 class="mark" id="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
-  <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em>.</p>
+  <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
 </section>
 
 {%- assign projects = site.projects | sort: "order" -%}
@@ -44,11 +44,11 @@ layout: default
     <div class="bio">
       {{ bio | markdownify }}
       {%- assign likes = site.data.likes -%}
-      <p class="likes">I like <span id="likes">{{ likes[0] | first }}, {{ likes[1] | first }}, and {{ likes[2] | first }}</span>.</p>
+      <p class="likes">I like <span id="likes"><span class="like">{{ likes[0] | first }}</span>, <span class="like">{{ likes[1] | first }}</span>, and <span class="like">{{ likes[2] | first }}</span></span>.</p>
     </div>
   </div>
   <footer class="foot">
-    <span>© {{ site.time | date: '%Y' }} <span class="alx">alx</span>jrvs</span>
+    <span>© {{ site.time | date: '%Y' }} <span class="alx">alx</span><span class="jrvs">jrvs</span></span>
     <a href="https://github.com/alxjrvs">GitHub ↗</a>
   </footer>
 </section>
@@ -56,7 +56,8 @@ layout: default
 <script>
   // The die. Either copy of it (the splash corner or the header) re-rolls
   // the page: the tagline spins slot-machine style, the project cards
-  // shuffle, and About picks three new things I like.
+  // shuffle, and About picks three new things I like. Every one of them
+  // rolls through options, slowing down until it settles.
   (function () {
     var SUBJECTS = {{ site.data.tagline.subjects | jsonify }};
     var OBJECTS  = {{ site.data.tagline.objects | jsonify }};
@@ -65,7 +66,7 @@ layout: default
     var subjs = [].slice.call(document.querySelectorAll('.roll-subject'));
     var objs  = [].slice.call(document.querySelectorAll('.roll-object'));
     var cards = document.querySelector('.cards');
-    var likes = document.getElementById('likes');
+    var likes = [].slice.call(document.querySelectorAll('#likes .like'));
     if (!dice.length) return;
 
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
@@ -80,6 +81,7 @@ layout: default
     // One reel: cycles a label through random options, decelerating to a stop.
     // `ticks` and `curve` differ per reel so the two never land together.
     function spin(els, opts, finalVal, ticks, base, curve, done) {
+      if (opts.length < 2) { els.forEach(function (el) { el.textContent = finalVal; }); return done(); }
       var i = 0;
       (function step() {
         i++;
@@ -98,12 +100,12 @@ layout: default
       })();
     }
 
-    // Reorder the project cards, sliding each from its old spot to its new one.
-    function shuffleCards() {
-      if (!cards) return;
+    // Reorder the project cards, sliding each from where it is now to its
+    // new spot.
+    function place(order, duration) {
       var items = [].slice.call(cards.children);
       var before = items.map(function (el) { return el.getBoundingClientRect(); });
-      var order = shuffle(items);
+      items.forEach(function (el) { el.getAnimations().forEach(function (an) { an.cancel(); }); });
       order.forEach(function (el) { cards.appendChild(el); });
       if (reduce.matches) return;
       items.forEach(function (el, i) {
@@ -112,58 +114,69 @@ layout: default
         if (!dx && !dy) return;
         el.animate(
           [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }],
-          { duration: 650, easing: 'cubic-bezier(.2,.8,.2,1)' }
+          { duration: duration, easing: 'cubic-bezier(.2,.8,.2,1)' }
         );
       });
     }
-
-    // "a", "a and b", "a, b, and c"
-    function sentence(list) {
-      if (list.length < 2) return list.join('');
-      if (list.length === 2) return list[0] + ' and ' + list[1];
-      return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
+    // The cards' reel: a few quick shuffles, each slower than the last, then
+    // a final one that eases into place.
+    function rollCards(done) {
+      if (!cards) return done();
+      var final = shuffle([].slice.call(cards.children));
+      if (reduce.matches) { place(final); return done(); }
+      var ticks = 7, i = 0;
+      (function step() {
+        i++;
+        if (i < ticks) {
+          var wait = 140 + i * i * 9;
+          place(shuffle([].slice.call(cards.children)), wait + 60);
+          setTimeout(step, wait);
+        } else {
+          place(final, 700);
+          setTimeout(done, 700);
+        }
+      })();
     }
+
     // One pick per slot, never the one already showing.
     var picked = LIKES.map(function () { return 0; });
-    function rerollLikes() {
-      if (!likes) return;
-      var next = sentence(LIKES.map(function (slot, i) {
-        if (slot.length > 1) {
-          var j = Math.floor(Math.random() * (slot.length - 1));
-          picked[i] = j >= picked[i] ? j + 1 : j;
-        }
-        return slot[picked[i]];
-      }));
-      if (reduce.matches) { likes.textContent = next; return; }
-      likes.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in' }).onfinish = function () {
-        likes.textContent = next;
-        likes.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' });
-      };
+    function nextLike(i) {
+      var slot = LIKES[i];
+      if (slot.length > 1) {
+        var j = Math.floor(Math.random() * (slot.length - 1));
+        picked[i] = j >= picked[i] ? j + 1 : j;
+      }
+      return slot[picked[i]];
     }
 
     function roll() {
       if (rolling) return;
       var finalS = pick(SUBJECTS), finalO = pick(OBJECTS);
-      shuffleCards();
-      rerollLikes();
+      var finalL = likes.map(function (el, i) { return nextLike(i); });
 
       if (reduce.matches) {
         subjs.forEach(function (el) { el.textContent = finalS; });
         objs.forEach(function (el) { el.textContent = finalO; });
+        likes.forEach(function (el, i) { el.textContent = finalL[i]; });
+        rollCards(function () {});
         return;
       }
 
       rolling = true;
       dice.forEach(function (d) { d.classList.add('rolling'); });
-      var pending = 2;
+      var pending = 3 + likes.length;
       function settled() {
         if (--pending) return;
         dice.forEach(function (d) { d.classList.remove('rolling'); });
         rolling = false;
       }
-      // Subject reel stops first; object reel runs about half a second longer.
+      // Every reel slows to a stop at its own pace, so they land one by one.
       spin(subjs, SUBJECTS, finalS, 14, 30, 1.8, settled);
       spin(objs,  OBJECTS,  finalO, 15, 30, 1.9, settled);
+      rollCards(settled);
+      likes.forEach(function (el, i) {
+        spin([el], LIKES[i], finalL[i], 12 + i * 2, 35, 1.7 + i * 0.2, settled);
+      });
     }
     dice.forEach(function (d) { d.addEventListener('click', roll); });
   })();
@@ -223,6 +236,23 @@ layout: default
     addEventListener('resize', measure);
     measure();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  })();
+
+  // Touch snapping: firm (mandatory) once every section fits on one screen,
+  // so a swipe always lands on a section. If any section is taller than
+  // the screen, keep the gentler proximity snapping so all of it stays
+  // reachable.
+  (function () {
+    var root = document.documentElement;
+    function check() {
+      var h = innerHeight + 2;
+      root.classList.toggle('fits', [].every.call(document.querySelectorAll('.screen'), function (s) { return s.offsetHeight <= h; }));
+    }
+    addEventListener('load', check);
+    addEventListener('resize', check);
+    // a re-roll can change how long the "I like" sentence is
+    [].forEach.call(document.querySelectorAll('.die-btn'), function (d) { d.addEventListener('click', function () { setTimeout(check, 3500); }); });
+    check();
   })();
 
   // Section snapping. Scrolling itself stays native and free, so the

@@ -77,9 +77,8 @@ empty state. Publish one post and they appear. A post with `project:` links to t
 ## Design notes
 
 - **Type**: Familjen Grotesk (700 for display, tight tracking), IBM Plex Mono for kickers and dates.
-- **Colour**: warm dark `#121110` / `#f2eee8`, or light `#f5f2ec` / `#171512`. The tagline's
-  object and the die are amber; each project card uses its own accent.
+- **Colour**: see [DESIGN.md](DESIGN.md) for the palette, roles and the rest of the design language.
 - **Header**: hidden on the first screen; it slides in as you scroll while the wordmark shrinks
   into its brand slot. Without JS it's simply always there.
-- **Theme**: the toggle remembers your choice (`localStorage`) and otherwise follows the OS,
-  set before first paint so there's no flash.
+- **Theme**: follows the OS light/dark setting, live, set before first paint so there's no
+  flash. The toggle overrides it only while it disagrees with the OS.
