@@ -5,6 +5,7 @@ layout: default
   <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="8" cy="4.5" r="1.35"/><circle class="on" cx="11.5" cy="4.5" r="1.35"/><circle class="on" cx="4.5" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle class="on" cx="11.5" cy="8" r="1.35"/><circle cx="4.5" cy="11.5" r="1.35"/><circle class="on" cx="8" cy="11.5" r="1.35"/><circle cx="11.5" cy="11.5" r="1.35"/></g></svg></button>
   <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
   <p class="tagline" id="tagline"><span class="roll roll-subject" data-suffix=".">{{ site.data.tagline.subjects | first }}.</span> I make <em class="roll roll-object" data-suffix=".">{{ site.data.tagline.objects | first }}.</em></p>
+  <a class="scroll-cue" href="#projects" aria-label="Scroll to projects"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></a>
 </section>
 
 {%- assign projects = site.projects | sort: "order" -%}
@@ -277,6 +278,7 @@ layout: default
       bar.style.setProperty('--p', e);
       if (mark) mark.classList.toggle('receding', e > 0.02);   // no hover reveal once it's moving
       bar.classList.toggle('off', e < 0.02);
+      intro.classList.toggle('scrolled', scrollY > 4);   // the scroll cue bows out
       document.body.classList.toggle('docked', p >= 1);
     }
 
