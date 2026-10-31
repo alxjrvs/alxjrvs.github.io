@@ -24,26 +24,24 @@ plugins:
   - jekyll-redirect-from   # old /work/ URLs land somewhere useful
 
 # ── projects ───────────────────────────────────────────
-# One Markdown file per project in _projects/, sorted by `order`.
-# Front matter holds the facts; the body is the write-up on its page.
+# One front-matter-only file per project in _projects/, sorted by `order`.
+# They render as cards on the home page; there are no per-project pages.
 collections:
   projects:
-    output: true
-    permalink: /projects/:name/
+    output: false
 
 defaults:
-  - scope: { type: projects }
-    values: { layout: project }
   - scope: { type: posts }
     values: { layout: post }
 
 # ── navigation (rendered by _layouts/default.html) ─────
-# Items with `needs_posts: true` only appear once _posts/ has something in it,
-# so the writing link shows up on its own with the first post.
+# Each item scrolls to a section of the home page. Items with
+# `needs_posts: true` only appear once _posts/ has something in it, so the
+# writing link shows up on its own with the first post.
 nav:
-  - { name: Projects, url: /projects/ }
-  - { name: Writing,  url: /writing/, needs_posts: true }
-  - { name: About,    url: /about/ }
+  - { name: Projects, url: "/#projects" }
+  - { name: Writing,  url: "/#writing", needs_posts: true }
+  - { name: About,    url: "/#about" }
 
 exclude:
   - Gemfile

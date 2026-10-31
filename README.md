@@ -3,9 +3,10 @@
 Personal site: a static [Jekyll](https://jekyllrb.com) site served by GitHub Pages.
 Projects first, plus the occasional piece of writing.
 
-Design: **Index**. The site is set like a reference book. A left rail works as the table of
-contents, the content is one column with hairline rules instead of boxes, and colour is spent
-on one thing only: each project's own accent. System fonts, no framework, light and dark.
+Design: **E · Oversized**. One scrolling page, each section at least a screen tall: a huge
+two-tone `alxjrvs` wordmark with the rollable tagline, then project cards, latest writing (once
+there is any) and About. As you scroll, a floating header slides in and the wordmark shrinks
+into it. Warm dark by default with a light theme, Familjen Grotesk + IBM Plex Mono.
 
 ## Local preview
 
@@ -17,22 +18,20 @@ bundle exec jekyll serve --livereload
 
 ## Structure
 
-| Path                 | What it is |
-|----------------------|------------|
-| `_config.yml`        | Site config, nav, the `projects` collection |
-| `index.html`         | Home: rollable tagline, the project catalogue, latest writing (once there is any) |
-| `_projects/`         | One Markdown file per project, which becomes `/projects/<name>/` |
-| `projects/index.html`| The projects index at `/projects/` |
-| `writing/`           | The post archive at `/writing/`, grouped by year |
-| `_posts/`            | Blog posts (`YYYY-MM-DD-slug.md`), none yet |
-| `about.md`           | About page |
-| `_layouts/`          | `default.html` (rail + theme toggle), `project.html`, `post.html` |
-| `_includes/`         | `facts.html`, `project-links.html`, `post-list.html` |
-| `_data/tagline.yml`  | Word lists for the rollable home-page tagline |
-| `assets/css/site.css`| The whole design system |
-| `assets/work/`       | Project screenshots (1280×800) |
-
-Old `/work/...` URLs redirect to their project (or to `/projects/`) via `jekyll-redirect-from`.
+| Path                  | What it is |
+|-----------------------|------------|
+| `_config.yml`         | Site config, nav (anchors into the home page), the `projects` collection |
+| `index.html`          | The whole home page, plus the tagline roller and the wordmark-into-header script |
+| `_projects/`          | One front-matter-only file per project; each becomes a card (no project pages) |
+| `_includes/about.md`  | The bio, shown in the About section |
+| `_includes/post-list.html` | A list of posts |
+| `writing/`            | The post archive at `/writing/`, grouped by year |
+| `_posts/`             | Blog posts (`YYYY-MM-DD-slug.md`), none yet |
+| `_layouts/`           | `default.html` (floating header, theme toggle, back-to-top), `post.html` |
+| `redirects/`          | `/about/`, `/projects/` and old `/work/...` URLs, sent to the matching section |
+| `_data/tagline.yml`   | Word lists for the rollable tagline |
+| `assets/css/site.css` | The whole design |
+| `assets/work/`        | Project screenshots (1280×800), refreshed by the Screenshots workflow |
 
 ## Adding a project
 
@@ -40,25 +39,17 @@ Add `_projects/<name>.md`:
 
 ```markdown
 ---
-order: 5                      # position in the list
+order: 5                      # position on the page
 title: Name
-pitch: The one-line hook.
-summary: Two sentences for the home page and the top of its page.
+summary: Two sentences for the card.
 link: https://example.com     # the live site
 link_label: example.com
-code: https://github.com/...  # optional
-shot: example.png             # optional, in assets/work/
+shot: example.png             # in assets/work/, captured by the Screenshots workflow
+kicker: Category · what it is
 accent: "#1f5fbf"             # accent on the light theme
 accent_dark: "#7fb0ff"        # accent on the dark theme
-facts:
-  - [For, "Who it's for"]
-  - [Built with, "TypeScript · Bun"]
 ---
-
-The long write-up, in Markdown. It's shown on the project's page.
 ```
-
-Quote fact values: a comma inside an unquoted value splits it.
 
 ## Writing a post
 
@@ -76,15 +67,15 @@ Body in Markdown.
 ```
 
 It lands at `/writing/slug/`. Writing works with zero posts: until the first one exists, the
-Writing nav link, the home-page writing section and the feed link stay hidden, and `/writing/`
-shows a short empty state. Publish one post and they all appear. A post with `project:` also
-shows up under "Writing about …" on that project's page.
+Writing nav link and the home-page writing section stay hidden, and `/writing/` shows a short
+empty state. Publish one post and they appear. A post with `project:` links to that project.
 
 ## Design notes
 
-- **Type**: system sans for everything structural (800 weight, tight tracking at display
-  sizes), `Iowan Old Style → Charter → Georgia` for long-form prose, system mono for labels.
-- **Colour**: paper `#f5f4f0` / ink `#141413`, inverted to `#111110` / `#ecebe6` for dark.
-  The only colour is a project's accent, used on its number, pitch and link underlines.
-- **Theme**: the toggle remembers your choice (`localStorage`) and otherwise follows the OS.
-  The theme is set before first paint, so there's no flash.
+- **Type**: Familjen Grotesk (700 for display, tight tracking), IBM Plex Mono for kickers and dates.
+- **Colour**: warm dark `#121110` / `#f2eee8`, or light `#f5f2ec` / `#171512`. The tagline's
+  object and the die are amber; each project card uses its own accent.
+- **Header**: hidden on the first screen; it slides in as you scroll while the wordmark shrinks
+  into its brand slot. Without JS it's simply always there.
+- **Theme**: the toggle remembers your choice (`localStorage`) and otherwise follows the OS,
+  set before first paint so there's no flash.

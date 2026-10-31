@@ -1,12 +1,56 @@
 ---
 layout: default
 ---
-<section class="intro">
-  <h1><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em>.<button type="button" class="die-btn" aria-label="Roll for a new tagline"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="2.5"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.6"/><circle cx="11.5" cy="4.5" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="4.5" cy="11.5" r="1.6"/><circle cx="11.5" cy="11.5" r="1.6"/></g></svg></button></h1>
-  <p>I'm Jrvs, a software engineer. These are the projects I'm proudest of, mostly tools for the games I play. There's more about me on the <a href="{{ '/about/' | relative_url }}">about page</a>.</p>
+<section class="screen intro" aria-label="Introduction">
+  <h1 class="mark" id="mark"><span class="alx">alx</span>jrvs</h1>
+  <p class="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><button type="button" class="die-btn" aria-label="Roll for a new tagline"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button></p>
+</section>
+
+{%- assign projects = site.projects | sort: "order" -%}
+<section class="screen wrap" id="projects" aria-labelledby="projects-head">
+  <h2 id="projects-head">Projects</h2>
+  <div class="cards">
+    {%- for p in projects -%}
+    <article class="card" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
+      {%- if p.shot -%}
+      <a class="shot" href="{{ p.link }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="" width="1280" height="800" loading="lazy"></a>
+      {%- endif -%}
+      <p class="kicker">{{ p.kicker }}</p>
+      <h3>{{ p.title }}</h3>
+      <p class="summary">{{ p.summary }}</p>
+      <a class="visit" href="{{ p.link }}">Visit {{ p.link_label | default: p.title }} ↗</a>
+    </article>
+    {%- endfor -%}
+  </div>
+</section>
+
+{%- comment -%} Writing only exists on the page (and in the nav) once there's some. {%- endcomment -%}
+{%- if site.posts.size > 0 -%}
+<section class="screen wrap" id="writing" aria-labelledby="writing-head">
+  <div class="section-head">
+    <h2 id="writing-head">Latest writing</h2>
+    <a href="{{ '/writing/' | relative_url }}">All writing →</a>
+  </div>
+  {% assign recent = site.posts | slice: 0, 5 %}
+  {% include post-list.html posts=recent %}
+</section>
+{%- endif -%}
+
+<section class="screen wrap about" id="about" aria-labelledby="about-head">
+  <div class="about-body">
+    <h2 id="about-head">About</h2>
+    {%- capture bio -%}{% include about.md %}{%- endcapture -%}
+    <div class="bio">{{ bio | markdownify }}</div>
+  </div>
+  <footer class="foot">
+    <span>© {{ site.time | date: '%Y' }} <span class="alx">alx</span>jrvs</span>
+    <a href="https://github.com/alxjrvs">GitHub ↗</a>
+  </footer>
 </section>
 
 <script>
+  // The tagline roller: the die spins both labels slot-machine style and
+  // lands on a random pair.
   (function () {
     var SUBJECTS = {{ site.data.tagline.subjects | jsonify }};
     var OBJECTS  = {{ site.data.tagline.objects | jsonify }};
@@ -54,36 +98,51 @@ layout: default
     }
     btn.addEventListener('click', roll);
   })();
+
+  // The wordmark receding into the header. Over the first part of the scroll
+  // the header slides in and the big "alxjrvs" shrinks and travels into the
+  // header's brand slot, then hands over to the real brand link.
+  (function () {
+    var mark  = document.getElementById('mark');
+    var bar   = document.getElementById('bar');
+    var brand = bar && bar.querySelector('.brand');
+    var intro = document.querySelector('.intro');
+    if (!mark || !bar || !brand || !intro) return;
+
+    var from, to, span;
+
+    function measure() {
+      mark.style.transform = 'none';
+      bar.style.setProperty('--p', 1);
+      var m = mark.getBoundingClientRect();
+      var b = brand.getBoundingClientRect();
+      from = { x: m.left, y: m.top + scrollY, h: m.height };
+      to   = { x: b.left, y: b.top, s: b.height / m.height };
+      span = intro.offsetHeight * 0.6;
+      update();
+    }
+
+    function update() {
+      var p = Math.min(Math.max(scrollY / span, 0), 1);
+      var e = p * p * (3 - 2 * p);                 // smoothstep
+      var nowY = from.y - scrollY;                 // where the mark sits in the flow right now
+      var dx = (to.x - from.x) * e;
+      var dy = (to.y - nowY) * e;
+      var s  = 1 + (to.s - 1) * e;
+      mark.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
+      bar.style.setProperty('--p', e);
+      bar.classList.toggle('off', e < 0.02);
+      document.body.classList.toggle('docked', p >= 1);
+    }
+
+    var queued = false;
+    addEventListener('scroll', function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; update(); });
+    }, { passive: true });
+    addEventListener('resize', measure);
+    measure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  })();
 </script>
-
-{%- assign projects = site.projects | sort: "order" -%}
-<section aria-labelledby="projects-head">
-  <div class="section-head">
-    <h2 class="label" id="projects-head">Projects</h2>
-    <a href="{{ '/projects/' | relative_url }}">Index →</a>
-  </div>
-  {%- for p in projects -%}
-  <article class="entry accented" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
-    <span class="entry-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-    <div>
-      <h3 class="entry-title"><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
-      <p class="entry-pitch">{{ p.pitch }}</p>
-      <p class="entry-summary">{{ p.summary }}</p>
-      {% include facts.html p=p %}
-      {% include project-links.html p=p more=true %}
-    </div>
-  </article>
-  {%- endfor -%}
-</section>
-
-{%- comment -%} Writing only takes up room on the home page once there's some. {%- endcomment -%}
-{%- if site.posts.size > 0 -%}
-<section aria-labelledby="writing-head">
-  <div class="section-head">
-    <h2 class="label" id="writing-head">Writing</h2>
-    <a href="{{ '/writing/' | relative_url }}">All writing →</a>
-  </div>
-  {% assign recent = site.posts | slice: 0, 5 %}
-  {% include post-list.html posts=recent %}
-</section>
-{%- endif -%}

@@ -4,7 +4,7 @@ layout: default
 {%- if page.project -%}
   {%- assign proj = site.projects | where: "slug", page.project | first -%}
 {%- endif -%}
-<article class="post{% if proj %} accented{% endif %}"{% if proj %} style="--accent-light:{{ proj.accent }};--accent-dark:{{ proj.accent_dark }}"{% endif %}>
+<article class="post wrap"{% if proj %} style="--accent-light:{{ proj.accent }};--accent-dark:{{ proj.accent_dark }}"{% endif %}>
   <header class="post-head">
     <a class="crumb label" href="{{ '/writing/' | relative_url }}">Writing</a>
     <h1>{{ page.title }}</h1>
@@ -12,7 +12,7 @@ layout: default
     <p class="meta label">
       <span>{{ page.date | date: "%B %-d, %Y" }}</span>
       <span>{{ content | number_of_words | divided_by: 220 | plus: 1 }} min read</span>
-      {%- if proj -%}<a href="{{ proj.url | relative_url }}">On {{ proj.title }}</a>{%- endif -%}
+      {%- if proj -%}<a href="{{ proj.link }}">On {{ proj.title }} ↗</a>{%- endif -%}
     </p>
   </header>
 

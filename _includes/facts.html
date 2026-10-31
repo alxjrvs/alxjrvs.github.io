@@ -1,8 +1,0 @@
-{%- comment -%} A project's facts as a definition list. Pass `p=` (a project document). {%- endcomment -%}
-{%- if include.p.facts -%}
-<dl class="facts">
-  {%- for f in include.p.facts -%}
-  <div><dt class="label">{{ f[0] }}</dt><dd>{{ f[1] }}</dd></div>
-  {%- endfor -%}
-</dl>
-{%- endif -%}

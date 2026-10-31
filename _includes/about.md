@@ -1,16 +1,3 @@
----
-layout: default
-title: About
-permalink: /about/
-description: About alxjrvs.
----
-<header class="pagehead">
-  <span class="label">Who and what</span>
-  <h1>About</h1>
-</header>
-
-<div class="prose" markdown="1">
-
 I was raised in Central Connecticut as a third-generation Norman Rockwell painting. As a
 precocious boy who didn't like to sleep, my parents made one of several key mistakes when
 they decided to allow me to purchase a copy of "The Mask" starring Jim Carrey. I've
@@ -24,9 +11,5 @@ friend's couch. That friend taught me to code, and things have worked out since.
 I like board games, "Weird" Al Yankovic, and the 2010 DreamWorks animated picture film
 "Megamind".
 
-### Elsewhere
-
 Code lives on [GitHub](https://github.com/alxjrvs). The source for this site is
 [alxjrvs.github.io](https://github.com/alxjrvs/alxjrvs.github.io).
-
-</div>
