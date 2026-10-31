@@ -63,7 +63,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | -------------- | ----------- | --------------------------------------------- |
 | `mark-first`   | `fg`        | "alx" in every wordmark (splash, header, footer) |
 | `mark-last`    | `brand`     | "jrvs" in every wordmark                      |
-| `mark-ghost`   | `fg-subtle` | the letters that spell out "alex jarvis" on the splash |
+| `mark-ghost`   | `fg-subtle` | the letters that spell out "alex jarvis" on hover |
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
 | `tag-verb`     | `fg-subtle` | "I build"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
@@ -111,7 +111,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 - The tagline is always "*Subject*. I build *object*." with real full stops.
   Each full stop belongs to the word before it: same colour, and it rolls with it.
 - Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
-  splash spells out "alex jarvis", with the extra letters ghosted.
+  splash wordmark spells out "alex jarvis" on hover, with the extra letters in grey.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.
 - In "I like …", items read mid-sentence. They're lowercase unless they're a
   proper noun, and they're listed as "a, b, and c".
@@ -160,10 +160,10 @@ animations and the pip flicker. The content still changes, but instantly.
 ## 7. Components
 
 - **Wordmark:** "alx" uses `mark-first`, "jrvs" uses `mark-last`, everywhere
-  it appears. On the splash it reads as the full name, "alex jarvis". The
-  extra letters (e, the space, a, i) are in `mark-ghost`. They fold away (width
-  and opacity) over the first 40% of the recede, so only "alxjrvs" reaches the
-  header. Without JS they simply stay.
+  it appears. Hovering the splash wordmark spells out the full name, "alex
+  jarvis". The extra letters (e, the space, a, i) open up in `mark-ghost`:
+  first the width (0.35s), then the fade. They close again when you move away,
+  and there's no reveal once the splash has started receding.
 - **Tagline:** "subject." (`tag-subject`), verb (`tag-verb`), "object."
   (`tag-object`), with each full stop part of its rolling word. A copy of it lives in the
   header (hidden on narrow screens).
