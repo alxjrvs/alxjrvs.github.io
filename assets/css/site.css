@@ -30,7 +30,7 @@
   /* palette: "Legal Pad" (canary yellow and navy ink, a bruise purple) */
   --surface: #14161f;
   --fg: #f3f0dc;
-  --fg-subtle: #959385;
+  --fg-subtle: #8f96b3;
   --fg-muted: #c7c4ad;
   --fg-body: #e6e3ce;
   --line: #262a38;
@@ -56,7 +56,7 @@
   color-scheme: light;
   --surface: #fbf3c4;
   --fg: #14193a;
-  --fg-subtle: #686a77;
+  --fg-subtle: #5b6285;
   --fg-muted: #3f4466;
   --fg-body: #212647;
   --line: #ece1a3;

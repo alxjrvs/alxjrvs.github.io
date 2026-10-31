@@ -42,7 +42,7 @@ is re-skinned.
 | `fg`           | `#f3f0dc` | `#14193a` | loudest text                                 |
 | `fg-body`      | `#e6e3ce` | `#212647` | running text                                 |
 | `fg-muted`     | `#c7c4ad` | `#3f4466` | secondary text                               |
-| `fg-subtle`    | `#959385` | `#686a77` | quietest text                                |
+| `fg-subtle`    | `#8f96b3` | `#5b6285` | quietest text ("navy slate", faded ink)      |
 | `brand`        | `#ffe45c` | `#1f3cb8` | signature colour (canary / ballpoint blue)   |
 | `brand-2`      | `#a986d6` | `#6b3fa0` | the pop (bruise purple)                      |
 
@@ -80,7 +80,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `fg`        | 15.7:1 | 15.2:1 |
 | `fg-body`   | 14.0:1 | 13.1:1 |
 | `fg-muted`  | 10.2:1 | 8.4:1  |
-| `fg-subtle` | 5.8:1  | 4.8:1  |
+| `fg-subtle` | 6.2:1  | 5.3:1  |
 | `brand`     | 14.2:1 | 7.8:1  |
 | `brand-2`   | 6.1:1  | 6.6:1  |
 
