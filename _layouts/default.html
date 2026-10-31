@@ -36,7 +36,7 @@
     script at the bottom). Everywhere else it's simply there.
   {%- endcomment -%}
   <header class="bar" id="bar">
-    <a class="brand" href="{{ '/' | relative_url }}"><span class="alx">alx</span>jrvs</a>
+    <a class="brand" href="{{ '/' | relative_url }}"><span class="alx">alx</span><span class="jrvs">jrvs</span></a>
     <nav class="nav" aria-label="Primary">
       {%- for item in site.nav -%}
         {%- if item.needs_posts and site.posts.size == 0 -%}{%- continue -%}{%- endif -%}
