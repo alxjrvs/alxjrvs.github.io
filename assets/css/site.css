@@ -253,11 +253,12 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   will-change: transform;
 }
 .die-face { fill: currentColor; }
+/* a 3x3 grid of pips; at rest the lit ones spell the favicon's "j", and a
+   roll flicks through die faces before landing back on it */
 .die-pips { fill: var(--surface); }
+.die-pips circle { opacity: 0; }
+.die-pips circle.on { opacity: 1; }
 .die-btn:hover .die { transform: rotate(-12deg); }
-.die-btn.rolling .die { animation: tumble .5s linear infinite; }
-@keyframes tumble { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .die-btn.rolling .die { animation: none; } }
 
 /* projects */
 #projects h2 { margin-bottom: clamp(24px, 4vh, 40px); }

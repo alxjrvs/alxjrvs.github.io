@@ -2,7 +2,7 @@
 layout: default
 ---
 <section class="screen intro" aria-label="Introduction">
-  <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button>
+  <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="8" cy="4.5" r="1.35"/><circle class="on" cx="11.5" cy="4.5" r="1.35"/><circle class="on" cx="4.5" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle class="on" cx="11.5" cy="8" r="1.35"/><circle cx="4.5" cy="11.5" r="1.35"/><circle class="on" cx="8" cy="11.5" r="1.35"/><circle cx="11.5" cy="11.5" r="1.35"/></g></svg></button>
   <h1 class="mark" id="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
   <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
 </section>
@@ -149,6 +149,35 @@ layout: default
       return slot[picked[i]];
     }
 
+    // The die's own reel: its 3x3 pips flick through random die faces,
+    // slowing down, and land back on the favicon's "j".
+    var FACES = [[4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8]];
+    var J = [2, 3, 5, 7];
+    var pipSets = dice.map(function (d) { return [].slice.call(d.querySelectorAll('.die-pips circle')); });
+    function showPips(on) {
+      pipSets.forEach(function (pips) {
+        pips.forEach(function (c, i) { c.classList.toggle('on', on.indexOf(i) > -1); });
+      });
+    }
+    function rollPips(done) {
+      var ticks = 16, i = 0, last = -1;
+      (function step() {
+        i++;
+        if (i < ticks) {
+          var f; do { f = Math.floor(Math.random() * FACES.length); } while (f === last);
+          last = f;
+          showPips(FACES[f]);
+          dice.forEach(function (d) {
+            d.firstElementChild.animate([{ transform: 'scale(.86)' }, { transform: 'none' }], { duration: 90, easing: 'ease-out' });
+          });
+          setTimeout(step, 35 + i * i * 2.2);
+        } else {
+          showPips(J);
+          done();
+        }
+      })();
+    }
+
     function roll() {
       if (rolling) return;
       var finalS = pick(SUBJECTS), finalO = pick(OBJECTS);
@@ -164,7 +193,7 @@ layout: default
 
       rolling = true;
       dice.forEach(function (d) { d.classList.add('rolling'); });
-      var pending = 3 + likes.length;
+      var pending = 4 + likes.length;
       function settled() {
         if (--pending) return;
         dice.forEach(function (d) { d.classList.remove('rolling'); });
@@ -174,6 +203,7 @@ layout: default
       spin(subjs, SUBJECTS, finalS, 14, 30, 1.8, settled);
       spin(objs,  OBJECTS,  finalO, 15, 30, 1.9, settled);
       rollCards(settled);
+      rollPips(settled);
       likes.forEach(function (el, i) {
         spin([el], LIKES[i], finalL[i], 12 + i * 2, 35, 1.7 + i * 0.2, settled);
       });
