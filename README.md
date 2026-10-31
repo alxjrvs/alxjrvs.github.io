@@ -1,6 +1,8 @@
 # alxjrvs.github.io
 
-Personal site: a static [Jekyll](https://jekyllrb.com) site served by GitHub Pages.
+Personal site: a static [Jekyll](https://jekyllrb.com) site served by GitHub Pages at
+[alxjrvs.com](https://alxjrvs.com). It deploys on every push to `main` (Pages builds from the
+branch); the custom domain lives in `CNAME` and `url` in `_config.yml`.
 Projects first, plus the occasional piece of writing.
 
 Design: **E · Oversized**. One scrolling page, each section at least a screen tall: a huge
@@ -20,6 +22,7 @@ bundle exec jekyll serve --livereload
 
 | Path                  | What it is |
 |-----------------------|------------|
+| `CNAME`               | The custom domain (`alxjrvs.com`) GitHub Pages serves the site on |
 | `_config.yml`         | Site config, nav (anchors into the home page), the `projects` collection |
 | `index.html`          | The whole home page, plus the tagline roller and the wordmark-into-header script |
 | `_projects/`          | One front-matter-only file per project; each becomes a card (no project pages) |
