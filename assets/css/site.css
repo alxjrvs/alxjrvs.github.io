@@ -16,7 +16,7 @@
      fg-muted   secondary UI text (nav, card summaries, deks)
      fg-subtle  labels, dates, footer, "I build", hover borders
    brand    the signature colour: "jrvs", the tagline's subject, focus rings.
-   brand-2  the pop: only the die and the tagline's full stops.
+   brand-2  the pop: only the die.
    Project cards and posts also get --accent from their project. */
 :root {
   --sans: 'Familjen Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -46,7 +46,6 @@
   --tag-subject: var(--brand);   /* "Enthusiast" */
   --tag-verb: var(--fg-subtle);  /* "I build" */
   --tag-object: var(--fg);       /* "stuff" */
-  --stop: var(--brand-2);        /* the tagline's full stops */
   --die: var(--brand-2);
   --focus: var(--brand);
   --nav-active: var(--brand);    /* underline under the current section's link */
@@ -247,7 +246,6 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .tagline, .bar-tag { color: var(--tag-verb); }
 .tagline .roll-subject, .bar-tag .roll-subject { color: var(--tag-subject); }
 .tagline em, .bar-tag em { font-style: normal; color: var(--tag-object); }
-.tagline .stop, .bar-tag .stop { color: var(--stop); }
 .roll { display: inline-block; }
 /* once docked, the header's own copies take over from the splash */
 .docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }

@@ -5,7 +5,7 @@ This is the source of truth for how the site looks, moves and reads. The CSS
 
 **In one line:** professional, with something a little wrong. The page is
 mostly calm navy and canary yellow, like a legal pad. One bruise-purple pop is
-saved for the die and the tagline's full stops: the things you can roll.
+saved for the die: the thing you roll.
 
 ---
 
@@ -13,8 +13,7 @@ saved for the die and the tagline's full stops: the things you can roll.
 
 1. **Projects first.** Everything else frames the four projects.
 2. **One loud thing at a time.** `brand` carries the identity. `brand-2` is the
-   pop, and it appears in exactly two places: the die and the tagline's full
-   stops. Never use it for text.
+   pop, and it appears in exactly one place: the die. Never use it for text.
 3. **Roles, not colours.** Components use role tokens (`--tag-subject`,
    `--die`…), never raw palette tokens or hex. Changing the palette means
    editing the palette block and nothing else.
@@ -68,7 +67,6 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
 | `tag-verb`     | `fg-subtle` | "I build"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
-| `stop`         | `brand-2`   | the tagline's two full stops                  |
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
 | `nav-active`   | `brand`     | underline under the current section's header link |
@@ -111,6 +109,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 **Copy rules**
 
 - The tagline is always "*Subject*. I build *object*." with real full stops.
+  Each full stop belongs to the word before it: same colour, and it rolls with it.
 - Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
   splash spells out "alex jarvis", with the extra letters ghosted.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.
@@ -165,7 +164,8 @@ animations and the pip flicker. The content still changes, but instantly.
   extra letters (e, the space, a, i) are in `mark-ghost`. They fold away (width
   and opacity) over the first 40% of the recede, so only "alxjrvs" reaches the
   header. Without JS they simply stay.
-- **Tagline:** subject, `stop`, verb, object, `stop`. A copy of it lives in the
+- **Tagline:** "subject." (`tag-subject`), verb (`tag-verb`), "object."
+  (`tag-object`), with each full stop part of its rolling word. A copy of it lives in the
   header (hidden on narrow screens).
 - **Die:** a rounded square in the `die` colour, with a 3×3 grid of pips cut
   out of `surface`. At rest, the lit pips spell the favicon's "j". There's one
