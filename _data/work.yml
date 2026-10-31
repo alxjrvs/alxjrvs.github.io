@@ -2,10 +2,10 @@
 # The "things i made" data model.
 #
 # SITES are the main event — each is a first-class entry with its
-# own page at /work/<slug>/ (rendered by _layouts/site.html), even
+# own page at /projects/<slug>/ (rendered by _layouts/site.html), even
 # when several share one `code` repo.
 #
-# `groups` only organize the /work/ index into sections by
+# `groups` only organize the /projects/ index into sections by
 # org/topic; each group's `flagship` is the site shown on the
 # landing page. Screenshots live in assets/work/.
 # ─────────────────────────────────────────────────────────────

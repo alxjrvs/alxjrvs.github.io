@@ -57,46 +57,35 @@ layout: default
   })();
 </script>
 
-<section class="columns">
-  <div class="col">
-    <h2>things i said</h2>
-    {%- if site.posts.size > 0 -%}
-    <ul class="linklist">
-      {%- for post in site.posts limit: 4 -%}
-      <li>
-        <a href="{{ post.url | relative_url }}">
-          <span class="bul" aria-hidden="true"></span>
-          <span class="t">{{ post.title }}</span>
-          <span class="d">{{ post.date | date: "%Y·%m" }}</span>
-        </a>
-      </li>
-      {%- endfor -%}
-    </ul>
-    {%- else -%}
-    <p class="empty">no entries yet</p>
-    {%- endif -%}
-  </div>
-
-  <div class="col">
-    <h2>things i made</h2>
-    <ul class="linklist">
-      {%- for group in site.data.work.groups -%}
-      {%- assign s = site.data.work.sites[group.flagship] -%}
-      <li>
-        <a href="{{ '/work/' | append: group.flagship | append: '/' | relative_url }}">
-          <span class="bul" aria-hidden="true"></span>
-          <span class="t">{{ s.name }}</span>
-          <span class="d">{{ group.name }}</span>
-        </a>
-      </li>
-      {%- endfor -%}
-      <li>
-        <a href="{{ '/work/' | relative_url }}">
-          <span class="bul" aria-hidden="true"></span>
-          <span class="t">all work</span>
-          <span class="d">→</span>
-        </a>
-      </li>
-    </ul>
-  </div>
+<section class="home-section">
+  <header class="home-head">
+    <h2>projects</h2>
+    <a class="home-more" href="{{ '/projects/' | relative_url }}">all projects <span aria-hidden="true">→</span></a>
+  </header>
+  <ul class="workgrid">
+    {%- for group in site.data.work.groups -%}
+    {%- include workcard.html slug=group.flagship -%}
+    {%- endfor -%}
+  </ul>
 </section>
+
+{%- comment -%} Writing only takes up room on the landing once there's some. {%- endcomment -%}
+{%- if site.posts.size > 0 -%}
+<section class="home-section">
+  <header class="home-head">
+    <h2>writing</h2>
+    <a class="home-more" href="{{ '/writing/' | relative_url }}">all writing <span aria-hidden="true">→</span></a>
+  </header>
+  <ul class="linklist">
+    {%- for post in site.posts limit: 3 -%}
+    <li>
+      <a href="{{ post.url | relative_url }}">
+        <span class="bul" aria-hidden="true"></span>
+        <span class="t">{{ post.title }}</span>
+        <span class="d">{{ post.date | date: "%Y·%m·%d" }}</span>
+      </a>
+    </li>
+    {%- endfor -%}
+  </ul>
+</section>
+{%- endif -%}

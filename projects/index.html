@@ -1,0 +1,23 @@
+---
+layout: default
+title: projects
+permalink: /projects/
+redirect_from: /work/
+description: The sites and tools alxjrvs has made — each its own thing.
+---
+<header class="pagehead">
+  <p class="eyebrow">things i made</p>
+  <h1>projects</h1>
+</header>
+
+{%- for group in site.data.work.groups -%}
+<section class="workgroup">
+  <h2 class="workgroup-name">{{ group.name }}</h2>
+  <p class="workgroup-blurb">{{ group.blurb }}</p>
+  <ul class="workgrid">
+    {%- for slug in group.sites -%}
+    {%- include workcard.html slug=slug -%}
+    {%- endfor -%}
+  </ul>
+</section>
+{%- endfor -%}

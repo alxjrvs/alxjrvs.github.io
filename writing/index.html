@@ -5,22 +5,34 @@ permalink: /writing/
 description: Essays and notes by alxjrvs.
 ---
 <header class="pagehead">
-  <p class="eyebrow">the archive</p>
+  <p class="eyebrow">things i said</p>
   <h1>writing</h1>
 </header>
 
 {%- if site.posts.size > 0 -%}
-<ul class="archive">
-  {%- for post in site.posts -%}
-  <li>
-    <a href="{{ post.url | relative_url }}">
-      <span class="bul" aria-hidden="true"></span>
-      <span class="t">{{ post.title }}</span>
-      <span class="d">{{ post.date | date: "%Y·%m" }}</span>
-    </a>
-  </li>
-  {%- endfor -%}
-</ul>
+{%- assign years = site.posts | group_by_exp: "post", "post.date | date: '%Y'" -%}
+{%- for year in years -%}
+<section class="archive-year">
+  <h2 class="workgroup-name">{{ year.name }}</h2>
+  <ul class="archive">
+    {%- for post in year.items -%}
+    <li>
+      <a href="{{ post.url | relative_url }}">
+        <span class="bul" aria-hidden="true"></span>
+        <span class="t">
+          {{ post.title }}
+          {%- if post.description -%}<span class="x">{{ post.description }}</span>{%- endif -%}
+        </span>
+        <span class="d">{{ post.date | date: "%m·%d" }}</span>
+      </a>
+    </li>
+    {%- endfor -%}
+  </ul>
+</section>
+{%- endfor -%}
 {%- else -%}
-<p class="empty empty--page">no entries yet</p>
+<div class="prose reading empty-state">
+  <p class="empty empty--page">Nothing here yet. When there is, it'll show up here.</p>
+  <p class="empty">In the meantime, the <a href="{{ '/projects/' | relative_url }}">projects</a> are where the action is.</p>
+</div>
 {%- endif -%}
