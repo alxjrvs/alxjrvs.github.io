@@ -90,18 +90,27 @@
       fab.addEventListener('mouseleave', function () { idle = setTimeout(function () { fab.classList.remove('show'); }, 800); });
     })();
 
-    // Theme toggle: remembers the choice, otherwise follows the OS.
+    // Theme: follows the visitor's system light/dark setting, live. The
+    // toggle overrides it; picking the same mode as the system clears the
+    // override, so the site goes back to following the system.
     (function () {
       var btn = document.getElementById('theme-toggle');
       var root = document.documentElement;
+      var os = matchMedia('(prefers-color-scheme: light)');
+      function system() { return os.matches ? 'light' : 'dark'; }
+      function saved() { try { var t = localStorage.getItem('theme'); return t === 'light' || t === 'dark' ? t : null; } catch (e) { return null; } }
       function current() { return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
-      function set(t, save) {
+      function apply(t) {
         root.setAttribute('data-theme', t);
-        if (save) { try { localStorage.setItem('theme', t); } catch (e) {} }
         btn.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
       }
-      set(current(), false);
-      btn.addEventListener('click', function () { set(current() === 'dark' ? 'light' : 'dark', true); });
+      apply(current());
+      btn.addEventListener('click', function () {
+        var t = current() === 'dark' ? 'light' : 'dark';
+        try { if (t === system()) localStorage.removeItem('theme'); else localStorage.setItem('theme', t); } catch (e) {}
+        apply(t);
+      });
+      os.addEventListener('change', function () { if (!saved()) apply(system()); });
     })();
   </script>
 </body>
