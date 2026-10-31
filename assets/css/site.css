@@ -42,7 +42,7 @@
   /* roles */
   --mark-first: var(--fg);       /* "alx" */
   --mark-last: var(--brand);     /* "jrvs" */
-  --mark-ghost: var(--fg-subtle); /* the rest of "alex jarvis", splash only */
+  --mark-ghost: var(--fg-subtle); /* the rest of "alex jarvis", on hover */
   --tag-subject: var(--brand);   /* "Enthusiast" */
   --tag-verb: var(--fg-subtle);  /* "I build" */
   --tag-object: var(--fg);       /* "stuff" */
@@ -226,13 +226,18 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   transform-origin: 0 0;
   will-change: transform;
 }
-/* the letters that turn "alxjrvs" into "alex jarvis": grey, and folded away
-   (width and opacity follow --g, set by the recede script) as you scroll */
-.mark .ghost { display: inline-block; color: var(--mark-ghost); }
-/* clip only while folding: at rest the tight letter-spacing makes each
-   glyph wider than its box, so clipping would shave its right edge */
-.mark.folding .ghost { overflow: clip; }
-.js .mark .ghost { width: calc(var(--w) * (1 - var(--g, 0))); opacity: calc(1 - var(--g, 0) * 1.6); }
+/* the letters that turn "alxjrvs" into "alex jarvis": hidden (zero width)
+   until you hover the name on the splash, then they open up in grey. No
+   clipping: they fade in only once their space has opened (and fade out
+   before it closes), so the tight letter-spacing never shaves a glyph. */
+.mark .ghost {
+  display: inline-block; width: 0; opacity: 0; color: var(--mark-ghost);
+  transition: opacity .15s, width .3s cubic-bezier(.2,.8,.2,1) .1s;
+}
+.mark:not(.receding):hover .ghost {
+  width: var(--w, auto); opacity: 1;
+  transition: width .35s cubic-bezier(.2,.8,.2,1), opacity .25s .15s;
+}
 .tagline {
   position: relative;
   z-index: 60;

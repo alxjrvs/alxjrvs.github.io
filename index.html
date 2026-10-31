@@ -227,15 +227,16 @@ layout: default
     ].filter(function (p) { return p[0] && p[1]; }).map(function (p) { return { el: p[0], to: p[1], pin: p[2] }; });
     var span;
 
-    // the full name's extra letters ("alex jarvis"), which fold away early
-    // in the recede so only "alxjrvs" reaches the header
+    // the full name's extra letters ("alex jarvis"), shown on hover; each
+    // one's natural width is measured so the CSS can open it to exactly that
     var mark = document.getElementById('mark');
     var ghosts = mark ? [].slice.call(mark.querySelectorAll('.ghost')) : [];
 
     function measure() {
       pairs.forEach(function (p) { p.el.style.transform = 'none'; p.el.style.opacity = ''; });
-      ghosts.forEach(function (g) { g.style.removeProperty('--w'); });
+      ghosts.forEach(function (g) { g.style.transition = 'none'; g.style.width = 'auto'; });
       ghosts.forEach(function (g) { g.style.setProperty('--w', g.getBoundingClientRect().width + 'px'); });
+      ghosts.forEach(function (g) { g.style.width = ''; g.offsetWidth; g.style.transition = ''; });
       bar.style.setProperty('--p', 1);
       pairs.forEach(function (p) {
         var a = p.el.getBoundingClientRect(), b = p.to.getBoundingClientRect();
@@ -260,11 +261,7 @@ layout: default
         q.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
       });
       bar.style.setProperty('--p', e);
-      if (mark) {
-        var g = Math.min(e * 2.5, 1);
-        mark.style.setProperty('--g', g);
-        mark.classList.toggle('folding', g > 0);
-      }
+      if (mark) mark.classList.toggle('receding', e > 0.02);   // no hover reveal once it's moving
       bar.classList.toggle('off', e < 0.02);
       document.body.classList.toggle('docked', p >= 1);
     }
