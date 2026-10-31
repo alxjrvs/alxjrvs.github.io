@@ -164,7 +164,8 @@ animations and the pip flicker. The content still changes, but instantly.
 - **Die:** a rounded square in the `die` colour, with a 3×3 grid of pips cut
   out of `surface`. At rest, the lit pips spell the favicon's "j". There's one
   in the splash corner and one as the header's rightmost button. Either one
-  re-rolls the page, and its pips roll too.
+  re-rolls the page, and its pips roll too. On hover it grows slightly
+  (12%, 0.2s).
 - **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
   theme toggle and the die. On the home page it's hidden until the splash
   recedes into it.
