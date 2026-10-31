@@ -145,4 +145,83 @@ layout: default
     measure();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   })();
+
+  // Section snapping. CSS scroll-snap handles touch and keyboard-only
+  // setups; with a mouse or trackpad, a wheel gesture glides to the next
+  // or previous section with an easing that settles gently, instead of
+  // CSS snap's abrupt pull. A section taller than the screen scrolls
+  // normally until you reach its edge.
+  (function () {
+    var desktop = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 761px) and (min-height: 600px)');
+    var reduce  = matchMedia('(prefers-reduced-motion: reduce)');
+    var root = document.documentElement;
+    var screens = [].slice.call(document.querySelectorAll('.screen'));
+    var animating = false, lastWheel = 0, consumed = false;
+
+    function on() { return desktop.matches && !reduce.matches; }
+    function sync() { root.classList.toggle('glide', on()); }
+    desktop.addEventListener('change', sync);
+    reduce.addEventListener('change', sync);
+    sync();
+
+    function bounds() {
+      return screens.map(function (el) { var t = el.offsetTop; return { top: t, bottom: t + el.offsetHeight }; });
+    }
+    function ease(t) { return 1 - Math.pow(1 - t, 4); }   // quick start, long soft landing
+
+    function glide(to) {
+      var from = scrollY, dist = to - from;
+      if (Math.abs(dist) < 2) return;
+      var dur = Math.min(1000, 620 + Math.abs(dist) * 0.25), start = null;
+      animating = true;
+      requestAnimationFrame(function step(ts) {
+        if (start === null) start = ts;
+        var t = Math.min((ts - start) / dur, 1);
+        scrollTo({ top: from + dist * ease(t), behavior: 'instant' });
+        if (t < 1) requestAnimationFrame(step);
+        else animating = false;
+      });
+    }
+
+    // Where a step up or down from here should land, or null to let the
+    // browser scroll natively (inside a tall section).
+    function target(dir) {
+      var b = bounds(), y = scrollY, vh = innerHeight, i = 0;
+      for (var k = 0; k < b.length; k++) if (b[k].top <= y + 2) i = k;
+      var cur = b[i];
+      if (dir > 0) {
+        if (y + vh < cur.bottom - 2) return cur.bottom - y > vh * 1.5 ? null : cur.bottom - vh > y + 2 ? cur.bottom - vh : (b[i + 1] ? b[i + 1].top : null);
+        return b[i + 1] ? b[i + 1].top : null;
+      }
+      if (y > cur.top + 2) return y - cur.top > vh * 1.5 ? null : cur.top;
+      var prev = b[i - 1];
+      if (!prev) return null;
+      return prev.bottom - prev.top > vh + 2 ? prev.bottom - vh : prev.top;
+    }
+
+    addEventListener('wheel', function (e) {
+      if (!on() || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      var now = performance.now(), gap = now - lastWheel;
+      lastWheel = now;
+      if (animating || (consumed && gap < 220)) { e.preventDefault(); return; }   // swallow trackpad momentum
+      consumed = false;
+      if (Math.abs(e.deltaY) < 3) return;
+      var to = target(e.deltaY > 0 ? 1 : -1);
+      if (to === null) return;
+      e.preventDefault();
+      consumed = true;
+      glide(Math.max(0, Math.min(to, root.scrollHeight - innerHeight)));
+    }, { passive: false });
+
+    addEventListener('keydown', function (e) {
+      if (!on() || e.altKey || e.ctrlKey || e.metaKey || /input|textarea|select|button/i.test(e.target.tagName)) return;
+      var dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
+      if (!dir) return;
+      if (animating) { e.preventDefault(); return; }
+      var to = target(dir);
+      if (to === null) return;
+      e.preventDefault();
+      glide(Math.max(0, Math.min(to, root.scrollHeight - innerHeight)));
+    });
+  })();
 </script>

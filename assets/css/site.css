@@ -40,7 +40,13 @@
 
 /* ── base ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--bar-h) + 24px); }
+/* Every home-page section is one screen tall and scrolling snaps to each.
+   Mandatory snapping where the sections fit the screen; on small screens,
+   where they can run taller, only snap when you're near an edge. */
+html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+@media (min-width: 761px) and (min-height: 600px) { html:has(body.home) { scroll-snap-type: y mandatory; } }
+/* With a mouse or trackpad, the home-page script glides between sections instead. */
+html.glide { scroll-snap-type: none; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   margin: 0;
@@ -145,23 +151,25 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: calc(var(--bar-h) + 72px);
-  padding-bottom: 72px;
+  padding-top: calc(var(--bar-h) + 40px);
+  padding-bottom: 40px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 .screen + .screen { border-top: 1px solid var(--rule); }
 
 /* intro */
 .intro {
-  justify-content: flex-end;
+  justify-content: center;
   gap: clamp(28px, 5vh, 48px);
-  padding: 0 var(--gutter) clamp(40px, 7vh, 56px);
+  padding: 0 var(--gutter);
 }
 .mark {
   position: relative;
   z-index: 60;
   align-self: flex-start;
   margin-left: -.045em;
-  font-size: clamp(96px, 23vw, 300px);
+  font-size: clamp(96px, min(23vw, 36vh), 300px);
   line-height: .8;
   letter-spacing: -.065em;
   transform-origin: 0 0;
@@ -177,8 +185,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 }
 .tagline em { font-style: normal; color: var(--hl); }
 .roll { display: inline-block; }
-.die-btn { padding: 0 0 0 .08em; border: 0; background: none; cursor: pointer; vertical-align: baseline; color: var(--hl); }
-.die { width: .4em; height: .4em; display: block; transition: transform .2s; }
+/* the die is the sentence's full stop: click it to roll */
+.die-btn { font: inherit; line-height: 0; padding: 0 0 0 .06em; margin: 0; border: 0; background: none; cursor: pointer; vertical-align: baseline; color: var(--hl); }
+.die { width: .36em; height: .36em; vertical-align: baseline; transition: transform .2s; }
 .die-face { fill: currentColor; }
 .die-pips { fill: var(--bg); }
 .die-btn:hover .die { transform: rotate(-12deg); }
@@ -187,8 +196,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 @media (prefers-reduced-motion: reduce) { .die-btn.rolling .die { animation: none; } }
 
 /* projects */
-#projects h2 { margin-bottom: 44px; }
-.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px 40px; }
+#projects h2 { margin-bottom: clamp(24px, 4vh, 40px); }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px 28px; }
+@media (max-width: 1100px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 28px; } }
 @media (max-width: 760px) { .cards { grid-template-columns: 1fr; gap: 56px; } }
 .card {
   --accent: var(--accent-dark);
@@ -201,6 +211,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .shot { display: block; width: 100%; margin-bottom: 6px; }
 .shot img {
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top;
@@ -211,7 +222,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 }
 .shot:hover img { transform: translateY(-4px); }
 .kicker { margin: 0; font: 500 .75rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-.summary { margin: 0; color: var(--muted); max-width: 34rem; }
+.summary { margin: 0; color: var(--muted); max-width: 34rem; font-size: 1rem; line-height: 1.5; }
 .visit {
   font-weight: 600;
   font-size: 1.0625rem;
