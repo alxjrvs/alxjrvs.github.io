@@ -171,8 +171,8 @@ animations and the tumble. The content still changes, but instantly.
   project accent, title, summary in `fg-muted`, and a "Visit … ↗" link with an
   accent underline.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
-- **Favicon:** a curved "j" made of a 3×3 grid of die pips. Lit pips are
-  `brand`, unused pips are a faint ghost, and the tile is dark `surface`. It's
+- **Favicon:** a curved "j" spelled in die pips on a 3×3 grid: only the four
+  pips that form the j, in `brand`, on a dark `surface` tile. It's
   never a whole die.
 
 ---
