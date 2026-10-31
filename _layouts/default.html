@@ -36,7 +36,12 @@
     script at the bottom). Everywhere else it's simply there.
   {%- endcomment -%}
   <header class="bar" id="bar">
-    <a class="brand" href="{{ '/' | relative_url }}"><span class="alx">alx</span><span class="jrvs">jrvs</span></a>
+    <div class="bar-id">
+      <a class="brand" href="{{ '/' | relative_url }}"><span class="alx">alx</span><span class="jrvs">jrvs</span></a>
+      {%- if page.url == '/' -%}
+      <p class="bar-tag" aria-hidden="true"><span class="roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll-object">{{ site.data.tagline.objects | first }}</em>.</p>
+      {%- endif -%}
+    </div>
     <nav class="nav" aria-label="Primary">
       {%- for item in site.nav -%}
         {%- if item.needs_posts and site.posts.size == 0 -%}{%- continue -%}{%- endif -%}
@@ -46,6 +51,9 @@
         <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>
         <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1z"/></svg>
       </button>
+      {%- if page.url == '/' -%}
+      <button class="die-btn die-bar" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button>
+      {%- endif -%}
     </nav>
   </header>
 

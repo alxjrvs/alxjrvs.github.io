@@ -106,6 +106,19 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 }
 .js .home .brand { opacity: 0; }
 .js .home.docked .brand { opacity: 1; }
+.bar-id { display: flex; align-items: baseline; gap: 16px; min-width: 0; }
+.bar-tag { margin: 0; font-weight: 500; font-size: 15px; line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
+@media (max-width: 960px) { .bar-tag { display: none; } }
+.die-bar {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+.die-bar:hover { border-color: var(--sub); }
+.die-bar .die { width: 18px; height: 18px; }
+.js .home .bar-tag, .js .home .die-bar { opacity: 0; pointer-events: none; }
+.js .home.docked .bar-tag, .js .home.docked .die-bar { opacity: 1; pointer-events: auto; }
 .nav { display: flex; align-items: center; gap: clamp(12px, 3vw, 28px); font-size: 1rem; }
 .nav a { text-decoration: none; color: var(--muted); }
 .nav a:hover { color: var(--ink); }
@@ -166,6 +179,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   justify-content: center;
   gap: clamp(28px, 5vh, 48px);
   padding: 0 var(--gutter);
+  position: relative;
 }
 .mark {
   position: relative;
@@ -178,21 +192,39 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   transform-origin: 0 0;
   will-change: transform;
 }
-.docked .mark { visibility: hidden; }
 .tagline {
+  position: relative;
+  z-index: 60;
+  align-self: flex-start;
+  transform-origin: 0 0;
+  will-change: transform;
   margin: 0;
   font-weight: 500;
   font-size: clamp(30px, 4.7vw, 60px);
   line-height: 1.1;
   letter-spacing: -.02em;
 }
-/* tagline: the subject in the highlight, the object grey, the die highlight */
-.tagline .roll-subject { color: var(--hl); }
-.tagline em { font-style: normal; color: var(--sub); }
+/* tagline: the subject in the highlight, "I build" grey, the object in ink */
+.tagline, .bar-tag { color: var(--sub); }
+.tagline .roll-subject, .bar-tag .roll-subject { color: var(--hl); }
+.tagline em, .bar-tag em { font-style: normal; color: var(--ink); }
 .roll { display: inline-block; }
-/* the die is the sentence's full stop: click it to roll */
-.die-btn { font: inherit; line-height: 0; padding: 0 0 0 .06em; margin: 0; border: 0; background: none; cursor: pointer; vertical-align: baseline; color: var(--hl); }
-.die { width: .36em; height: .36em; vertical-align: baseline; transition: transform .2s; }
+/* once docked, the header's own copies take over from the splash */
+.docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
+
+/* the die: click either copy to re-roll the page */
+.die-btn { line-height: 0; padding: 0; margin: 0; border: 0; background: none; cursor: pointer; color: var(--hl); }
+.die { display: block; width: 100%; height: 100%; transition: transform .2s; }
+.die-corner {
+  position: absolute;
+  top: 28px;
+  right: var(--gutter);
+  z-index: 60;
+  width: clamp(36px, 4vw, 48px);
+  height: clamp(36px, 4vw, 48px);
+  transform-origin: 0 0;
+  will-change: transform;
+}
 .die-face { fill: currentColor; }
 .die-pips { fill: var(--bg); }
 .die-btn:hover .die { transform: rotate(-12deg); }
