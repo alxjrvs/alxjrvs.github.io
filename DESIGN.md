@@ -152,7 +152,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | ----------------- | ------------------------------------------------------------- |
 | Splash recede     | The wordmark, tagline and die shrink and travel into the header over the first 60% of the splash, with smoothstep easing. The die stays pinned on screen while it travels. |
 | Section snap      | Desktop: scrolling is free. Once it has slowed right down, a soft, critically damped spring (stiffness 42, damping 1, so no bounce) picks up from the scroll's own speed and eases to the next section if you moved past 10% of a screen, otherwise back. Touch: the browser's proximity snapping, so a swipe can pass sections and only eases on when it ends near one. The splash recede updates in the same frame as the scroll, so it never lags a frame behind. |
-| Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
+| Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. A reel never shows the same word twice in one roll: it runs through a shuffle of the other options (fewer, longer ticks for short lists) before landing. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
 | Card shuffle      | About 7 shuffles, each slower than the last. Each move is a FLIP slide with `cubic-bezier(.2,.8,.2,1)`. The last one takes 700ms. |
 | Theme change      | 0.25s background/colour fade.                                 |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |
@@ -181,8 +181,9 @@ animations and the pip flicker. The content still changes, but instantly.
   `pattern`, with random faces and the pips cut out. Each cell is the size of the
   splash die (`--die-s`), with half a die between cells. The grid is lined up
   so the splash die sits exactly on one cell, so on load it reads as one of
-  the dice, lit up in `die`. It's strongest at the top and fades out by about
-  three quarters of the way down the splash. It's a CSS mask on `.intro::before`,
+  the dice, lit up in `die`. It's at full strength down to about the
+  middle of the splash, still clearly there at three quarters, and fades out
+  just before the bottom. It's a CSS mask on `.intro::before`,
   so its colour follows the theme.
 - **Header nav:** links are `fg-muted`, and `fg` on hover. The link for the
   section you're scrolled into is marked `aria-current`. It turns `fg` and a

@@ -88,12 +88,19 @@ layout: default
       var sfx = el.getAttribute('data-suffix') || '';
       el.textContent = sfx && v.slice(-sfx.length) === sfx ? v : v + sfx;
     }
+    // The words a reel flicks through never repeat within one roll: a
+    // shuffled run of the options, leaving out the word it lands on and the
+    // one showing now. A short list means fewer ticks, each held longer, so
+    // the reel still takes about as long and slows down the same way.
     function spin(els, opts, finalVal, ticks, base, curve, done) {
       if (opts.length < 2) { els.forEach(function (el) { setText(el, finalVal); }); return done(); }
-      var i = 0;
+      var showing = els[0].textContent.replace(/\.$/, '');
+      var pool = opts.filter(function (o) { return o !== finalVal && o !== showing; });
+      if (!pool.length) pool = opts.filter(function (o) { return o !== finalVal; });
+      var run = shuffle(pool).slice(0, ticks - 1).concat([finalVal]);
+      var n = run.length, scale = ticks / n, i = 0;
       (function step() {
-        i++;
-        var v = i < ticks ? pick(opts) : finalVal;
+        var v = run[i++];
         els.forEach(function (el) {
           setText(el, v);
           if (!reduce.matches) {
@@ -103,7 +110,7 @@ layout: default
             );
           }
         });
-        if (i < ticks) setTimeout(step, base + i * i * curve);
+        if (i < n) setTimeout(step, (base + Math.pow(i * scale, 2) * curve) * scale);
         else done();
       })();
     }
