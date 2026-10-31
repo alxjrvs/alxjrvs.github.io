@@ -16,7 +16,6 @@ layout: default
       {%- if p.shot -%}
       <a class="shot" href="{{ p.link }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="" width="1280" height="800" decoding="async"></a>
       {%- endif -%}
-      <p class="kicker">{{ p.kicker }}</p>
       <h3>{{ p.title }}</h3>
       <p class="summary">{{ p.summary }}</p>
       <a class="visit" href="{{ p.link }}">Visit {{ p.link_label | default: p.title }} ↗</a>

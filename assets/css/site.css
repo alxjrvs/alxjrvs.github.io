@@ -305,7 +305,6 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   transition: transform .25s;
 }
 .shot:hover img { transform: translateY(-4px); }
-.kicker { margin: 0; font: 500 .75rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 .summary { margin: 0; color: var(--fg-muted); max-width: 34rem; font-size: 1rem; line-height: 1.5; }
 .visit {
   font-weight: 600;

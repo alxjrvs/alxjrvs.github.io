@@ -49,7 +49,6 @@ summary: Two sentences for the card.
 link: https://example.com     # the live site
 link_label: example.com
 shot: example.png             # in assets/work/, captured by the Screenshots workflow
-kicker: Category · what it is
 accent: "#1f5fbf"             # accent on the light theme
 accent_dark: "#7fb0ff"        # accent on the dark theme
 ---
@@ -76,7 +75,7 @@ empty state. Publish one post and they appear. A post with `project:` links to t
 
 ## Design notes
 
-- **Type**: Familjen Grotesk (700 for display, tight tracking), IBM Plex Mono for kickers and dates.
+- **Type**: Familjen Grotesk (700 for display, tight tracking), IBM Plex Mono for labels and dates.
 - **Colour**: see [DESIGN.md](DESIGN.md) for the palette, roles and the rest of the design language.
 - **Header**: hidden on the first screen; it slides in as you scroll while the wordmark shrinks
   into its brand slot. Without JS it's simply always there.

@@ -7,7 +7,6 @@ summary: >-
 link: https://salvageunion.io
 link_label: salvageunion.io
 shot: salvageunion.png
-kicker: Salvage Union · TTRPG reference
 accent: "#b4531f"
 accent_dark: "#f0955a"
 ---

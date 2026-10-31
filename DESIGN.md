@@ -70,7 +70,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
 | `nav-active`   | `brand`     | underline under the current section's header link |
-| `accent`       | project     | card kicker, "Visit" underline, post links    |
+| `accent`       | project     | "Visit" underline, post links                 |
 
 ### 2.4 Contrast (WCAG, against `surface`)
 
@@ -91,7 +91,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 - **Familjen Grotesk** (400–700) for everything. Display sizes use weight
   700 with tight negative tracking.
-- **IBM Plex Mono** (400/500) for kickers, labels, dates and code. Labels are
+- **IBM Plex Mono** (400/500) for labels, dates and code. Labels are
   uppercase with `.08em` tracking.
 
 | Style           | Size                                    | Weight | Tracking |
@@ -180,9 +180,9 @@ animations and the pip flicker. The content still changes, but instantly.
 - **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
   theme toggle and the die. On the home page it's hidden until the splash
   recedes into it.
-- **Project card:** screenshot (16:10, or 4:3 on phones), mono kicker in the
-  project accent, title, summary in `fg-muted`, and a "Visit … ↗" link with an
-  accent underline.
+- **Project card:** screenshot (16:10, or 4:3 on phones), title, summary in
+  `fg-muted`, and a "Visit … ↗" link with an accent underline. No category
+  label above the title.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** a curved "j" spelled in die pips on a 3×3 grid: only the four
   pips that form the j, in `brand`, on a dark `surface` tile. It's
