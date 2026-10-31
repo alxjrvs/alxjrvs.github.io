@@ -62,6 +62,9 @@ h1, h2, h3 { margin: 0; font-weight: 700; }
 h2 { font-size: clamp(2.5rem, 6vw, 3.5rem); line-height: 1; letter-spacing: -.04em; }
 h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacing: -.04em; }
 .alx { color: var(--sub); }
+/* the wordmark itself: alx in ink, jrvs in the highlight */
+.mark .alx, .brand .alx { color: var(--ink); }
+.mark .jrvs, .brand .jrvs { color: var(--hl); }
 .label { font: 500 .75rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--sub); }
 .wrap { padding-left: var(--gutter); padding-right: var(--gutter); }
 .skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--ink); color: var(--bg); padding: 8px 12px; }
@@ -183,7 +186,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   line-height: 1.1;
   letter-spacing: -.02em;
 }
-.tagline em { font-style: normal; color: var(--hl); }
+/* tagline: the subject in the highlight, the object grey, the die highlight */
+.tagline .roll-subject { color: var(--hl); }
+.tagline em { font-style: normal; color: var(--sub); }
 .roll { display: inline-block; }
 /* the die is the sentence's full stop: click it to roll */
 .die-btn { font: inherit; line-height: 0; padding: 0 0 0 .06em; margin: 0; border: 0; background: none; cursor: pointer; vertical-align: baseline; color: var(--hl); }
