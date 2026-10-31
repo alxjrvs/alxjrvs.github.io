@@ -14,11 +14,11 @@ layout: default
     {%- for p in projects -%}
     <article class="card" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
       {%- if p.shot -%}
-      <a class="shot" href="{{ p.link }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="" width="1280" height="800" decoding="async"></a>
+      <a class="shot" href="{{ p.link }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>
       {%- endif -%}
       <h3>{{ p.title }}</h3>
       <p class="summary">{{ p.summary }}</p>
-      <a class="visit" href="{{ p.link }}">Visit {{ p.link_label | default: p.title }} ↗</a>
+      <a class="visit" href="{{ p.link }}">Visit {{ p.link_label | default: p.title }} <span aria-hidden="true">↗</span></a>
     </article>
     {%- endfor -%}
   </div>
@@ -29,7 +29,7 @@ layout: default
 <section class="screen wrap" id="writing" aria-labelledby="writing-head">
   <div class="section-head">
     <h2 id="writing-head">Latest writing</h2>
-    <a href="{{ '/writing/' | relative_url }}">All writing →</a>
+    <a href="{{ '/writing/' | relative_url }}">All writing <span aria-hidden="true">→</span></a>
   </div>
   {% assign recent = site.posts | slice: 0, 5 %}
   {% include post-list.html posts=recent %}
@@ -48,7 +48,7 @@ layout: default
   </div>
   <footer class="foot">
     <span>© {{ site.time | date: '%Y' }} <span class="alx">alx</span><span class="jrvs">jrvs</span></span>
-    <a href="https://github.com/alxjrvs">GitHub ↗</a>
+    <a href="https://github.com/alxjrvs">GitHub <span aria-hidden="true">↗</span></a>
   </footer>
 </section>
 

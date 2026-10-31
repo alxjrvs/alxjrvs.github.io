@@ -31,6 +31,16 @@ collections:
     output: false
 
 defaults:
+  # The social preview card (Open Graph / Twitter) for every page. Made from
+  # scripts/social-card.html by scripts/social-card.mjs; re-render it when
+  # the palette, wordmark or tagline change. A page can set its own `image:`.
+  - scope: { path: "" }
+    values:
+      image:
+        path: /assets/social.png
+        width: 1200
+        height: 630
+        alt: "alxjrvs: Enthusiast. I make stuff."
   - scope: { type: posts }
     values: { layout: post }
 

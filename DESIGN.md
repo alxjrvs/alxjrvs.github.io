@@ -94,6 +94,8 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   700 with tight negative tracking.
 - **IBM Plex Mono** (400/500) for labels, dates and code. Labels are
   uppercase with `.08em` tracking.
+- Both are self-hosted from `assets/fonts/` (latin subset), and the grotesk is
+  preloaded, so the splash never waits on a third-party stylesheet.
 
 | Style           | Size                                    | Weight | Tracking |
 | --------------- | --------------------------------------- | ------ | -------- |
@@ -200,6 +202,11 @@ animations and the pip flicker. The content still changes, but instantly.
   follows the browser's light or dark setting, like the page. The stylesheet
   and favicon links carry a `?v=` build stamp so a deploy is never hidden
   behind a cached copy.
+- **Social card:** `assets/social.png` (1200×630), used for every page's
+  Open Graph and Twitter preview. It's the dark splash in miniature: the dice
+  grid fading down, the purple die on its "j", the wordmark, the default
+  tagline and `alxjrvs.com` as a mono label. Edit `scripts/social-card.html`
+  and re-render with `node scripts/social-card.mjs`.
 
 ---
 
@@ -209,4 +216,5 @@ animations and the pip flicker. The content still changes, but instantly.
    dark, `[data-theme="light"]` for light.
 2. Keep every text token at 4.5:1 or better against `surface`.
 3. `brand-2` must stay distinct from `brand`, because it is the pop.
-4. Update the favicon's colours in `assets/favicon.svg`, and the tables above.
+4. Update the favicon's colours in `assets/favicon.svg`, the social card's in
+   `scripts/social-card.html` (then re-render it), and the tables above.
