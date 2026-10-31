@@ -33,7 +33,7 @@ bundle exec jekyll serve --livereload
 | `_layouts/`           | `default.html` (floating header, theme toggle, back-to-top), `post.html` |
 | `redirects/`          | `/about/`, `/projects/` and old `/work/...` URLs, sent to the matching section |
 | `_data/tagline.yml`   | Word lists for the rollable tagline |
-| `_data/likes.yml`     | The things in About's "I like …" sentence; each roll picks three |
+| `_data/likes.yml`     | The things in About's "I like …" sentence; three slots, each roll picks one from each |
 | `assets/css/site.css` | The whole design |
 | `assets/work/`        | Project screenshots (1280×800), refreshed by the Screenshots workflow |
 

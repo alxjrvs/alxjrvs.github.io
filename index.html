@@ -44,7 +44,7 @@ layout: default
     <div class="bio">
       {{ bio | markdownify }}
       {%- assign likes = site.data.likes -%}
-      <p class="likes">I like <span id="likes">{% for l in likes limit: 3 %}{% if forloop.last and forloop.length > 1 %}and {% endif %}{{ l }}{% unless forloop.last %}{% if forloop.length > 2 %}, {% else %} {% endif %}{% endunless %}{% endfor %}</span>.</p>
+      <p class="likes">I like <span id="likes">{{ likes[0] | first }}, {{ likes[1] | first }}, and {{ likes[2] | first }}</span>.</p>
     </div>
   </div>
   <footer class="foot">
@@ -123,9 +123,17 @@ layout: default
       if (list.length === 2) return list[0] + ' and ' + list[1];
       return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
     }
+    // One pick per slot, never the one already showing.
+    var picked = LIKES.map(function () { return 0; });
     function rerollLikes() {
-      if (!likes || LIKES.length < 2) return;
-      var next = sentence(shuffle(LIKES).slice(0, 3));
+      if (!likes) return;
+      var next = sentence(LIKES.map(function (slot, i) {
+        if (slot.length > 1) {
+          var j = Math.floor(Math.random() * (slot.length - 1));
+          picked[i] = j >= picked[i] ? j + 1 : j;
+        }
+        return slot[picked[i]];
+      }));
       if (reduce.matches) { likes.textContent = next; return; }
       likes.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in' }).onfinish = function () {
         likes.textContent = next;
