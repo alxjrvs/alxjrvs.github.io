@@ -238,6 +238,23 @@ layout: default
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   })();
 
+  // Touch snapping: firm (mandatory) once every section fits on one screen,
+  // so a swipe always lands on a section. If any section is taller than
+  // the screen, keep the gentler proximity snapping so all of it stays
+  // reachable.
+  (function () {
+    var root = document.documentElement;
+    function check() {
+      var h = innerHeight + 2;
+      root.classList.toggle('fits', [].every.call(document.querySelectorAll('.screen'), function (s) { return s.offsetHeight <= h; }));
+    }
+    addEventListener('load', check);
+    addEventListener('resize', check);
+    // a re-roll can change how long the "I like" sentence is
+    [].forEach.call(document.querySelectorAll('.die-btn'), function (d) { d.addEventListener('click', function () { setTimeout(check, 3500); }); });
+    check();
+  })();
+
   // Section snapping. Scrolling itself stays native and free, so the
   // wordmark animation plays under your fingers. Once a scroll settles (or
   // slows right down), a gentle spring carries the page to a section: the

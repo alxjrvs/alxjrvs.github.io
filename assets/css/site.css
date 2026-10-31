@@ -346,3 +346,41 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .brand { font-size: 24px; }
   .nav { font-size: .9375rem; }
 }
+
+/* ── phones: every section fits one screen ──────────── */
+/* The projects become a sideways swipe (the next card peeks in), the type
+   tightens, and once every section fits, touch scrolling snaps firmly
+   section to section (see the "fits" check in the home-page script). */
+@media (max-width: 760px) {
+  .screen { padding-top: calc(var(--bar-h) + 20px); padding-bottom: 20px; }
+  h2 { font-size: 2.25rem; }
+  #projects h2 { margin-bottom: 18px; }
+  .cards {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 84%;
+    gap: 16px;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 0 var(--gutter) 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gutter);
+    scrollbar-width: none;
+  }
+  .cards::-webkit-scrollbar { display: none; }
+  .card { scroll-snap-align: start; gap: 10px; }
+  .shot img { aspect-ratio: 4 / 3; }
+  .summary { font-size: .9375rem; }
+  .about h2 { margin-bottom: 16px; }
+  .bio { font-size: 1rem; line-height: 1.45; }
+  .bio p { margin-bottom: 10px; }
+  .foot { margin-top: 12px; height: 56px; }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  .shot img { aspect-ratio: 16 / 10; }
+  .about h2 { font-size: 1.875rem; margin-bottom: 10px; }
+  .bio { font-size: .9375rem; line-height: 1.4; }
+}
+@media (pointer: coarse) { html.fits { scroll-snap-type: y mandatory; } }
