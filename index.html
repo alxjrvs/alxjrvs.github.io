@@ -273,40 +273,24 @@ layout: default
       document.body.classList.toggle('docked', p >= 1);
     }
 
-    var queued = false;
-    addEventListener('scroll', function () {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(function () { queued = false; update(); });
-    }, { passive: true });
+    // Update straight from the scroll event, in the same frame the page
+    // moved. (Deferring to the next animation frame left the wordmark one
+    // frame behind the scroll, so it jittered on the way into the header.)
+    addEventListener('scroll', update, { passive: true });
+    window.__recede = update;   // the snapping spring calls this as it scrolls
     addEventListener('resize', measure);
     measure();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   })();
 
-  // Touch snapping: firm (mandatory) once every section fits on one screen,
-  // so a swipe always lands on a section. If any section is taller than
-  // the screen, keep the gentler proximity snapping so all of it stays
-  // reachable.
-  (function () {
-    var root = document.documentElement;
-    function check() {
-      var h = innerHeight + 2;
-      root.classList.toggle('fits', [].every.call(document.querySelectorAll('.screen'), function (s) { return s.offsetHeight <= h; }));
-    }
-    addEventListener('load', check);
-    addEventListener('resize', check);
-    // a re-roll can change how long the "I like" sentence is
-    [].forEach.call(document.querySelectorAll('.die-btn'), function (d) { d.addEventListener('click', function () { setTimeout(check, 3500); }); });
-    check();
-  })();
-
   // Section snapping. Scrolling itself stays native and free, so the
-  // wordmark animation plays under your fingers. Once a scroll settles (or
-  // slows right down), a gentle spring carries the page to a section: the
-  // next one if you've moved past a tenth of a screen from where you
-  // started, otherwise back where you were. Any new input cancels the
-  // spring at once. Only for mouse and trackpad; touch gets CSS snapping.
+  // wordmark animation plays under your fingers. Once a scroll has slowed
+  // right down, a soft, critically damped spring picks up from the scroll's
+  // own speed and eases the page onto a section, with no bounce: the next
+  // one if you've moved past a tenth of a screen (counting where your
+  // momentum was heading), otherwise back where you were. Any new input
+  // cancels the spring at once. Only for mouse and trackpad; touch gets
+  // CSS snapping.
   (function () {
     var fine   = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 761px) and (min-height: 600px)');
     var reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -314,8 +298,9 @@ layout: default
     var screens = [].slice.call(document.querySelectorAll('.screen'));
 
     var MARK = 0.1;          // fraction of a screen you have to cross to move on
-    var STIFF = 110;         // spring stiffness
-    var DAMP = 0.78;         // damping ratio below 1 leaves a soft, elastic settle
+    var STIFF = 42;          // spring stiffness: low, so it eases in over ~0.8s
+    var DAMP = 1;            // critically damped: no overshoot, no wobble
+    var COAST = 260;         // ms of current speed to count when picking a section
 
     var origin = null;       // where the current gesture started
     var lastY = scrollY, lastT = performance.now(), vel = 0;   // px per ms
@@ -373,7 +358,8 @@ layout: default
     function settle() {
       clearTimeout(idle);
       if (!on() || spring) return;
-      var y = scrollY, to = pick(y);
+      if (performance.now() - lastT > 100) vel = 0;   // the scroll has already stopped
+      var y = scrollY, to = pick(Math.max(0, Math.min(maxY(), y + vel * COAST)));
       origin = null;
       if (to === null || Math.abs(to - y) < 1) return;
       var x = y, v = vel * 1000, k = STIFF, c = 2 * DAMP * Math.sqrt(k), prev = null;
@@ -392,6 +378,7 @@ layout: default
         if (Math.abs(x - to) < 0.4 && Math.abs(v) < 8) x = to;
         lastY = Math.round(x);
         scrollTo(0, x);
+        if (window.__recede) window.__recede();     // keep the wordmark in step this frame
         if (x === to) { stop(); return; }
         spring.raf = requestAnimationFrame(step);
       });
@@ -409,8 +396,8 @@ layout: default
       clearTimeout(idle);
       // hand over as soon as the scroll has slowed to a crawl, rather than
       // waiting out a long trackpad momentum tail
-      if (now - began > 160 && Math.abs(vel) < 0.12 && Math.abs(y - origin) > 4) { settle(); return; }
-      idle = setTimeout(settle, 110);
+      if (now - began > 220 && Math.abs(vel) < 0.08 && Math.abs(y - origin) > 4) { settle(); return; }
+      idle = setTimeout(settle, 160);
     }, { passive: true });
 
     // While the spring runs, swallow the tail of a trackpad's momentum; a
