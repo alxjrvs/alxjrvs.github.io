@@ -193,7 +193,8 @@ animations and the pip flicker. The content still changes, but instantly.
 - **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
   theme toggle and the die. On the home page it's hidden until the splash
   recedes into it.
-- **Project card:** screenshot (16:10, or 4:3 on phones), title, summary in
+- **Project card:** screenshot (16:10, or 4:3 on phones; a WebP at 1280 and
+  640 wide, picked with `srcset`, lazy-loaded), title, summary in
   `fg-muted`, and a "Visit … ↗" link with an accent underline. No category
   label above the title.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.

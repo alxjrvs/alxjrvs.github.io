@@ -6,7 +6,7 @@ summary: >-
   mech builder, and the API, apps and bot that grew up around it.
 link: https://salvageunion.io
 link_label: salvageunion.io
-shot: salvageunion.png
+shot: salvageunion
 kicker: Salvage Union · TTRPG reference
 accent: "#b4531f"
 accent_dark: "#f0955a"
