@@ -40,13 +40,13 @@
 
 /* ── base ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-/* Every home-page section is one screen tall and scrolling snaps to each.
-   Mandatory snapping where the sections fit the screen; on small screens,
-   where they can run taller, only snap when you're near an edge. */
+/* Every home-page section is one screen tall. With a mouse or trackpad the
+   home-page script springs to sections once a scroll settles; on touch,
+   the browser's own proximity snapping does it. */
 html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
-@media (min-width: 761px) and (min-height: 600px) { html:has(body.home) { scroll-snap-type: y mandatory; } }
-/* With a mouse or trackpad, the home-page script glides between sections instead. */
 html.glide { scroll-snap-type: none; }
+/* no hover effects flickering under the cursor while the page springs */
+html.moving main { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   margin: 0;
