@@ -204,9 +204,10 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   line-height: 1.1;
   letter-spacing: -.02em;
 }
-/* tagline: the subject in the highlight, the object grey */
+/* tagline: the subject in the highlight, "I build" grey, the object in ink */
+.tagline, .bar-tag { color: var(--sub); }
 .tagline .roll-subject, .bar-tag .roll-subject { color: var(--hl); }
-.tagline em, .bar-tag em { font-style: normal; color: var(--sub); }
+.tagline em, .bar-tag em { font-style: normal; color: var(--ink); }
 .roll { display: inline-block; }
 /* once docked, the header's own copies take over from the splash */
 .docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
