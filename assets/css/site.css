@@ -192,7 +192,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .roll { display: inline-block; }
 /* the die is the sentence's full stop: click it to roll */
 .die-btn { font: inherit; line-height: 0; padding: 0 0 0 .06em; margin: 0; border: 0; background: none; cursor: pointer; vertical-align: baseline; color: var(--hl); }
-.die { width: .36em; height: .36em; vertical-align: baseline; transition: transform .2s; }
+.die { width: .252em; height: .252em; vertical-align: baseline; transition: transform .2s; }
 .die-face { fill: currentColor; }
 .die-pips { fill: var(--bg); }
 .die-btn:hover .die { transform: rotate(-12deg); }
