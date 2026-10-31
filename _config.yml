@@ -1,8 +1,8 @@
 title: alxjrvs
 tagline: Enthusiast. I make stuff.
 description: >-
-  The personal site of alxjrvs: the projects, and the occasional piece of
-  writing about them.
+  Alex Jarvis makes stuff: dice engines, card-game references, TTRPG gadgets
+  and other side quests that got out of hand. Roll the die, see what lands.
 author: alxjrvs
 url: "https://alxjrvs.com"
 baseurl: ""
@@ -40,7 +40,7 @@ defaults:
         path: /assets/social.png
         width: 1200
         height: 630
-        alt: "alxjrvs: Enthusiast. I make stuff."
+        alt: "The alxjrvs wordmark over a field of faint dice, a purple die in the corner, and the line: Enthusiast. I make stuff."
   - scope: { type: posts }
     values: { layout: post }
 
