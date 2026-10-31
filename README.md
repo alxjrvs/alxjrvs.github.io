@@ -35,7 +35,7 @@ bundle exec jekyll serve --livereload
 | `_data/tagline.yml`   | Word lists for the rollable tagline |
 | `_data/likes.yml`     | The things in About's "I like …" sentence; three slots, each roll picks one from each |
 | `assets/css/site.css` | The whole design |
-| `assets/work/`        | Project screenshots (1280×800), refreshed by the Screenshots workflow |
+| `assets/work/`        | Project screenshots (WebP, 1280×800 + 640×400), refreshed by the Screenshots workflow |
 
 ## Adding a project
 
@@ -48,7 +48,7 @@ title: Name
 summary: Two sentences for the card.
 link: https://example.com     # the live site
 link_label: example.com
-shot: example.png             # in assets/work/, captured by the Screenshots workflow
+shot: example                # assets/work/example.webp (+ -640), captured by the Screenshots workflow
 accent: "#1f5fbf"             # accent on the light theme
 accent_dark: "#7fb0ff"        # accent on the dark theme
 ---

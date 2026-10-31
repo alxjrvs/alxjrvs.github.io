@@ -36,7 +36,7 @@ jobs:
 
       - name: Install Playwright + Chromium
         run: |
-          npm install --no-save playwright@1.48.2
+          npm install --no-save playwright@1.48.2 sharp@0.33
           npx playwright install --with-deps chromium
 
       - name: Capture
@@ -44,7 +44,7 @@ jobs:
 
       - name: Commit changed screenshots
         run: |
-          git add assets/work
+          git add -A assets/work
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

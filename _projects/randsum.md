@@ -7,7 +7,7 @@ summary: >-
   actually play.
 link: https://randsum.dev
 link_label: randsum.dev
-shot: randsum.png
+shot: randsum
 kicker: TypeScript · dice engine
 accent: "#c43d3d"
 accent_dark: "#ff7a7a"
