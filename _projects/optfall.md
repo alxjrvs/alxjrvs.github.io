@@ -7,6 +7,7 @@ summary: >-
 link: https://optfall.com
 link_label: optfall.com
 shot: optfall.png
+kicker: Flesh and Blood · card search and rules
 accent: "#a3122a"
 accent_dark: "#ff5468"
 ---

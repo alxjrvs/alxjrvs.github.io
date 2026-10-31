@@ -8,6 +8,7 @@ summary: >-
 link: https://vellumhud.com
 link_label: vellumhud.com
 shot: vellum.png
+kicker: TTRPG · camera HUD
 accent: "#7a5a00"
 accent_dark: "#ffc93c"
 ---
