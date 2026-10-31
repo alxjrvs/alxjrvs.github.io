@@ -194,9 +194,11 @@ animations and the pip flicker. The content still changes, but instantly.
   `fg-muted`, and a "Visit … ↗" link with an accent underline. No category
   label above the title.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
-- **Favicon:** a curved "j" spelled in die pips on a 3×3 grid: only the four
-  pips that form the j, in `brand`, on a dark `surface` tile. It's
-  never a whole die.
+- **Favicon:** the die at rest, matching the on-page button: a `die`
+  (`brand-2`) face with the four pips of the curved "j" in `surface`. It
+  follows the browser's light or dark setting, like the page. The stylesheet
+  and favicon links carry a `?v=` build stamp so a deploy is never hidden
+  behind a cached copy.
 
 ---
 
