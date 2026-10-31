@@ -1,0 +1,55 @@
+---
+layout: default
+---
+{%- assign projects = site.projects | sort: "order" -%}
+{%- assign p = page -%}
+{%- for x in projects -%}
+  {%- if x.url == page.url -%}
+    {%- assign i = forloop.index0 -%}
+    {%- assign num = forloop.index | prepend: '0' | slice: -2, 2 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign prev_i = i | minus: 1 -%}
+{%- assign next_i = i | plus: 1 -%}
+{%- assign related = site.posts | where: "project", page.slug -%}
+
+<article class="accented" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
+  <header class="project-head">
+    <a class="crumb label" href="{{ '/projects/' | relative_url }}">Projects <span class="n">/ {{ num }}</span></a>
+    <h1>{{ p.title }}</h1>
+    <p class="entry-pitch">{{ p.pitch }}</p>
+    <p class="entry-summary">{{ p.summary }}</p>
+    {% include project-links.html p=p %}
+  </header>
+
+  {%- if p.shot -%}
+  <figure class="shot">
+    <a href="{{ p.link }}" aria-label="Visit {{ p.title }}">
+      <img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="{{ p.title }}, as it looks live" width="1280" height="800">
+    </a>
+  </figure>
+  {%- endif -%}
+
+  <div class="project-body">
+    <div class="prose">{{ content }}</div>
+    <aside>{% include facts.html p=p %}</aside>
+  </div>
+
+  {%- if related.size > 0 -%}
+  <section class="related">
+    <div class="section-head"><h2 class="label">Writing about {{ p.title }}</h2></div>
+    {% include post-list.html posts=related %}
+  </section>
+  {%- endif -%}
+
+  <nav class="pager" aria-label="More projects">
+    {%- if i > 0 -%}
+    {%- assign q = projects[prev_i] -%}
+    <a class="prev" href="{{ q.url | relative_url }}"><span class="label">← Previous</span><span class="t">{{ q.title }}</span></a>
+    {%- endif -%}
+    {%- if next_i < projects.size -%}
+    {%- assign q = projects[next_i] -%}
+    <a class="next" href="{{ q.url | relative_url }}"><span class="label">Next →</span><span class="t">{{ q.title }}</span></a>
+    {%- endif -%}
+  </nav>
+</article>

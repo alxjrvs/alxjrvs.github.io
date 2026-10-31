@@ -1,0 +1,6 @@
+{%- comment -%} Visit / source / (optionally) more links. Pass `p=`, and `more=true` to link the project page. {%- endcomment -%}
+<ul class="links">
+  {%- if include.p.link -%}<li><a class="ext" href="{{ include.p.link }}">{{ include.p.link_label | default: 'Visit' }}</a></li>{%- endif -%}
+  {%- if include.p.code -%}<li><a class="ext" href="{{ include.p.code }}">Source</a></li>{%- endif -%}
+  {%- if include.more -%}<li><a class="int" href="{{ include.p.url | relative_url }}">More on {{ include.p.title }}</a></li>{%- endif -%}
+</ul>

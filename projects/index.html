@@ -1,23 +1,29 @@
 ---
 layout: default
-title: projects
+title: Projects
 permalink: /projects/
-redirect_from: /work/
-description: The sites and tools alxjrvs has made — each its own thing.
+description: The projects alxjrvs builds and looks after.
+redirect_from:
+  - /work/
+  - /work/boom/
+  - /work/dotfiles/
 ---
+{%- assign projects = site.projects | sort: "order" -%}
 <header class="pagehead">
-  <p class="eyebrow">things i made</p>
-  <h1>projects</h1>
+  <span class="label">Index</span>
+  <h1>Projects</h1>
+  <p>{{ projects.size }} things, each its own site. Pick one for the long version.</p>
 </header>
 
-{%- for group in site.data.work.groups -%}
-<section class="workgroup">
-  <h2 class="workgroup-name">{{ group.name }}</h2>
-  <p class="workgroup-blurb">{{ group.blurb }}</p>
-  <ul class="workgrid">
-    {%- for slug in group.sites -%}
-    {%- include workcard.html slug=slug -%}
-    {%- endfor -%}
-  </ul>
-</section>
-{%- endfor -%}
+<ol class="index">
+  {%- for p in projects -%}
+  <li class="accented" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
+    <a href="{{ p.url | relative_url }}">
+      <span class="n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+      <span class="t">{{ p.title }}</span>
+      <span class="p">{{ p.pitch }}</span>
+      <span class="go">→</span>
+    </a>
+  </li>
+  {%- endfor -%}
+</ol>

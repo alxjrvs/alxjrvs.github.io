@@ -1,8 +1,8 @@
 title: alxjrvs
 tagline: Software engineer. I build small, sharp tools.
 description: >-
-  The personal site of alxjrvs — software engineer. Projects first, plus
-  the occasional piece of writing.
+  The personal site of alxjrvs: the projects, and the occasional piece of
+  writing about them.
 author: alxjrvs
 url: "https://alxjrvs.github.io"
 baseurl: ""
@@ -14,29 +14,36 @@ markdown: kramdown
 highlighter: rouge
 permalink: /writing/:title/
 
-# Fully custom design — no theme. (github-pages bundles minima; we don't use it.)
+# Fully custom design, no theme. (github-pages bundles minima; we don't use it.)
 theme:
-
-sass:
-  style: compressed
 
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-  - jekyll-redirect-from   # old /work/ URLs → /projects/
+  - jekyll-redirect-from   # old /work/ URLs land somewhere useful
+
+# ── projects ───────────────────────────────────────────
+# One Markdown file per project in _projects/, sorted by `order`.
+# Front matter holds the facts; the body is the write-up on its page.
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
+
+defaults:
+  - scope: { type: projects }
+    values: { layout: project }
+  - scope: { type: posts }
+    values: { layout: post }
 
 # ── navigation (rendered by _layouts/default.html) ─────
 # Items with `needs_posts: true` only appear once _posts/ has something in it,
 # so the writing link shows up on its own with the first post.
 nav:
-  - { name: index,    url: / }
-  - { name: projects, url: /projects/ }
-  - { name: writing,  url: /writing/, needs_posts: true }
-  - { name: about,    url: /about/ }
-
-# Projects live in _data/work.yml — grouped by org/topic, with a page per
-# site at /projects/<slug>/. Rendered on / (flagships) and /projects/ (all).
+  - { name: Projects, url: /projects/ }
+  - { name: Writing,  url: /writing/, needs_posts: true }
+  - { name: About,    url: /about/ }
 
 exclude:
   - Gemfile

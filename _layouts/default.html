@@ -18,35 +18,55 @@
   </script>
 
   <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
-  <link rel="stylesheet" href="{{ '/assets/css/signal.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
   {%- feed_meta -%}
   {%- seo -%}
 </head>
 <body>
-  <a class="skip" href="#main">skip to content</a>
+  <a class="skip" href="#main">Skip to content</a>
+  {%- assign projects = site.projects | sort: "order" -%}
 
   <div class="shell">
-    <header class="masthead">
-      <a class="brand" href="{{ '/' | relative_url }}">alxjrvs<span class="sq" aria-hidden="true" style="margin-left:.28em"></span></a>
-      <nav class="nav" aria-label="Primary">
+    <header class="rail">
+      <div>
+        <a class="brand" href="{{ '/' | relative_url }}">alxjrvs</a>
+        <p class="brand-sub">{{ site.tagline }}</p>
+      </div>
+
+      <nav class="toc" aria-label="Primary">
         {%- for item in site.nav -%}
           {%- if item.needs_posts and site.posts.size == 0 -%}{%- continue -%}{%- endif -%}
-          <a href="{{ item.url | relative_url }}"{% if page.url == item.url or item.url != '/' and page.url contains item.url %} aria-current="page"{% endif %}>{{ item.name }}</a>
+          <div>
+            <span class="toc-head label"><a href="{{ item.url | relative_url }}"{% if page.url contains item.url %} aria-current="page"{% endif %}>{{ item.name }}</a></span>
+            {%- if item.url == '/projects/' -%}
+            <ol>
+              {%- for p in projects -%}
+              <li class="accented" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
+                <a href="{{ p.url | relative_url }}"{% if page.url == p.url %} aria-current="page"{% endif %}><span class="n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>{{ p.title }}</a>
+              </li>
+              {%- endfor -%}
+            </ol>
+            {%- endif -%}
+          </div>
         {%- endfor -%}
+      </nav>
+
+      <div class="rail-foot">
         <button id="theme-toggle" class="toggle" type="button" aria-pressed="false" aria-label="Toggle light or dark theme">
           <span class="knob" aria-hidden="true"></span><span class="lbl" aria-hidden="true"></span>
         </button>
-      </nav>
+        <span class="meta"><a href="https://github.com/alxjrvs">GitHub</a>{% if site.posts.size > 0 %} · <a href="{{ '/feed.xml' | relative_url }}">Feed</a>{% endif %}</span>
+      </div>
     </header>
 
-    <main id="main">
+    <main id="main" class="page">
       {{ content }}
-    </main>
 
-    <footer class="footer">
-      <span>© {{ site.time | date: '%Y' }} alxjrvs — built with Jekyll. <a href="{{ '/about/' | relative_url }}">about</a></span>
-      <span><a href="https://github.com/alxjrvs">github</a>{% if site.posts.size > 0 %} · <a href="{{ '/feed.xml' | relative_url }}">feed</a>{% endif %}</span>
-    </footer>
+      <footer class="page-foot">
+        <span>© {{ site.time | date: '%Y' }} alxjrvs</span>
+        <span>Built with Jekyll · <a href="https://github.com/alxjrvs/alxjrvs.github.io">source</a></span>
+      </footer>
+    </main>
   </div>
 
   <script>

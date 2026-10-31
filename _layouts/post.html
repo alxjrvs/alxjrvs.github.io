@@ -1,19 +1,31 @@
 ---
 layout: default
 ---
-<article class="post">
-  <p class="kicker">writing</p>
-  <h1>{{ page.title }}</h1>
-  <p class="byline">
-    {{ page.date | date: "%B %-d, %Y" }} <span class="sep">·</span> {{ content | number_of_words | divided_by: 200 | plus: 1 }} min read
-  </p>
+{%- if page.project -%}
+  {%- assign proj = site.projects | where: "slug", page.project | first -%}
+{%- endif -%}
+<article class="post{% if proj %} accented{% endif %}"{% if proj %} style="--accent-light:{{ proj.accent }};--accent-dark:{{ proj.accent_dark }}"{% endif %}>
+  <header class="post-head">
+    <a class="crumb label" href="{{ '/writing/' | relative_url }}">Writing</a>
+    <h1>{{ page.title }}</h1>
+    {%- if page.description -%}<p class="dek">{{ page.description }}</p>{%- endif -%}
+    <p class="meta label">
+      <span>{{ page.date | date: "%B %-d, %Y" }}</span>
+      <span>{{ content | number_of_words | divided_by: 220 | plus: 1 }} min read</span>
+      {%- if proj -%}<a href="{{ proj.url | relative_url }}">On {{ proj.title }}</a>{%- endif -%}
+    </p>
+  </header>
 
-  <div class="prose reading">
+  <div class="prose">
     {{ content }}
-    <span class="fin" aria-hidden="true" title="the end"></span>
   </div>
 
-  <nav class="postnav">
-    <a href="{{ '/writing/' | relative_url }}"><span class="sq" aria-hidden="true"></span> all writing</a>
+  <nav class="pager" aria-label="More writing">
+    {%- if page.previous -%}
+    <a class="prev" href="{{ page.previous.url | relative_url }}"><span class="label">← Older</span><span class="t">{{ page.previous.title }}</span></a>
+    {%- endif -%}
+    {%- if page.next -%}
+    <a class="next" href="{{ page.next.url | relative_url }}"><span class="label">Newer →</span><span class="t">{{ page.next.title }}</span></a>
+    {%- endif -%}
   </nav>
 </article>

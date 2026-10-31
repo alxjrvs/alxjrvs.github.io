@@ -1,38 +1,22 @@
 ---
 layout: default
-title: writing
+title: Writing
 permalink: /writing/
 description: Essays and notes by alxjrvs.
 ---
 <header class="pagehead">
-  <p class="eyebrow">things i said</p>
-  <h1>writing</h1>
+  <span class="label">Archive</span>
+  <h1>Writing</h1>
 </header>
 
 {%- if site.posts.size > 0 -%}
 {%- assign years = site.posts | group_by_exp: "post", "post.date | date: '%Y'" -%}
 {%- for year in years -%}
-<section class="archive-year">
-  <h2 class="workgroup-name">{{ year.name }}</h2>
-  <ul class="archive">
-    {%- for post in year.items -%}
-    <li>
-      <a href="{{ post.url | relative_url }}">
-        <span class="bul" aria-hidden="true"></span>
-        <span class="t">
-          {{ post.title }}
-          {%- if post.description -%}<span class="x">{{ post.description }}</span>{%- endif -%}
-        </span>
-        <span class="d">{{ post.date | date: "%m·%d" }}</span>
-      </a>
-    </li>
-    {%- endfor -%}
-  </ul>
+<section>
+  <h2 class="year label">{{ year.name }}</h2>
+  {% include post-list.html posts=year.items %}
 </section>
 {%- endfor -%}
 {%- else -%}
-<div class="prose reading empty-state">
-  <p class="empty empty--page">Nothing here yet. When there is, it'll show up here.</p>
-  <p class="empty">In the meantime, the <a href="{{ '/projects/' | relative_url }}">projects</a> are where the action is.</p>
-</div>
+<p class="empty">Nothing here yet. When there is, it'll show up here. In the meantime, the <a href="{{ '/projects/' | relative_url }}">projects</a> are where the action is.</p>
 {%- endif -%}

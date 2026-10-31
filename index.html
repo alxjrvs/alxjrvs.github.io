@@ -1,10 +1,9 @@
 ---
 layout: default
 ---
-<section class="hero">
-  <h1 class="wordmark">alxjrvs</h1>
-  <div class="rule" aria-hidden="true"></div>
-  <p class="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><button type="button" class="die-btn" aria-label="Roll for a new tagline"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="1.5"/><g class="die-pips"><circle cx="4" cy="4" r="2.5"/><circle cx="12" cy="4" r="2.5"/><circle cx="8" cy="8" r="2.5"/><circle cx="4" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/></g></svg></button></p>
+<section class="intro">
+  <h1><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em>.<button type="button" class="die-btn" aria-label="Roll for a new tagline"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="2.5"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.6"/><circle cx="11.5" cy="4.5" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="4.5" cy="11.5" r="1.6"/><circle cx="11.5" cy="11.5" r="1.6"/></g></svg></button></h1>
+  <p>I'm Jrvs, a software engineer. These are the projects I'm proudest of, mostly tools for the games I play. There's more about me on the <a href="{{ '/about/' | relative_url }}">about page</a>.</p>
 </section>
 
 <script>
@@ -57,35 +56,34 @@ layout: default
   })();
 </script>
 
-<section class="home-section">
-  <header class="home-head">
-    <h2>projects</h2>
-    <a class="home-more" href="{{ '/projects/' | relative_url }}">all projects <span aria-hidden="true">→</span></a>
-  </header>
-  <ul class="workgrid">
-    {%- for group in site.data.work.groups -%}
-    {%- include workcard.html slug=group.flagship -%}
-    {%- endfor -%}
-  </ul>
+{%- assign projects = site.projects | sort: "order" -%}
+<section aria-labelledby="projects-head">
+  <div class="section-head">
+    <h2 class="label" id="projects-head">Projects</h2>
+    <a href="{{ '/projects/' | relative_url }}">Index →</a>
+  </div>
+  {%- for p in projects -%}
+  <article class="entry accented" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
+    <span class="entry-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+    <div>
+      <h3 class="entry-title"><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
+      <p class="entry-pitch">{{ p.pitch }}</p>
+      <p class="entry-summary">{{ p.summary }}</p>
+      {% include facts.html p=p %}
+      {% include project-links.html p=p more=true %}
+    </div>
+  </article>
+  {%- endfor -%}
 </section>
 
-{%- comment -%} Writing only takes up room on the landing once there's some. {%- endcomment -%}
+{%- comment -%} Writing only takes up room on the home page once there's some. {%- endcomment -%}
 {%- if site.posts.size > 0 -%}
-<section class="home-section">
-  <header class="home-head">
-    <h2>writing</h2>
-    <a class="home-more" href="{{ '/writing/' | relative_url }}">all writing <span aria-hidden="true">→</span></a>
-  </header>
-  <ul class="linklist">
-    {%- for post in site.posts limit: 3 -%}
-    <li>
-      <a href="{{ post.url | relative_url }}">
-        <span class="bul" aria-hidden="true"></span>
-        <span class="t">{{ post.title }}</span>
-        <span class="d">{{ post.date | date: "%Y·%m·%d" }}</span>
-      </a>
-    </li>
-    {%- endfor -%}
-  </ul>
+<section aria-labelledby="writing-head">
+  <div class="section-head">
+    <h2 class="label" id="writing-head">Writing</h2>
+    <a href="{{ '/writing/' | relative_url }}">All writing →</a>
+  </div>
+  {% assign recent = site.posts | slice: 0, 5 %}
+  {% include post-list.html posts=recent %}
 </section>
 {%- endif -%}
