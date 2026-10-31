@@ -1,5 +1,5 @@
 ---
-order: 2
+order: 3
 title: Optfall
 pitch: Legality that remembers, and rulings you can cite.
 summary: >-
@@ -8,6 +8,7 @@ summary: >-
 link: https://optfall.com
 link_label: optfall.com
 code: https://github.com/alxjrvs/optfall
+shot: optfall.png
 accent: "#a3122a"
 accent_dark: "#e0475c"
 facts:

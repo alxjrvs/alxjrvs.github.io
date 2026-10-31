@@ -1,5 +1,5 @@
 ---
-order: 3
+order: 2
 title: RANDSUM
 pitch: Throw dice, not exceptions.
 summary: >-
@@ -9,7 +9,7 @@ summary: >-
 link: https://randsum.dev
 link_label: randsum.dev
 code: https://github.com/RANDSUM/randsum
-shot: randsum-dev.png
+shot: randsum.png
 accent: "#6d3fd6"
 accent_dark: "#a98bff"
 facts:

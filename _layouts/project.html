@@ -12,6 +12,9 @@ layout: default
 {%- assign prev_i = i | minus: 1 -%}
 {%- assign next_i = i | plus: 1 -%}
 {%- assign related = site.posts | where: "project", page.slug -%}
+{%- comment -%} Only show a screenshot that exists; the Screenshots workflow fills these in. {%- endcomment -%}
+{%- assign shot_path = '/assets/work/' | append: p.shot -%}
+{%- assign shot_file = site.static_files | where: "path", shot_path | first -%}
 
 <article class="accented" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
   <header class="project-head">
@@ -22,7 +25,7 @@ layout: default
     {% include project-links.html p=p %}
   </header>
 
-  {%- if p.shot -%}
+  {%- if p.shot and shot_file -%}
   <figure class="shot">
     <a href="{{ p.link }}" aria-label="Visit {{ p.title }}">
       <img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="{{ p.title }}, as it looks live" width="1280" height="800">

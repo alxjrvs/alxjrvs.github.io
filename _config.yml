@@ -50,5 +50,8 @@ exclude:
   - Gemfile.lock
   - README.md
   - mise.toml
+  - scripts
+  - node_modules
+  - package-lock.json
   - vendor
   - .jekyll-cache

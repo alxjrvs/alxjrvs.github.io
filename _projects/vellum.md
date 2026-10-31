@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 4
 title: Vellum
 pitch: Your character sheet, on your face.
 summary: >-
@@ -9,7 +9,7 @@ summary: >-
 link: https://vellumhud.com
 link_label: vellumhud.com
 code: https://github.com/alxjrvs/vellum
-shot: vellum-site.png
+shot: vellum.png
 accent: "#8a6a1f"
 accent_dark: "#d4ad55"
 facts:
