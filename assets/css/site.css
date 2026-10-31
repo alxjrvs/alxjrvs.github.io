@@ -228,7 +228,10 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 }
 /* the letters that turn "alxjrvs" into "alex jarvis": grey, and folded away
    (width and opacity follow --g, set by the recede script) as you scroll */
-.mark .ghost { display: inline-block; overflow: clip; color: var(--mark-ghost); }
+.mark .ghost { display: inline-block; color: var(--mark-ghost); }
+/* clip only while folding: at rest the tight letter-spacing makes each
+   glyph wider than its box, so clipping would shave its right edge */
+.mark.folding .ghost { overflow: clip; }
 .js .mark .ghost { width: calc(var(--w) * (1 - var(--g, 0))); opacity: calc(1 - var(--g, 0) * 1.6); }
 .tagline {
   position: relative;

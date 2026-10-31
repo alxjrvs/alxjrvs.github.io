@@ -260,7 +260,11 @@ layout: default
         q.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
       });
       bar.style.setProperty('--p', e);
-      if (mark) mark.style.setProperty('--g', Math.min(e * 2.5, 1));
+      if (mark) {
+        var g = Math.min(e * 2.5, 1);
+        mark.style.setProperty('--g', g);
+        mark.classList.toggle('folding', g > 0);
+      }
       bar.classList.toggle('off', e < 0.02);
       document.body.classList.toggle('docked', p >= 1);
     }
