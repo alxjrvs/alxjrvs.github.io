@@ -1,0 +1,11 @@
+{%- comment -%} A list of posts. Pass `posts=`. {%- endcomment -%}
+<ul class="archive">
+  {%- for post in include.posts -%}
+  <li>
+    <a href="{{ post.url | relative_url }}">
+      <span class="d">{{ post.date | date: "%Y·%m·%d" }}</span>
+      <span class="t">{{ post.title }}{%- if post.description -%}<span class="x">{{ post.description }}</span>{%- endif -%}</span>
+    </a>
+  </li>
+  {%- endfor -%}
+</ul>

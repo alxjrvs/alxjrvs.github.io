@@ -1,8 +1,8 @@
 title: alxjrvs
 tagline: Software engineer. I build small, sharp tools.
 description: >-
-  The personal site of alxjrvs — software engineer. Writing, work, and
-  marginalia from a terminal.
+  The personal site of alxjrvs: the projects, and the occasional piece of
+  writing about them.
 author: alxjrvs
 url: "https://alxjrvs.github.io"
 baseurl: ""
@@ -14,31 +14,42 @@ markdown: kramdown
 highlighter: rouge
 permalink: /writing/:title/
 
-# Fully custom design — no theme. (github-pages bundles minima; we don't use it.)
+# Fully custom design, no theme. (github-pages bundles minima; we don't use it.)
 theme:
-
-sass:
-  style: compressed
 
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
+  - jekyll-redirect-from   # old /work/ URLs land somewhere useful
+
+# ── projects ───────────────────────────────────────────
+# One front-matter-only file per project in _projects/, sorted by `order`.
+# They render as cards on the home page; there are no per-project pages.
+collections:
+  projects:
+    output: false
+
+defaults:
+  - scope: { type: posts }
+    values: { layout: post }
 
 # ── navigation (rendered by _layouts/default.html) ─────
+# Each item scrolls to a section of the home page. Items with
+# `needs_posts: true` only appear once _posts/ has something in it, so the
+# writing link shows up on its own with the first post.
 nav:
-  - { name: index,   url: / }
-  - { name: writing, url: /writing/ }
-  - { name: work,    url: /work/ }
-  - { name: about,   url: /about/ }
-
-# The "things i made" data now lives in _data/work.yml — grouped by
-# org/topic, with a page per project at /work/<slug>/. Rendered on / and /work/.
+  - { name: Projects, url: "/#projects" }
+  - { name: Writing,  url: "/#writing", needs_posts: true }
+  - { name: About,    url: "/#about" }
 
 exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
   - mise.toml
+  - scripts
+  - node_modules
+  - package-lock.json
   - vendor
   - .jekyll-cache

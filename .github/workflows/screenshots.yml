@@ -1,0 +1,55 @@
+name: Screenshots
+
+# Re-captures each project's live site into assets/work/ and commits the result
+# when anything changed. Runs on demand, weekly, and on PRs that touch the
+# project list or this tooling (committing back to the PR branch).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1"
+  pull_request:
+    paths:
+      - "_projects/**"
+      - "scripts/screenshots.mjs"
+      - ".github/workflows/screenshots.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    # A fork's PR gets a read-only token, so only same-repo branches commit.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright + Chromium
+        run: |
+          npm install --no-save playwright@1.48.2
+          npx playwright install --with-deps chromium
+
+      - name: Capture
+        run: node scripts/screenshots.mjs
+
+      - name: Commit changed screenshots
+        run: |
+          git add assets/work
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh project screenshots"
+          git push

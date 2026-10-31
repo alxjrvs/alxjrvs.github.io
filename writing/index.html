@@ -1,26 +1,24 @@
 ---
 layout: default
-title: writing
+title: Writing
 permalink: /writing/
 description: Essays and notes by alxjrvs.
 ---
+<div class="wrap">
 <header class="pagehead">
-  <p class="eyebrow">the archive</p>
-  <h1>writing</h1>
+  <span class="label">Archive</span>
+  <h1>Writing</h1>
 </header>
 
 {%- if site.posts.size > 0 -%}
-<ul class="archive">
-  {%- for post in site.posts -%}
-  <li>
-    <a href="{{ post.url | relative_url }}">
-      <span class="bul" aria-hidden="true"></span>
-      <span class="t">{{ post.title }}</span>
-      <span class="d">{{ post.date | date: "%Y·%m" }}</span>
-    </a>
-  </li>
-  {%- endfor -%}
-</ul>
+{%- assign years = site.posts | group_by_exp: "post", "post.date | date: '%Y'" -%}
+{%- for year in years -%}
+<section>
+  <h2 class="year label">{{ year.name }}</h2>
+  {% include post-list.html posts=year.items %}
+</section>
+{%- endfor -%}
 {%- else -%}
-<p class="empty empty--page">no entries yet</p>
+<p class="empty">Nothing here yet. When there is, it'll show up here. In the meantime, the <a href="{{ '/#projects' | relative_url }}">projects</a> are where the action is.</p>
 {%- endif -%}
+</div>
