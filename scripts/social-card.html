@@ -1,0 +1,74 @@
+<!doctype html>
+<!-- The social preview card (Open Graph / Twitter), 1200×630.
+     Rendered to assets/social.png by scripts/social-card.mjs. It's the splash
+     in miniature: the dark "Legal Pad" palette, the faint dice grid fading
+     down, the wordmark, the tagline and the purple die resting on its "j".
+     Colours are copied from the :root palette in assets/css/site.css. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Familjen Grotesk'; font-weight: 400 700; font-display: block; src: url('../assets/fonts/familjen-grotesk-latin.woff2'); }
+  @font-face { font-family: 'IBM Plex Mono'; font-weight: 500; font-display: block; src: url('../assets/fonts/ibm-plex-mono-500-latin.woff2'); }
+  :root {
+    --surface: #14161f; --fg: #f3f0dc; --fg-subtle: #aea57a;
+    --pattern: #1c1f2c; --brand: #ffe45c; --brand-2: #a986d6;
+    --die-s: 72px; --gutter: 80px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: var(--surface);
+    color: var(--fg);
+    font-family: 'Familjen Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  #grid { position: absolute; inset: 0; }
+  .die { position: absolute; top: 56px; right: var(--gutter); width: var(--die-s); height: var(--die-s); }
+  .die rect { fill: var(--brand-2); }
+  .die circle { fill: var(--surface); }
+  .copy { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 72px; }
+  .mark { margin: 0 0 0 -.045em; font-size: 232px; font-weight: 700; line-height: .8; letter-spacing: -.065em; }
+  .alx { color: var(--fg); } .jrvs { color: var(--brand); }
+  .tagline { margin: 36px 0 0; font-size: 52px; font-weight: 500; letter-spacing: -.02em; line-height: 1.1; color: var(--fg-subtle); }
+  .tagline .s { color: var(--brand); } .tagline .o { color: var(--fg); font-style: normal; }
+  .url { position: absolute; left: var(--gutter); top: 72px; font: 500 20px/1 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+</style>
+</head>
+<body>
+  <svg id="grid" width="1200" height="630" aria-hidden="true"></svg>
+  <span class="url">alxjrvs.com</span>
+  <svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" rx="3"/><circle cx="11.5" cy="4.5" r="1.35"/><circle cx="4.5" cy="8" r="1.35"/><circle cx="11.5" cy="8" r="1.35"/><circle cx="8" cy="11.5" r="1.35"/></svg>
+  <div class="copy">
+    <h1 class="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
+    <p class="tagline"><span class="s">Enthusiast.</span> I make <em class="o">stuff.</em></p>
+  </div>
+<script>
+  // Faint die faces, one splash-die wide with half a die between them, lined
+  // up so the purple die sits on a cell, fading out toward the bottom.
+  (function () {
+    var NS = 'http://www.w3.org/2000/svg', svg = document.getElementById('grid');
+    var S = 72, CELL = S * 1.5, W = 1200, H = 630;
+    var FACES = [[4],[0,8],[0,4,8],[0,2,6,8],[0,2,4,6,8],[0,2,3,5,6,8]];
+    var P = [[4.5,4.5],[8,4.5],[11.5,4.5],[4.5,8],[8,8],[11.5,8],[4.5,11.5],[8,11.5],[11.5,11.5]];
+    var seed = 7; function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    var defs = document.createElementNS(NS, 'defs');
+    defs.innerHTML = '<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".15" stop-color="#fff"/><stop offset=".85" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="fm"><rect width="1200" height="630" fill="url(#fade)"/></mask>';
+    svg.appendChild(defs);
+    var g = document.createElementNS(NS, 'g'); g.setAttribute('mask', 'url(#fm)'); svg.appendChild(g);
+    var x0 = W - 80 - S, y0 = 56; // the die's cell
+    var c0 = Math.ceil(x0 / CELL), r0 = Math.ceil(y0 / CELL);
+    for (var r = -r0; y0 + r * CELL < H; r++) for (var c = -c0; x0 + c * CELL < W; c++) {
+      if (r === 0 && c === 0) continue; // the real die lives here
+      var x = x0 + c * CELL, y = y0 + r * CELL, k = S / 16;
+      var m = 'm' + r + '_' + c, face = FACES[Math.floor(rnd() * 6)];
+      var html = '<mask id="' + m + '"><rect x="' + x + '" y="' + y + '" width="' + S + '" height="' + S + '" rx="' + 3 * k + '" fill="#fff"/>';
+      face.forEach(function (i) { html += '<circle cx="' + (x + P[i][0] * k) + '" cy="' + (y + P[i][1] * k) + '" r="' + 1.35 * k + '" fill="#000"/>'; });
+      html += '</mask><rect x="' + x + '" y="' + y + '" width="' + S + '" height="' + S + '" fill="#1c1f2c" mask="url(#' + m + ')"/>';
+      g.insertAdjacentHTML('beforeend', html);
+    }
+  })();
+</script>
+</body>
+</html>
