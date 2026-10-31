@@ -45,7 +45,6 @@ layout: default
       {{ bio | markdownify }}
       {%- assign likes = site.data.likes -%}
       <p class="likes">I like <span id="likes">{% for l in likes limit: 3 %}{% if forloop.last and forloop.length > 1 %}and {% endif %}{{ l }}{% unless forloop.last %}{% if forloop.length > 2 %}, {% else %} {% endif %}{% endunless %}{% endfor %}</span>.</p>
-      <p>Code lives on <a href="https://github.com/alxjrvs">GitHub</a>. The source for this site is <a href="https://github.com/alxjrvs/alxjrvs.github.io">alxjrvs.github.io</a>.</p>
     </div>
   </div>
   <footer class="foot">
