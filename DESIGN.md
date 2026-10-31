@@ -179,8 +179,9 @@ animations and the pip flicker. The content still changes, but instantly.
   `pattern`, with random faces and the pips cut out. Each cell is the size of the
   splash die (`--die-s`), with half a die between cells. The grid is lined up
   so the splash die sits exactly on one cell, so on load it reads as one of
-  the dice, lit up in `die`. It's strongest at the top and fades out by about
-  three quarters of the way down the splash. It's a CSS mask on `.intro::before`,
+  the dice, lit up in `die`. It's at full strength down to about the
+  middle of the splash, still clearly there at three quarters, and fades out
+  just before the bottom. It's a CSS mask on `.intro::before`,
   so its colour follows the theme.
 - **Header nav:** links are `fg-muted`, and `fg` on hover. The link for the
   section you're scrolled into is marked `aria-current`. It turns `fg` and a
