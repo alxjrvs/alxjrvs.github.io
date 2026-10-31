@@ -39,7 +39,7 @@
     <div class="bar-id">
       <a class="brand" href="{{ '/' | relative_url }}"><span class="alx">alx</span><span class="jrvs">jrvs</span></a>
       {%- if page.url == '/' -%}
-      <p class="bar-tag" aria-hidden="true"><span class="roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll-object">{{ site.data.tagline.objects | first }}</em>.</p>
+      <p class="bar-tag" aria-hidden="true"><span class="roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
       {%- endif -%}
     </div>
     <nav class="nav" aria-label="Primary">

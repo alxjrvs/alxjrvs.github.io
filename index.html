@@ -4,7 +4,7 @@ layout: default
 <section class="screen intro" aria-label="Introduction">
   <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button>
   <h1 class="mark" id="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
-  <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em>.</p>
+  <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span><span class="stop">.</span> I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><span class="stop">.</span></p>
 </section>
 
 {%- assign projects = site.projects | sort: "order" -%}

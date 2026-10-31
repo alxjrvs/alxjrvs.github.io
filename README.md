@@ -77,12 +77,7 @@ empty state. Publish one post and they appear. A post with `project:` links to t
 ## Design notes
 
 - **Type**: Familjen Grotesk (700 for display, tight tracking), IBM Plex Mono for kickers and dates.
-- **Colour**: two layers of tokens at the top of `site.css`. The *palette* (`surface`, `line`,
-  `fg`, `fg-body`, `fg-muted`, `fg-subtle`, `brand`, `brand-2`) is all that changes between
-  light, dark or a new palette. The *roles* map text to it: the wordmark (`mark-first` "alx" →
-  `fg`, `mark-last` "jrvs" → `brand`, the same everywhere), the tagline (`tag-subject` →
-  `brand`, `tag-verb` "I build" → `brand-2`, `tag-object` → `fg`), `die` and `focus` → `brand`.
-  Each project card adds its own `--accent`.
+- **Colour**: see [DESIGN.md](DESIGN.md) for the palette, roles and the rest of the design language.
 - **Header**: hidden on the first screen; it slides in as you scroll while the wordmark shrinks
   into its brand slot. Without JS it's simply always there.
 - **Theme**: follows the OS light/dark setting, live, set before first paint so there's no

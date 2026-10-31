@@ -47,6 +47,7 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
+  - DESIGN.md
   - mise.toml
   - scripts
   - node_modules

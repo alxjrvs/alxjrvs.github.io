@@ -5,19 +5,18 @@
    and role tokens below; project cards add their own accent. */
 
 /* ── tokens ─────────────────────────────────────────── */
-/* Two layers. The palette (surface, line, fg-*, brand, brand-2) is the only
-   thing that changes between themes or palettes. The roles below it say
-   which palette colour each piece of text uses, so re-skinning the site
-   means editing the palette and nothing else.
+/* Two layers; DESIGN.md explains the whole system.
+   The palette (surface, line, fg-*, brand, brand-2) is the only thing that
+   changes between light, dark or a new palette. The roles below it say
+   which palette colour each piece uses.
 
    Text runs from loudest to quietest:
      fg         headings, links, "alx", the tagline's object
      fg-body    running text (bio, posts)
      fg-muted   secondary UI text (nav, card summaries, deks)
-     fg-subtle  labels, dates, footer, hover borders
-   brand is the one signature colour ("jrvs", the tagline's subject, the
-   die, focus rings); brand-2 is an optional second accent, used for the
-   tagline's verb ("I build") and falling back to fg-subtle.
+     fg-subtle  labels, dates, footer, "I build", hover borders
+   brand    the signature colour: "jrvs", the tagline's subject, focus rings.
+   brand-2  the pop: only the die and the tagline's full stops.
    Project cards and posts also get --accent from their project. */
 :root {
   --sans: 'Familjen Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -27,39 +26,42 @@
   --measure: 40rem;
   color-scheme: dark;
 
-  --surface: #121110;
-  --fg: #f2eee8;
-  --fg-subtle: #8f877c;
-  --fg-muted: #b3aca1;
-  --fg-body: #d2ccc2;
-  --line: #2a2724;
-  --line-strong: #2f2b27;
-  --brand: #ffc93c;
-  --surface-bar: rgba(24, 22, 20, .72);
+  /* palette: "Legal Pad" (canary yellow and navy ink, a bruise purple) */
+  --surface: #14161f;
+  --fg: #f3f0dc;
+  --fg-subtle: #959385;
+  --fg-muted: #c7c4ad;
+  --fg-body: #e6e3ce;
+  --line: #262a38;
+  --line-strong: #353948;
+  --brand: #ffe45c;
+  --brand-2: #a986d6;
+  --surface-bar: rgba(22, 24, 34, .74);
   --shadow: 0 30px 60px -30px rgba(0, 0, 0, .9);
 
   /* roles */
-  --brand-2: var(--fg-subtle);
   --mark-first: var(--fg);       /* "alx" */
   --mark-last: var(--brand);     /* "jrvs" */
   --tag-subject: var(--brand);   /* "Enthusiast" */
-  --tag-verb: var(--brand-2);    /* "I build" and the full stops */
+  --tag-verb: var(--fg-subtle);  /* "I build" */
   --tag-object: var(--fg);       /* "stuff" */
-  --die: var(--brand);
+  --stop: var(--brand-2);        /* the tagline's full stops */
+  --die: var(--brand-2);
   --focus: var(--brand);
 }
 [data-theme="light"] {
   color-scheme: light;
-  --surface: #f5f2ec;
-  --fg: #171512;
-  --fg-subtle: #776f64;
-  --fg-muted: #5d564d;
-  --fg-body: #3a352f;
-  --line: #e2dcd2;
-  --line-strong: #ddd6cb;
-  --brand: #9a6b00;
-  --surface-bar: rgba(250, 248, 244, .78);
-  --shadow: 0 30px 60px -36px rgba(60, 45, 20, .35);
+  --surface: #fbf3c4;
+  --fg: #14193a;
+  --fg-subtle: #686a77;
+  --fg-muted: #3f4466;
+  --fg-body: #212647;
+  --line: #ece1a3;
+  --line-strong: #d9cd8a;
+  --brand: #1f3cb8;
+  --brand-2: #6b3fa0;
+  --surface-bar: rgba(253, 248, 214, .8);
+  --shadow: 0 30px 60px -36px rgba(40, 40, 10, .3);
 }
 
 /* ── base ───────────────────────────────────────────── */
@@ -232,6 +234,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .tagline, .bar-tag { color: var(--tag-verb); }
 .tagline .roll-subject, .bar-tag .roll-subject { color: var(--tag-subject); }
 .tagline em, .bar-tag em { font-style: normal; color: var(--tag-object); }
+.tagline .stop, .bar-tag .stop { color: var(--stop); }
 .roll { display: inline-block; }
 /* once docked, the header's own copies take over from the splash */
 .docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
