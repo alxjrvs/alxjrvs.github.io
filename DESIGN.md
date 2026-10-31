@@ -38,10 +38,11 @@ is re-skinned.
 | `surface-bar`  | `#161822` at 74% | `#fdf8d6` at 80% | the floating header's glass   |
 | `line`         | `#262a38` | `#ece1a3` | dividers, borders, code backgrounds          |
 | `line-strong`  | `#353948` | `#d9cd8a` | screenshot frames                            |
+| `pattern`      | `#1c1f2c` | `#f5ebb5` | the dice grid behind the splash              |
 | `fg`           | `#f3f0dc` | `#14193a` | loudest text                                 |
 | `fg-body`      | `#e6e3ce` | `#212647` | running text                                 |
 | `fg-muted`     | `#c7c4ad` | `#3f4466` | secondary text                               |
-| `fg-subtle`    | `#959385` | `#686a77` | quietest text                                |
+| `fg-subtle`    | `#8f96b3` | `#5b6285` | quietest text ("navy slate", faded ink)      |
 | `brand`        | `#ffe45c` | `#1f3cb8` | signature colour (canary / ballpoint blue)   |
 | `brand-2`      | `#a986d6` | `#6b3fa0` | the pop (bruise purple)                      |
 
@@ -79,7 +80,7 @@ Projects bring their own `accent` (light) and `accent_dark` from
 | `fg`        | 15.7:1 | 15.2:1 |
 | `fg-body`   | 14.0:1 | 13.1:1 |
 | `fg-muted`  | 10.2:1 | 8.4:1  |
-| `fg-subtle` | 5.8:1  | 4.8:1  |
+| `fg-subtle` | 6.2:1  | 5.3:1  |
 | `brand`     | 14.2:1 | 7.8:1  |
 | `brand-2`   | 6.1:1  | 6.6:1  |
 
@@ -174,6 +175,13 @@ animations and the pip flicker. The content still changes, but instantly.
   in the splash corner and one as the header's rightmost button. Either one
   re-rolls the page, and its pips roll too. On hover it grows slightly
   (12%, 0.2s).
+- **Dice grid:** the splash background is rows of faint die faces in
+  `pattern`, with random faces and the pips cut out. Each cell is the size of the
+  splash die (`--die-s`), with half a die between cells. The grid is lined up
+  so the splash die sits exactly on one cell, so on load it reads as one of
+  the dice, lit up in `die`. It's strongest at the top and fades out by about
+  three quarters of the way down the splash. It's a CSS mask on `.intro::before`,
+  so its colour follows the theme.
 - **Header nav:** links are `fg-muted`, and `fg` on hover. The link for the
   section you're scrolled into is marked `aria-current`. It turns `fg` and a
   2px `nav-active` underline draws in from the left (0.3s). The current section
