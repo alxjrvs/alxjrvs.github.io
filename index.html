@@ -2,8 +2,9 @@
 layout: default
 ---
 <section class="screen intro" aria-label="Introduction">
+  <button class="die-btn die-corner" type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button>
   <h1 class="mark" id="mark"><span class="alx">alx</span><span class="jrvs">jrvs</span></h1>
-  <p class="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em><button type="button" class="die-btn" aria-label="Roll for a new tagline"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.4"/><circle cx="11.5" cy="4.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="4.5" cy="11.5" r="1.4"/><circle cx="11.5" cy="11.5" r="1.4"/></g></svg></button></p>
+  <p class="tagline" id="tagline"><span class="roll roll-subject">{{ site.data.tagline.subjects | first }}</span>. I build <em class="roll roll-object">{{ site.data.tagline.objects | first }}</em>.</p>
 </section>
 
 {%- assign projects = site.projects | sort: "order" -%}
@@ -40,7 +41,12 @@ layout: default
   <div class="about-body">
     <h2 id="about-head">About</h2>
     {%- capture bio -%}{% include about.md %}{%- endcapture -%}
-    <div class="bio">{{ bio | markdownify }}</div>
+    <div class="bio">
+      {{ bio | markdownify }}
+      {%- assign likes = site.data.likes -%}
+      <p class="likes">I like <span id="likes">{% for l in likes limit: 3 %}{% if forloop.last and forloop.length > 1 %}and {% endif %}{{ l }}{% unless forloop.last %}{% if forloop.length > 2 %}, {% else %} {% endif %}{% endunless %}{% endfor %}</span>.</p>
+      <p>Code lives on <a href="https://github.com/alxjrvs">GitHub</a>. The source for this site is <a href="https://github.com/alxjrvs/alxjrvs.github.io">alxjrvs.github.io</a>.</p>
+    </div>
   </div>
   <footer class="foot">
     <span>© {{ site.time | date: '%Y' }} <span class="alx">alx</span>jrvs</span>
@@ -49,75 +55,136 @@ layout: default
 </section>
 
 <script>
-  // The tagline roller: the die spins both labels slot-machine style and
-  // lands on a random pair.
+  // The die. Either copy of it (the splash corner or the header) re-rolls
+  // the page: the tagline spins slot-machine style, the project cards
+  // shuffle, and About picks three new things I like.
   (function () {
     var SUBJECTS = {{ site.data.tagline.subjects | jsonify }};
     var OBJECTS  = {{ site.data.tagline.objects | jsonify }};
-    var btn  = document.querySelector('.die-btn');
-    var subj = document.querySelector('.roll-subject');
-    var obj  = document.querySelector('.roll-object');
-    if (!btn || !subj || !obj) return;
+    var LIKES    = {{ site.data.likes | jsonify }};
+    var dice  = [].slice.call(document.querySelectorAll('.die-btn'));
+    var subjs = [].slice.call(document.querySelectorAll('.roll-subject'));
+    var objs  = [].slice.call(document.querySelectorAll('.roll-object'));
+    var cards = document.querySelector('.cards');
+    var likes = document.getElementById('likes');
+    if (!dice.length) return;
 
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function shuffle(a) {
+      a = a.slice();
+      for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    }
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)');
     var rolling = false;
 
     // One reel: cycles a label through random options, decelerating to a stop.
     // `ticks` and `curve` differ per reel so the two never land together.
-    function spin(el, opts, finalVal, ticks, base, curve, done) {
+    function spin(els, opts, finalVal, ticks, base, curve, done) {
       var i = 0;
       (function step() {
         i++;
-        el.textContent = i < ticks ? pick(opts) : finalVal;
-        if (!reduce) {
-          el.animate(
-            [{ transform: 'translateY(-0.55em)', opacity: 0.25 }, { transform: 'none', opacity: 1 }],
-            { duration: 95, easing: 'ease-out' }
-          );
-        }
+        var v = i < ticks ? pick(opts) : finalVal;
+        els.forEach(function (el) {
+          el.textContent = v;
+          if (!reduce.matches) {
+            el.animate(
+              [{ transform: 'translateY(-0.55em)', opacity: 0.25 }, { transform: 'none', opacity: 1 }],
+              { duration: 95, easing: 'ease-out' }
+            );
+          }
+        });
         if (i < ticks) setTimeout(step, base + i * i * curve);
         else done();
       })();
     }
 
+    // Reorder the project cards, sliding each from its old spot to its new one.
+    function shuffleCards() {
+      if (!cards) return;
+      var items = [].slice.call(cards.children);
+      var before = items.map(function (el) { return el.getBoundingClientRect(); });
+      var order = shuffle(items);
+      order.forEach(function (el) { cards.appendChild(el); });
+      if (reduce.matches) return;
+      items.forEach(function (el, i) {
+        var now = el.getBoundingClientRect();
+        var dx = before[i].left - now.left, dy = before[i].top - now.top;
+        if (!dx && !dy) return;
+        el.animate(
+          [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }],
+          { duration: 650, easing: 'cubic-bezier(.2,.8,.2,1)' }
+        );
+      });
+    }
+
+    // "a", "a and b", "a, b, and c"
+    function sentence(list) {
+      if (list.length < 2) return list.join('');
+      if (list.length === 2) return list[0] + ' and ' + list[1];
+      return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
+    }
+    function rerollLikes() {
+      if (!likes || LIKES.length < 2) return;
+      var next = sentence(shuffle(LIKES).slice(0, 3));
+      if (reduce.matches) { likes.textContent = next; return; }
+      likes.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in' }).onfinish = function () {
+        likes.textContent = next;
+        likes.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' });
+      };
+    }
+
     function roll() {
       if (rolling) return;
       var finalS = pick(SUBJECTS), finalO = pick(OBJECTS);
+      shuffleCards();
+      rerollLikes();
 
-      if (reduce) { subj.textContent = finalS; obj.textContent = finalO; return; }
+      if (reduce.matches) {
+        subjs.forEach(function (el) { el.textContent = finalS; });
+        objs.forEach(function (el) { el.textContent = finalO; });
+        return;
+      }
 
       rolling = true;
-      btn.classList.add('rolling');
+      dice.forEach(function (d) { d.classList.add('rolling'); });
       var pending = 2;
-      function settled() { if (--pending === 0) { btn.classList.remove('rolling'); rolling = false; } }
-
+      function settled() {
+        if (--pending) return;
+        dice.forEach(function (d) { d.classList.remove('rolling'); });
+        rolling = false;
+      }
       // Subject reel stops first; object reel runs about half a second longer.
-      spin(subj, SUBJECTS, finalS, 14, 30, 1.8, settled);
-      spin(obj,  OBJECTS,  finalO, 15, 30, 1.9, settled);
+      spin(subjs, SUBJECTS, finalS, 14, 30, 1.8, settled);
+      spin(objs,  OBJECTS,  finalO, 15, 30, 1.9, settled);
     }
-    btn.addEventListener('click', roll);
+    dice.forEach(function (d) { d.addEventListener('click', roll); });
   })();
 
-  // The wordmark receding into the header. Over the first part of the scroll
-  // the header slides in and the big "alxjrvs" shrinks and travels into the
-  // header's brand slot, then hands over to the real brand link.
+  // The splash receding into the header. Over the first part of the scroll
+  // the header slides in while the big wordmark, the tagline and the die each
+  // shrink and travel into their own spot in it, then hand over to the
+  // header's copies. Where the header has no room for the tagline (narrow
+  // screens) it fades out instead.
   (function () {
-    var mark  = document.getElementById('mark');
     var bar   = document.getElementById('bar');
-    var brand = bar && bar.querySelector('.brand');
     var intro = document.querySelector('.intro');
-    if (!mark || !bar || !brand || !intro) return;
-
-    var from, to, span;
+    if (!bar || !intro) return;
+    var pairs = [
+      [document.getElementById('mark'), bar.querySelector('.brand')],
+      [document.getElementById('tagline'), bar.querySelector('.bar-tag')],
+      [intro.querySelector('.die-corner'), bar.querySelector('.die-bar .die'), true]
+    ].filter(function (p) { return p[0] && p[1]; }).map(function (p) { return { el: p[0], to: p[1], pin: p[2] }; });
+    var span;
 
     function measure() {
-      mark.style.transform = 'none';
+      pairs.forEach(function (p) { p.el.style.transform = 'none'; p.el.style.opacity = ''; });
       bar.style.setProperty('--p', 1);
-      var m = mark.getBoundingClientRect();
-      var b = brand.getBoundingClientRect();
-      from = { x: m.left, y: m.top + scrollY, h: m.height };
-      to   = { x: b.left, y: b.top, s: b.height / m.height };
+      pairs.forEach(function (p) {
+        var a = p.el.getBoundingClientRect(), b = p.to.getBoundingClientRect();
+        p.from = { x: a.left, y: a.top + scrollY };
+        p.dest = b.width ? { x: b.left, y: b.top, s: b.height / a.height } : null;   // null: hidden, so fade
+      });
       span = intro.offsetHeight * 0.6;
       update();
     }
@@ -125,11 +192,16 @@ layout: default
     function update() {
       var p = Math.min(Math.max(scrollY / span, 0), 1);
       var e = p * p * (3 - 2 * p);                 // smoothstep
-      var nowY = from.y - scrollY;                 // where the mark sits in the flow right now
-      var dx = (to.x - from.x) * e;
-      var dy = (to.y - nowY) * e;
-      var s  = 1 + (to.s - 1) * e;
-      mark.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
+      pairs.forEach(function (q) {
+        if (!q.dest) { q.el.style.opacity = 1 - Math.min(e * 1.6, 1); return; }
+        var nowY = q.from.y - scrollY;             // where it sits in the flow right now
+        var dx = (q.dest.x - q.from.x) * e;
+        // the die is already up by the header, so it stays put on screen and
+        // glides straight into its slot instead of scrolling away first
+        var dy = q.pin ? scrollY + (q.dest.y - q.from.y) * e : (q.dest.y - nowY) * e;
+        var s  = 1 + (q.dest.s - 1) * e;
+        q.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
+      });
       bar.style.setProperty('--p', e);
       bar.classList.toggle('off', e < 0.02);
       document.body.classList.toggle('docked', p >= 1);

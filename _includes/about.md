@@ -7,9 +7,3 @@ I spent most of my young life trying to be an actor, followed up by a temporary 
 an academic. After "Graduating" "College", I set out to make a life for myself in a field
 that went nowhere before packing all my things, moving to Boston, and sleeping on a
 friend's couch. That friend taught me to code, and things have worked out since.
-
-I like board games, "Weird" Al Yankovic, and the 2010 DreamWorks animated picture film
-"Megamind".
-
-Code lives on [GitHub](https://github.com/alxjrvs). The source for this site is
-[alxjrvs.github.io](https://github.com/alxjrvs/alxjrvs.github.io).
