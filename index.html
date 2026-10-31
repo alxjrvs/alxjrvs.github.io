@@ -13,7 +13,7 @@ layout: default
     {%- for p in projects -%}
     <article class="card" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
       {%- if p.shot -%}
-      <a class="shot" href="{{ p.link }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="" width="1280" height="800" loading="lazy"></a>
+      <a class="shot" href="{{ p.link }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/work/' | append: p.shot | relative_url }}" alt="" width="1280" height="800" decoding="async"></a>
       {%- endif -%}
       <p class="kicker">{{ p.kicker }}</p>
       <h3>{{ p.title }}</h3>
@@ -146,82 +146,132 @@ layout: default
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   })();
 
-  // Section snapping. CSS scroll-snap handles touch and keyboard-only
-  // setups; with a mouse or trackpad, a wheel gesture glides to the next
-  // or previous section with an easing that settles gently, instead of
-  // CSS snap's abrupt pull. A section taller than the screen scrolls
-  // normally until you reach its edge.
+  // Section snapping. Scrolling itself stays native and free, so the
+  // wordmark animation plays under your fingers. Once a scroll settles (or
+  // slows right down), a gentle spring carries the page to a section: the
+  // next one if you've moved past a tenth of a screen from where you
+  // started, otherwise back where you were. Any new input cancels the
+  // spring at once. Only for mouse and trackpad; touch gets CSS snapping.
   (function () {
-    var desktop = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 761px) and (min-height: 600px)');
-    var reduce  = matchMedia('(prefers-reduced-motion: reduce)');
+    var fine   = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 761px) and (min-height: 600px)');
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)');
     var root = document.documentElement;
     var screens = [].slice.call(document.querySelectorAll('.screen'));
-    var animating = false, lastWheel = 0, consumed = false;
 
-    function on() { return desktop.matches && !reduce.matches; }
+    var MARK = 0.1;          // fraction of a screen you have to cross to move on
+    var STIFF = 110;         // spring stiffness
+    var DAMP = 0.78;         // damping ratio below 1 leaves a soft, elastic settle
+
+    var origin = null;       // where the current gesture started
+    var lastY = scrollY, lastT = performance.now(), vel = 0;   // px per ms
+    var idle = 0, spring = null, lastDelta = 0, began = 0;
+
+    function on() { return fine.matches && !reduce.matches; }
     function sync() { root.classList.toggle('glide', on()); }
-    desktop.addEventListener('change', sync);
+    fine.addEventListener('change', sync);
     reduce.addEventListener('change', sync);
     sync();
 
-    function bounds() {
-      return screens.map(function (el) { var t = el.offsetTop; return { top: t, bottom: t + el.offsetHeight }; });
-    }
-    function ease(t) { return 1 - Math.pow(1 - t, 4); }   // quick start, long soft landing
+    function maxY() { return root.scrollHeight - innerHeight; }
 
-    function glide(to) {
-      var from = scrollY, dist = to - from;
-      if (Math.abs(dist) < 2) return;
-      var dur = Math.min(1000, 620 + Math.abs(dist) * 0.25), start = null;
-      animating = true;
-      requestAnimationFrame(function step(ts) {
-        if (start === null) start = ts;
-        var t = Math.min((ts - start) / dur, 1);
-        scrollTo({ top: from + dist * ease(t), behavior: 'instant' });
-        if (t < 1) requestAnimationFrame(step);
-        else animating = false;
+    // Resting places: every section's top, plus the bottom edge of any
+    // section taller than the screen.
+    function stops() {
+      var vh = innerHeight, out = [];
+      screens.forEach(function (el) {
+        var t = el.offsetTop, h = el.offsetHeight;
+        out.push(Math.min(t, maxY()));
+        if (h > vh + 2) out.push(Math.min(t + h - vh, maxY()));
+      });
+      return out.sort(function (a, b) { return a - b; });
+    }
+    function nearest(list, y) {
+      return list.reduce(function (best, s) { return Math.abs(s - y) < Math.abs(best - y) ? s : best; }, list[0]);
+    }
+
+    function pick(y) {
+      var list = stops(), vh = innerHeight, from = origin === null ? nearest(list, y) : origin;
+      var moved = y - from;
+      if (Math.abs(moved) < vh * MARK) return from;
+      var dir = moved > 0 ? 1 : -1;
+      // the first stop past the start in the direction of travel, but never
+      // pull back past where the scroll already got to
+      var ahead = list.filter(function (s) { return dir > 0 ? s > from + 1 : s < from - 1; });
+      if (!ahead.length) return nearest(list, y);
+      var next = dir > 0 ? ahead[0] : ahead[ahead.length - 1];
+      var beyond = list.filter(function (s) { return dir > 0 ? s >= y - 1 : s <= y + 1; });
+      if (dir > 0 && y > next) next = beyond.length ? beyond[0] : next;
+      if (dir < 0 && y < next) next = beyond.length ? beyond[beyond.length - 1] : next;
+      // in the middle of a long section, leave it where it is
+      if (Math.abs(next - y) > vh * 1.2) return null;
+      return next;
+    }
+
+    function stop() {
+      if (!spring) return;
+      cancelAnimationFrame(spring.raf);
+      spring = null;
+      root.classList.remove('moving');
+      root.style.scrollBehavior = '';
+    }
+
+    function settle() {
+      clearTimeout(idle);
+      if (!on() || spring) return;
+      var y = scrollY, to = pick(y);
+      origin = null;
+      if (to === null || Math.abs(to - y) < 1) return;
+      var x = y, v = vel * 1000, k = STIFF, c = 2 * DAMP * Math.sqrt(k), prev = null;
+      root.style.scrollBehavior = 'auto';
+      root.classList.add('moving');
+      spring = { to: to, dir: Math.sign(to - y), raf: 0 };
+      spring.raf = requestAnimationFrame(function step(ts) {
+        if (!spring) return;
+        var dt = prev === null ? 1 / 60 : Math.min((ts - prev) / 1000, 1 / 30);
+        prev = ts;
+        for (var n = 0; n < 4; n++) {                 // a few substeps keep it stable
+          var a = -k * (x - to) - c * v;
+          v += a * dt / 4;
+          x += v * dt / 4;
+        }
+        if (Math.abs(x - to) < 0.4 && Math.abs(v) < 8) x = to;
+        lastY = Math.round(x);
+        scrollTo(0, x);
+        if (x === to) { stop(); return; }
+        spring.raf = requestAnimationFrame(step);
       });
     }
 
-    // Where a step up or down from here should land, or null to let the
-    // browser scroll natively (inside a tall section).
-    function target(dir) {
-      var b = bounds(), y = scrollY, vh = innerHeight, i = 0;
-      for (var k = 0; k < b.length; k++) if (b[k].top <= y + 2) i = k;
-      var cur = b[i];
-      if (dir > 0) {
-        if (y + vh < cur.bottom - 2) return cur.bottom - y > vh * 1.5 ? null : cur.bottom - vh > y + 2 ? cur.bottom - vh : (b[i + 1] ? b[i + 1].top : null);
-        return b[i + 1] ? b[i + 1].top : null;
+    addEventListener('scroll', function () {
+      if (spring || !on()) return;
+      var now = performance.now(), y = scrollY, dt = now - lastT;
+      if (origin === null || dt > 200) {           // a new gesture
+        if (origin === null) origin = nearest(stops(), lastY);
+        began = now; vel = 0; dt = 0;
       }
-      if (y > cur.top + 2) return y - cur.top > vh * 1.5 ? null : cur.top;
-      var prev = b[i - 1];
-      if (!prev) return null;
-      return prev.bottom - prev.top > vh + 2 ? prev.bottom - vh : prev.top;
-    }
+      if (dt > 0) vel = vel * 0.6 + ((y - lastY) / dt) * 0.4;
+      lastY = y; lastT = now;
+      clearTimeout(idle);
+      // hand over as soon as the scroll has slowed to a crawl, rather than
+      // waiting out a long trackpad momentum tail
+      if (now - began > 160 && Math.abs(vel) < 0.12 && Math.abs(y - origin) > 4) { settle(); return; }
+      idle = setTimeout(settle, 110);
+    }, { passive: true });
 
+    // While the spring runs, swallow the tail of a trackpad's momentum; a
+    // fresh swipe (a jump in force, or the other direction) takes over.
     addEventListener('wheel', function (e) {
-      if (!on() || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-      var now = performance.now(), gap = now - lastWheel;
-      lastWheel = now;
-      if (animating || (consumed && gap < 220)) { e.preventDefault(); return; }   // swallow trackpad momentum
-      consumed = false;
-      if (Math.abs(e.deltaY) < 3) return;
-      var to = target(e.deltaY > 0 ? 1 : -1);
-      if (to === null) return;
+      var d = e.deltaY;
+      if (!spring) { lastDelta = Math.abs(d); return; }
+      var fresh = Math.sign(d) === -spring.dir || Math.abs(d) > lastDelta * 1.5 + 6;
+      lastDelta = Math.abs(d);
+      if (fresh) { stop(); origin = null; vel = 0; lastY = scrollY; lastT = performance.now(); return; }
       e.preventDefault();
-      consumed = true;
-      glide(Math.max(0, Math.min(to, root.scrollHeight - innerHeight)));
     }, { passive: false });
 
-    addEventListener('keydown', function (e) {
-      if (!on() || e.altKey || e.ctrlKey || e.metaKey || /input|textarea|select|button/i.test(e.target.tagName)) return;
-      var dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
-      if (!dir) return;
-      if (animating) { e.preventDefault(); return; }
-      var to = target(dir);
-      if (to === null) return;
-      e.preventDefault();
-      glide(Math.max(0, Math.min(to, root.scrollHeight - innerHeight)));
+    ['mousedown', 'touchstart', 'keydown'].forEach(function (type) {
+      addEventListener(type, function () { if (spring) { stop(); origin = null; } }, { passive: true });
     });
+    addEventListener('resize', function () { stop(); origin = null; });
   })();
 </script>
