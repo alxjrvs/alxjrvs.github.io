@@ -146,7 +146,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | ----------------- | ------------------------------------------------------------- |
 | Splash recede     | The wordmark, tagline and die shrink and travel into the header over the first 60% of the splash, with smoothstep easing. The die stays pinned on screen while it travels. |
 | Section snap      | Desktop: scrolling is free. Once it settles, a spring (stiffness 110, damping 0.78) goes to the next section if you moved past 10% of a screen, otherwise back. Touch: CSS snapping, mandatory once every section fits. |
-| Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. The die doesn't spin: its pips flick through random die faces (each with a small press), slow down, and land last, back on the favicon's "j". |
+| Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
 | Card shuffle      | About 7 shuffles, each slower than the last. Each move is a FLIP slide with `cubic-bezier(.2,.8,.2,1)`. The last one takes 700ms. |
 | Theme change      | 0.25s background/colour fade.                                 |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |

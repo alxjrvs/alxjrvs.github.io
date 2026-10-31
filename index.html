@@ -167,9 +167,6 @@ layout: default
           var f; do { f = Math.floor(Math.random() * FACES.length); } while (f === last);
           last = f;
           showPips(FACES[f]);
-          dice.forEach(function (d) {
-            d.firstElementChild.animate([{ transform: 'scale(.86)' }, { transform: 'none' }], { duration: 90, easing: 'ease-out' });
-          });
           setTimeout(step, 35 + i * i * 2.2);
         } else {
           showPips(J);
