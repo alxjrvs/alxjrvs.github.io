@@ -7,6 +7,7 @@
 import { Image } from "emdash/ui";
 import comicSrc from "../client/comic.ts?inline-script";
 import type { ComicPage } from "../lib/content";
+import { responsive } from "../lib/media";
 import InlineScript from "./InlineScript.astro";
 import Stepper from "./Stepper.astro";
 
@@ -19,15 +20,28 @@ interface Props {
 const { pages, title, beyond } = Astro.props;
 const n = pages.length;
 const steps = n > 1 || Boolean(beyond?.prev || beyond?.next);
+// the comic column is at most ~900px wide
+const sizes = "(max-width: 960px) 100vw, 900px";
 ---
 <section class:list={["comic", { single: !steps }]} id="comic" aria-label={`${title}, a comic in ${n} ${n === 1 ? "page" : "pages"}`}>
   <ol class="comic-pages" data-swipe>
-    {pages.map((page, i) => (
-      <li class="comic-page" id={`page-${i + 1}`} aria-label={`Page ${i + 1} of ${n}`}>
-        <Image image={page.image} alt={page.alt} priority={i === 0} placeholder={false} />
-      </li>
-    ))}
+    {pages.map((page, i) => {
+      const r = responsive(page.image);
+      return (
+        <li class="comic-page" id={`page-${i + 1}`} aria-label={`Page ${i + 1} of ${n}`} data-alt={page.alt} data-full={r?.full}>
+          {r ? (
+            <img src={r.src} srcset={r.srcset || undefined} sizes={r.srcset ? sizes : undefined} alt={page.alt} width={page.image.width} height={page.image.height} loading={i === 0 ? "eager" : "lazy"} fetchpriority={i === 0 ? "high" : undefined} decoding="async" />
+          ) : (
+            <Image image={page.image} alt={page.alt} priority={i === 0} placeholder={false} />
+          )}
+        </li>
+      );
+    })}
   </ol>
   {steps && <Stepper label="Pages" noun="Page" n={1} total={n} buttons keys beyond={beyond} />}
+  {/* the current page at full size; client/comic.ts keeps it pointing at the page shown */}
+  {pages[0] && responsive(pages[0].image) && (
+    <a class="full-size label" href={responsive(pages[0].image)?.full} target="_blank" rel="noopener" data-full-size>Full size<span class="sr"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
+  )}
 </section>
 {steps && <InlineScript src={comicSrc} name="comic.ts" />}

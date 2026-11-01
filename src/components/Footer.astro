@@ -6,7 +6,7 @@ interface Props {
 }
 const year = new Date().getFullYear();
 ---
-<footer class={Astro.props.class}>
+<footer class={Astro.props.class} role="contentinfo">
   <span>© {year} <Wordmark /></span>
   <a href="https://github.com/alxjrvs">GitHub <span aria-hidden="true">↗</span></a>
 </footer>

@@ -13,8 +13,10 @@
   const pages = comic ? [...comic.querySelectorAll<HTMLElement>(".comic-page")] : [];
   if (!comic || !nav) return;
   const now = nav.querySelector<HTMLElement>("[data-now]");
-  const back = nav.querySelector<HTMLButtonElement>('[data-step="-1"]');
-  const next = nav.querySelector<HTMLButtonElement>('[data-step="1"]');
+  const desc = nav.querySelector<HTMLElement>("[data-desc]");
+  const full = comic.querySelector<HTMLAnchorElement>("[data-full-size]");
+  const back = nav.querySelector<HTMLElement>('[data-step="-1"]');
+  const next = nav.querySelector<HTMLElement>('[data-step="1"]');
   const beyond = { "-1": nav.dataset.prevHref, "1": nav.dataset.nextHref };
   const line = document.getElementById("read-progress");
   const last = pages.length - 1;
@@ -31,8 +33,16 @@
       p.hidden = j !== at;
     });
     if (now) now.textContent = String(at + 1);
-    if (back) back.disabled = at === 0 && !beyond["-1"];
-    if (next) next.disabled = at === last && !beyond["1"];
+    // the page's description is read out with the count when it turns
+    if (desc) {
+      const alt = pages[at]?.dataset.alt;
+      desc.textContent = turned && alt ? `: ${alt}` : "";
+    }
+    const href = pages[at]?.dataset.full;
+    if (full && href) full.href = href;
+    // aria-disabled, not disabled, so a focused button keeps focus at the end
+    back?.toggleAttribute("aria-disabled", at === 0 && !beyond["-1"]);
+    next?.toggleAttribute("aria-disabled", at === last && !beyond["1"]);
     line?.style.setProperty("--read", String((at + 1) / pages.length));
     warm(at + 1);
     warm(at - 1);

@@ -30,14 +30,14 @@ const { subjects, objects, lead, likes, likesLead } = rolls;
   <a class="scroll-cue" href="#projects" aria-label="Scroll to projects"><span class="scroll-cue-label" aria-hidden="true">Scroll down</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></a>
 </section>
 
-<section class="screen wrap" id="projects" aria-labelledby="projects-head">
+<section class="screen wrap" id="projects" aria-labelledby="projects-head" aria-roledescription="carousel">
   <h2 id="projects-head">{projectsHead?.title}</h2>
   <div class="carousel">
   <div class="cards" id="cards">
-    {projects.map((p) => {
+    {projects.map((p, i) => {
       const shot = p.shot && `/assets/work/${p.shot}`;
       return (
-        <article class="card" style={`--accent:${p.accent_dark}`}>
+        <article class="card" style={`--accent:${p.accent_dark}`} aria-roledescription="slide" aria-label={`${i + 1} of ${projects.length}: ${p.title}`}>
           {shot && <a class="shot" href={p.link} tabindex="-1" aria-hidden="true"><img src={`${shot}.webp`} srcset={`${shot}-640.webp 640w, ${shot}.webp 1280w`} sizes="(max-width: 760px) 84vw, 60vw" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>}
           <div class="card-body">
             <h3>{p.title}</h3>
@@ -49,6 +49,7 @@ const { subjects, objects, lead, likes, likesLead } = rolls;
     })}
   </div>
   <button class="nudge next" type="button" aria-label="Next project" aria-controls="cards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+  <button class="hold" type="button" aria-pressed="false" aria-controls="cards" aria-label="Hold the slideshow" title="Hold the slideshow" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7v10M15 7v10"/></svg></button>
   </div>
 </section>
 

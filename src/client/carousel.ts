@@ -4,8 +4,10 @@
 // the cards at each end (hidden from screen readers and the keyboard); once a
 // scroll settles on a copy, it jumps to the real card it copies, which looks
 // identical. It also moves on by itself every 8 seconds, but only while it's
-// on screen and nobody is using it: hovering, touching or focusing it pauses
-// the cycle, any swipe restarts the count, and reduced motion turns it off.
+// on screen and nobody has touched it: hovering pauses the cycle, and any
+// swipe, press, key or focus inside it stops it for the visit (WCAG 2.2.2).
+// The Hold button under the arrow stops and restarts it by hand; its state
+// lasts the session. Reduced motion turns it off.
 // The die's roll spins it round to a random project (see below).
 (() => {
   const cards = document.querySelector<HTMLElement>(".cards");
@@ -99,11 +101,38 @@
   let auto: ReturnType<typeof setTimeout> | undefined;
   let seen = false;
   let hovered = false;
-  let touching = false;
+  const KEY = "carousel-hold";
+  const hold = box.querySelector<HTMLButtonElement>(".hold");
+  let held = false;
+  try {
+    held = sessionStorage.getItem(KEY) === "1";
+  } catch {}
+  function setHeld(v: boolean) {
+    held = v;
+    hold?.setAttribute("aria-pressed", String(v));
+    try {
+      sessionStorage.setItem(KEY, v ? "1" : "0");
+    } catch {}
+  }
+  if (hold) {
+    hold.hidden = reduce.matches;
+    setHeld(held);
+    hold.addEventListener("click", () => setHeld(!held));
+  }
+  // any hand on the carousel (other than on Hold itself) stops it for good
+  for (const type of ["pointerdown", "wheel", "keydown", "touchstart", "focusin"]) {
+    box.addEventListener(
+      type,
+      (e) => {
+        if (!held && !hold?.contains(e.target as Node)) setHeld(true);
+      },
+      { passive: true },
+    );
+  }
   function cycle() {
     clearTimeout(auto);
     auto = setTimeout(() => {
-      const idle = !landNow && !hovered && !touching && !box?.contains(document.activeElement);
+      const idle = !landNow && !hovered && !held;
       if (on && seen && idle && !document.hidden && !reduce.matches) nudge(1);
       cycle();
     }, EVERY);
@@ -122,12 +151,6 @@
     hovered = false;
     cycle();
   });
-  box.addEventListener("touchstart", () => (touching = true), { passive: true });
-  box.addEventListener("touchend", () => {
-    touching = false;
-    cycle();
-  });
-  box.addEventListener("focusout", cycle);
 
   // The die's roll: the carousel whips through the projects, a few times
   // round, and slows down card by card to land on a different one. It's

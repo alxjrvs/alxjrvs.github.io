@@ -8,14 +8,18 @@
     const nav = document.querySelector<HTMLElement>("[data-stepper][data-keys]");
     if (!nav || nav.hidden) return false;
     const control = nav.querySelector<HTMLElement>(`[data-step="${step}"]`);
-    if (!control || (control as HTMLButtonElement).disabled) return false;
+    if (!control || control.hasAttribute("aria-disabled")) return false;
     control.click();
     return true;
   };
 
   document.addEventListener("keydown", (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
-    if ((e.target as Element).closest("input, textarea, select, [contenteditable]")) return;
+    // leave arrows to whatever else uses them: form fields, code and tables
+    // that scroll sideways, and a selection being extended
+    if ((e.target as Element).closest("input, textarea, select, [contenteditable], pre, table"))
+      return;
+    if (!document.getSelection()?.isCollapsed) return;
     const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     if (step && press(step)) e.preventDefault();
   });
