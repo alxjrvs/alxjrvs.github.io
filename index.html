@@ -435,7 +435,7 @@ layout: default
     var ghosts = mark ? [].slice.call(mark.querySelectorAll('.ghost')) : [];
 
     function measure() {
-      pairs.forEach(function (p) { p.el.style.transform = 'none'; p.el.style.opacity = ''; });
+      pairs.forEach(function (p) { p.el.style.transform = 'none'; p.el.style.opacity = ''; p.to.style.opacity = ''; p.fade = false; });
       ghosts.forEach(function (g) { g.style.transition = 'none'; g.style.width = 'auto'; });
       ghosts.forEach(function (g) { g.style.setProperty('--w', g.getBoundingClientRect().width + 'px'); });
       ghosts.forEach(function (g) { g.style.width = ''; g.offsetWidth; g.style.transition = ''; });
@@ -444,6 +444,12 @@ layout: default
         var a = p.el.getBoundingClientRect(), b = p.to.getBoundingClientRect();
         p.from = { x: a.left, y: a.top + scrollY };
         p.dest = b.width ? { x: b.left, y: b.top, s: b.height / a.height } : null;   // null: hidden, so fade
+        // the splash tagline is two lines and the header's is one, so it
+        // shrinks to the header's type size and cross-fades into it
+        if (p.dest && p.el.id === 'tagline') {
+          p.dest.s = parseFloat(getComputedStyle(p.to).fontSize) / parseFloat(getComputedStyle(p.el).fontSize);
+          p.fade = true;
+        }
       });
       span = intro.offsetHeight * 0.6;
       update();
@@ -461,6 +467,11 @@ layout: default
         var dy = q.pin ? scrollY + (q.dest.y - q.from.y) * e : (q.dest.y - nowY) * e;
         var s  = 1 + (q.dest.s - 1) * e;
         q.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
+        if (q.fade) {
+          var f = Math.min(Math.max((e - 0.6) / 0.4, 0), 1);
+          q.el.style.opacity = 1 - f;
+          q.to.style.opacity = f;
+        }
       });
       bar.style.setProperty('--p', e);
       if (mark) mark.classList.toggle('receding', e > 0.02);   // no hover reveal once it's moving
