@@ -38,6 +38,9 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
+      - name: Test
+        run: bun run test
+
   build:
     name: build
     runs-on: ubuntu-latest

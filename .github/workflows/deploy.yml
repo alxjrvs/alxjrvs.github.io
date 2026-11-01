@@ -58,7 +58,11 @@ jobs:
           fi
           set +e
           if [ "$IS_PR" = "true" ]; then
-            bunx wrangler versions upload --preview-alias "pr-${PR_NUMBER}" 2>&1 | tee wrangler.log
+            # Previews share the production database, so they must never
+            # migrate it: in "check" mode EmDash answers 503 instead when the
+            # branch's schema is ahead of production's.
+            bunx wrangler versions upload --preview-alias "pr-${PR_NUMBER}" \
+              --var EMDASH_MIGRATIONS_MODE:check 2>&1 | tee wrangler.log
           else
             bunx wrangler deploy 2>&1 | tee wrangler.log
           fi
@@ -85,3 +89,27 @@ jobs:
             echo "::notice::Deployed: ${url}"
             echo "Deployed: ${url}" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      # After a production deploy: make sure the site answers and the admin
+      # stays off the public host, then warm the (per-version, so empty)
+      # cache with every page in the sitemap.
+      - name: Smoke test and warm the cache
+        if: github.event_name != 'pull_request' && steps.deploy.outputs.url != ''
+        run: |
+          set -euo pipefail
+          base=https://alxjrvs.com
+          sleep 10
+          for path in / /writing/ /feed.xml /sitemap.xml; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$base$path")
+            echo "$path → $code"
+            [ "$code" = "200" ] || { echo "::error::$path answered $code"; exit 1; }
+          done
+          for path in "//_emdash/api/health" "/%5Femdash/api/health"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$base$path")
+            echo "$path → $code"
+            [ "$code" != "200" ] || { echo "::error::$path reached EmDash on the public host"; exit 1; }
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' "http://alxjrvs.com/")
+          [ "$code" = "301" ] || echo "::warning::http://alxjrvs.com/ answered $code, not 301"
+          curl -s "$base/sitemap.xml" | grep -oE '<loc>[^<]+</loc>' | sed -E 's#</?loc>##g' \
+            | while read -r url; do curl -s -o /dev/null -w "warm %{http_code} $url\n" "$url"; done

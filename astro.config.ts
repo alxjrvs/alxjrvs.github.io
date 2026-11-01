@@ -30,14 +30,20 @@ function inlineScripts(): Plugin {
 // something in it is published or changed, so an edit shows up within
 // seconds. "all" is never purged automatically: it's the emergency switch.
 // The cache is kept short anyway, so a missed purge (a change written
-// straight to the database, say) shows up everywhere within a few minutes:
-// a copy is fresh for a minute, then served at most five more while a new
-// one renders.
+// straight to the database, say) shows up within a minute: a copy is fresh
+// for a minute, then the next visit gets it once more while a new one renders
+// behind it. A long stale window keeps rarely visited pages fast without
+// making them any less fresh than that.
 const cached = {
   maxAge: 60,
-  swr: 300,
+  swr: 86400,
   tags: ["posts", "projects", "sections", "randomizers", "all"],
 };
+
+// Stamped into the stylesheet and favicon URLs (`?v=`), once per build, so a
+// deploy's CSS is never hidden behind a cached copy and browsers can keep it
+// otherwise.
+const BUILD_ID = Date.now().toString(36);
 
 // alxjrvs.com: an Astro site on the `alxjrvs` Worker (wrangler.jsonc).
 // Static files in public/ are served as assets, without running the Worker.
@@ -74,13 +80,15 @@ export default defineConfig({
       }),
     }),
   ],
-  vite: { plugins: [inlineScripts()] },
+  vite: { plugins: [inlineScripts()], define: { __BUILD_ID__: JSON.stringify(BUILD_ID) } },
   cache: { provider: cacheCloudflare() },
   routeRules: {
     "/": cached,
     "/writing": cached,
     "/writing/[slug]": cached,
     "/writing/tags/[tag]": cached,
+    "/writing/threads": cached,
+    "/writing/threads/[thread]": cached,
     "/feed.xml": cached,
     "/sitemap.xml": cached,
     "/projects.json": cached,
