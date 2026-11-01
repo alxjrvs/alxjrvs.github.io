@@ -420,7 +420,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .all-writing { align-self: flex-end; margin-top: 16px; padding-top: 14px; color: var(--fg-muted); text-decoration: none; }
 .all-writing:hover { color: var(--fg); }
 .archive > li { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid var(--line); }
-.archive .d { font: .8125rem/2 var(--mono); color: var(--fg-subtle); white-space: nowrap; }
+.archive .d { font: 500 .75rem/2.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); white-space: nowrap; }
 .archive .t { display: block; text-decoration: none; font-weight: 700; font-size: 1.5rem; line-height: 1.2; letter-spacing: -.02em; }
 .archive .x { display: block; margin-top: 4px; font-weight: 400; font-size: 1.0625rem; letter-spacing: 0; color: var(--fg-muted); }
 .archive .t:hover { text-decoration: underline; text-underline-offset: .15em; text-decoration-thickness: 2px; }
@@ -578,7 +578,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .post .prose { margin-top: 48px; }
 /* the end mark: a die showing one, quietly */
 .fin { max-width: var(--measure); margin: 48px 0 0; }
-.fin .pip { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 4px; background: var(--fg-subtle); opacity: .7; }
+.fin .pip { display: grid; place-items: center; width: 18px; height: 18px; border-radius: calc(18px * 3 / 16); background: var(--fg-subtle); opacity: .7; }
 .fin .pip::after { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--surface); }
 
 .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; max-width: var(--measure); margin-top: 56px; border-top: 1px solid var(--line); }
@@ -744,6 +744,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
    the type tightens so each section fits one screen. */
 @media (max-width: 760px) {
   .screen { padding-top: calc(var(--bar-h) + 20px); padding-bottom: 20px; }
+  .inner main { padding-top: calc(var(--bar-h) + 40px); }
   h2 { font-size: 2.25rem; }
   #projects h2 { margin-bottom: 18px; }
   .cards { grid-auto-columns: 84%; gap: 16px; }

@@ -136,7 +136,9 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 - **Sections:** every home-page section is one screen tall (`100svh`), and
   its content must fit in it, or the snapping lets go of it. Writing shows as
   many of the latest five as fit: three on phones, four under 760px tall,
-  three under 660px. Its
+  three under 660px. Each is a ruled line like the archive's: the date as a mono
+  label, title and dek, then the project dot (in its accent), the thread and
+  the tags. Its
   padding clears the header (`bar-h + 40px`, or `+ 20px` on phones).
 - **Projects:** a sideways carousel at every width, one project at a time.
   Each swipe, trackpad flick or arrow press moves exactly one project and
@@ -172,7 +174,6 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. A reel never shows the same word twice in one roll: it runs through a shuffle of the other options (fewer, longer ticks for short lists) before landing. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
 | Grid pulse        | A roll sends a pulse out from the tagline across the splash's dice grid (about 0.8s to the farthest die, whatever the screen). As it passes each die, the die rerolls to a different face; nothing moves or changes size. The dice stay in `pattern`. Only the splash grid; off screen the faces just change. |
 | Card shuffle      | About 7 shuffles, each slower than the last. Each move is a FLIP slide with `cubic-bezier(.2,.8,.2,1)`. The last one takes 700ms. |
-| Theme change      | 0.25s background/colour fade.                                 |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |
 
 `prefers-reduced-motion` turns off smooth scrolling, the spring, the roll
@@ -246,6 +247,10 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   each with its date. A 2px `progress` line along the bottom of the header
   fills as you read; it tracks the scroll, so reduced motion changes nothing.
   Under 860px the margin becomes one wrapped row above the title.
+- **Inner pages** (the writing pages and the 404) start `bar-h + 72px` down,
+  or `bar-h + 40px` on phones, like the home sections' tighter phone padding.
+  Every date in a ruled line is the long human date ("August 21, 2026"),
+  on the index, tag pages and a thread's page alike.
 - **A comic (`/writing/<slug>/` with pages):** a piece with comic pages is a
   comic. It's the same page as a piece, but the pages take the words' place,
   in the full width beside the margin, each in a 1px `line-strong` frame with
