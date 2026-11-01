@@ -474,11 +474,12 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 
 /* about */
 .about { justify-content: space-between; padding-bottom: 0; }
-/* About is never a snap point: it ends the page, so the page's bottom edge is
-   its resting place. As a snap point it fought that edge on phones, where the
-   browser bar grows and shrinks at the bottom and the page bounced between the
-   two. */
-.about { scroll-snap-align: none; }
+/* About snaps like every other section, and it ends the page. It is exactly
+   as tall as the screen is right now (dvh), so its top and the page's bottom
+   are the same resting place. Sized to the small screen (svh) instead, the
+   two came apart by the height of the phone browser's bar whenever it
+   collapsed, and the page bounced between them. */
+.about { min-height: 100dvh; }
 .about-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
 .about h2 { margin-bottom: 28px; }
 .bio { max-width: 45rem; font-size: 1.1875rem; line-height: 1.6; color: var(--fg-body); }
