@@ -353,18 +353,39 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 
 /* projects */
 #projects h2 { margin-bottom: clamp(24px, 4vh, 40px); }
-.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px 28px; }
-@media (max-width: 1100px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 28px; } }
-@media (max-width: 760px) { .cards { grid-template-columns: 1fr; gap: 56px; } }
+/* The projects are a sideways carousel at every width: one project at a
+   time, each swipe or arrow press moves exactly one and snaps to it, and it
+   loops (see carousel.ts). On wider screens a slide is the screenshot on the
+   left and the words on the right; on phones they stack and the next card
+   peeks in. */
+.cards {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  gap: calc(var(--gutter) * 2);
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter) 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 var(--gutter);
+  scrollbar-width: none;
+}
+.cards::-webkit-scrollbar { display: none; }
 .card {
   --accent: var(--accent-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
+.card-body { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.card h3 { font-size: clamp(2rem, 3.4vw, 3rem); }
+.card .summary { font-size: 1.125rem; }
 [data-theme="light"] .card { --accent: var(--accent-light); }
-.shot { display: block; width: 100%; margin-bottom: 6px; }
+.shot { display: block; width: 100%; }
 .shot img {
   width: 100%;
   height: auto;
@@ -386,9 +407,34 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   padding-bottom: 2px;
 }
 .visit:hover { color: var(--accent); }
-/* the carousel's arrows: phones only (see below) */
+/* the carousel's one arrow: subtle, out in the right-hand margin, level
+   with the middle of the screenshots. It loops, so it's always there. */
 .carousel { position: relative; }
-.nudge { display: none; }
+.nudge {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: var(--nudge-y, 40%);
+  right: calc(var(--gutter) * -1 + max(6px, (var(--gutter) - 40px) / 2));
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-bar);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--fg-subtle);
+  opacity: .7;
+  cursor: pointer;
+  transition: opacity .2s, color .2s, border-color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nudge svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nudge:hover, .nudge:active { color: var(--fg); border-color: var(--fg-subtle); opacity: 1; }
+.nudge:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; opacity: 1; }
 
 /* writing */
 .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 28px; }
@@ -474,56 +520,21 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 }
 
 /* ── phones ─────────────────────────────────────────── */
-/* The projects become a sideways swipe (the next card peeks in) and the
-   type tightens so each section fits one screen. */
+/* The projects carousel stacks each card and lets the next one peek in, and
+   the type tightens so each section fits one screen. */
 @media (max-width: 760px) {
   .screen { padding-top: calc(var(--bar-h) + 20px); padding-bottom: 20px; }
   h2 { font-size: 2.25rem; }
   #projects h2 { margin-bottom: 18px; }
-  .cards {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    grid-auto-columns: 84%;
-    gap: 16px;
-    margin: 0 calc(var(--gutter) * -1);
-    padding: 0 var(--gutter) 4px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 var(--gutter);
-    scrollbar-width: none;
-  }
-  .cards::-webkit-scrollbar { display: none; }
-  .card { scroll-snap-align: start; scroll-snap-stop: always; gap: 10px; }
-  /* one light arrow over the screenshots' right edge, hinting there's more;
-     it loops, so it's always there (swipe to go back) */
-  .nudge {
-    display: grid;
-    place-items: center;
-    position: absolute;
-    top: var(--nudge-y, 30%);
-    z-index: 1;
-    width: 34px;
-    height: 34px;
-    margin-top: -17px;
-    padding: 0;
-    border: 1px solid var(--line-strong);
-    border-radius: 50%;
-    background: var(--surface-bar);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    color: var(--fg-subtle);
-    opacity: .85;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
+  .cards { grid-auto-columns: 84%; gap: 16px; }
+  .card { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .card-body { gap: 10px; }
+  .shot { margin-bottom: 6px; }
+  .card h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); }
+  .nudge { width: 34px; height: 34px; margin-top: -17px; border-color: var(--line-strong); opacity: .85; }
   .nudge.next { right: calc(var(--gutter) * -1 + 6px); }
-  .nudge svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .nudge:active { color: var(--fg); opacity: 1; }
-  .nudge:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .shot img { aspect-ratio: 4 / 3; }
-  .summary { font-size: .9375rem; }
+  .card .summary { font-size: .9375rem; }
   .about h2 { margin-bottom: 16px; }
   .bio { font-size: 1rem; line-height: 1.45; }
   .bio p { margin-bottom: 10px; }

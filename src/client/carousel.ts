@@ -1,14 +1,13 @@
-// Phones: the projects are a sideways carousel. Each swipe or arrow tap moves
-// one card and snaps to it (the one arrow points onward), and it loops: past
-// the last card comes the first again. The loop is two copies of the cards at
-// each end (hidden from screen readers and the keyboard); once a scroll
-// settles on a copy, it jumps to the real card it copies, which looks
+// The projects are a sideways carousel at every width. Each swipe or arrow
+// press moves one card and snaps to it (the one arrow points onward), and it
+// loops: past the last card comes the first again. The loop is two copies of
+// the cards at each end (hidden from screen readers and the keyboard); once a
+// scroll settles on a copy, it jumps to the real card it copies, which looks
 // identical. Nothing moves on its own.
 (() => {
   const cards = document.querySelector<HTMLElement>(".cards");
   const box = cards?.parentElement;
   if (!cards || !box) return;
-  const phone = matchMedia("(max-width: 760px)");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const PAD = 2;
   let on = false;
@@ -97,21 +96,20 @@
       cards.scrollLeft = 0;
     }
   });
-  cards.addEventListener("shuffleend", () => {
-    if (phone.matches) build();
-  });
+  cards.addEventListener("shuffleend", build);
 
-  function sync() {
-    if (phone.matches) build();
-    else unbuild();
-  }
-  phone.addEventListener("change", sync);
+  // a resize changes the card width, so put the current card back in place
+  let resizing: ReturnType<typeof setTimeout> | undefined;
   addEventListener("resize", () => {
-    if (on) {
-      aim();
+    aim();
+    clearTimeout(resizing);
+    resizing = setTimeout(() => {
+      if (!on || !cards) return;
+      const s = step();
+      jump(Math.round(cards.scrollLeft / s) * s);
       settle();
-    }
+    }, 100);
   });
   addEventListener("load", aim);
-  sync();
+  build();
 })();
