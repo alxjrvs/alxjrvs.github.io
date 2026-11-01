@@ -9,15 +9,16 @@ import InlineScript from "../components/InlineScript.astro";
 import PostList from "../components/PostList.astro";
 import Prose from "../components/Prose.astro";
 import Base from "../layouts/Base.astro";
-import { getPosts, getProjects, getRolls, getSection } from "../lib/content";
+import { getPlaces, getPosts, getProjects, getRolls, getSection } from "../lib/content";
 
-const [projects, posts, rolls, projectsHead, writingHead, about] = await Promise.all([
+const [projects, posts, rolls, projectsHead, writingHead, about, places] = await Promise.all([
   getProjects(Astro),
   getPosts(Astro),
   getRolls(Astro),
   getSection(Astro, "projects"),
   getSection(Astro, "writing"),
   getSection(Astro, "about"),
+  getPlaces(Astro),
 ]);
 const { subjects, objects, lead, likes, likesLead } = rolls;
 ---
@@ -56,9 +57,9 @@ const { subjects, objects, lead, likes, likesLead } = rolls;
   <section class="screen wrap" id="writing" aria-labelledby="writing-head">
     <div class="section-head">
       <h2 id="writing-head">{writingHead?.title}</h2>
-      {writingHead?.dek && <a href="/writing/">{writingHead.dek} <span aria-hidden="true">→</span></a>}
     </div>
-    <PostList posts={posts.slice(0, 5)} />
+    <PostList posts={posts.slice(0, 5)} projects={projects} places={places} />
+    {writingHead?.dek && <a class="all-writing" href="/writing/">{writingHead.dek} <span aria-hidden="true">→</span></a>}
   </section>
 )}
 
