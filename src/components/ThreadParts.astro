@@ -1,0 +1,32 @@
+---
+// A thread's parts as a numbered list, the current piece marked: in a piece's
+// margin, under its words, and on the thread's own page.
+import { type Post, readingMinutes, shortDate, year } from "../lib/content";
+
+interface Props {
+  parts: Post[];
+  /** the piece being read, marked current */
+  current?: string | undefined;
+  /** show each part's dek, date and minutes (the thread page) */
+  full?: boolean | undefined;
+  class?: string | undefined;
+}
+const { parts, current, full, class: cls } = Astro.props;
+---
+<ol class:list={["parts", { full }, cls]}>
+  {parts.map((p, i) => (
+    <li>
+      <a href={`/writing/${p.id}/`} aria-current={p.id === current ? "page" : undefined}>
+        <span class="n label">{String(i + 1).padStart(2, "0")}</span>
+        <span class="t">{p.title}</span>
+        {full && p.description && <span class="x">{p.description}</span>}
+        {full && (
+          <span class="label when">
+            <time datetime={p.date.toISOString()}>{shortDate(p.date)}, {year(p.date)}</time>
+            <span>{readingMinutes(p.content)} min</span>
+          </span>
+        )}
+      </a>
+    </li>
+  ))}
+</ol>

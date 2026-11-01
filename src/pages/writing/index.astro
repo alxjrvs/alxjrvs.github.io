@@ -2,12 +2,15 @@
 import PieceLines from "../../components/PieceLines.astro";
 import Prose from "../../components/Prose.astro";
 import Tags from "../../components/Tags.astro";
+import ThreadLines from "../../components/ThreadLines.astro";
 import Base from "../../layouts/Base.astro";
 import {
+  getPlaces,
   getPosts,
   getProjects,
   getSection,
   getTags,
+  getThreads,
   longDate,
   readingMinutes,
   year,
@@ -15,15 +18,19 @@ import {
 
 // The Writing index: every published piece in EmDash (Writing), newest first.
 // The newest gets the big slot; the rest are ruled lines grouped by year, with
-// the year in the left-hand margin, like a legal pad.
-const [posts, page, projects, tags] = await Promise.all([
+// the year in the left-hand margin, like a legal pad. Threads (chains of
+// pieces that read together) get their own rows between the two.
+const [posts, page, projects, tags, threads, places] = await Promise.all([
   getPosts(Astro),
   getSection(Astro, "writing-archive"),
   getProjects(Astro),
   getTags(Astro),
+  getThreads(Astro),
+  getPlaces(Astro),
 ]);
 const [lead, ...rest] = posts;
 const proj = lead && projects.find((p) => p.id === lead.project);
+const leadPlace = lead && places.get(lead.id);
 const oldest = posts.at(-1);
 const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
 ---
@@ -50,6 +57,7 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
           <time datetime={lead.date.toISOString()}>{longDate(lead.date)}</time>
           <span>{readingMinutes(lead.content)} min read</span>
           {proj && <span class="tag">{proj.title}</span>}
+          {leadPlace && <a class="thread-mark" href={`/writing/threads/${leadPlace.thread.slug}/`}>{leadPlace.thread.label} · Part {leadPlace.n} of {leadPlace.thread.parts.length}</a>}
         </p>
         <a class="lead-link" href={`/writing/${lead.id}/`}>
           <span class="t">{lead.title}</span>
@@ -59,7 +67,8 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
         <Tags tags={lead.tags} />
       </div>
     </section>
-    <PieceLines posts={rest} projects={projects} />
+    <ThreadLines threads={threads} />
+    <PieceLines posts={rest} projects={projects} places={places} />
     {tags.length > 0 && (
       <section class="ruled" aria-labelledby="all-tags">
         <h2 class="margin label" id="all-tags">Tags</h2>

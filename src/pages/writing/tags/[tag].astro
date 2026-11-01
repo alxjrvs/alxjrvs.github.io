@@ -3,12 +3,17 @@ import { decodeSlug } from "emdash";
 import PieceLines from "../../../components/PieceLines.astro";
 import Tags from "../../../components/Tags.astro";
 import Base from "../../../layouts/Base.astro";
-import { getPosts, getProjects, getTags } from "../../../lib/content";
+import { getPlaces, getPosts, getProjects, getTags } from "../../../lib/content";
 
 // Every published piece with one tag, ruled like the Writing index. A tag
 // that no published piece carries gets the 404.
 const slug = decodeSlug(Astro.params.tag);
-const [posts, projects, tags] = await Promise.all([getPosts(Astro), getProjects(Astro), getTags(Astro)]);
+const [posts, projects, tags, places] = await Promise.all([
+  getPosts(Astro),
+  getProjects(Astro),
+  getTags(Astro),
+  getPlaces(Astro),
+]);
 const tag = tags.find((t) => t.slug === slug);
 if (!tag) return Astro.rewrite("/404");
 const tagged = posts.filter((p) => p.tags.some((t) => t.slug === slug));
@@ -25,7 +30,7 @@ const count = `${tagged.length} ${tagged.length === 1 ? "piece" : "pieces"}`;
     <p class="label">{count}</p>
   </div>
 </header>
-<PieceLines posts={tagged} projects={projects} current={slug} />
+<PieceLines posts={tagged} projects={projects} current={slug} places={places} />
 <section class="ruled" aria-labelledby="all-tags">
   <h2 class="margin label" id="all-tags">Tags</h2>
   <div class="tag-cloud"><Tags tags={tags} current={slug} /></div>
