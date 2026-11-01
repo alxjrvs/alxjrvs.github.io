@@ -24,6 +24,9 @@
     from?: { x: number; y: number };
     // null: hidden, so fade
     dest?: { x: number; y: number; s: number } | null;
+    // how far it takes to land: by the time the scroll alone would carry it
+    // up to its spot, or as the header lands, whichever comes first
+    span?: number;
   };
   const tagline = document.getElementById("tagline");
   const barTag = bar.querySelector(".bar-tag");
@@ -91,6 +94,8 @@
       prev = p;
     }
     span = (intro?.offsetHeight ?? 0) * 0.6;
+    for (const p of pairs)
+      p.span = p.dest && p.from && !p.pin ? Math.max(Math.min(span, p.from.y - p.dest.y), 1) : span;
     update();
   }
 
@@ -109,6 +114,12 @@
         q.el.style.opacity = String(1 - Math.min(e * 1.6, 1));
         continue;
       }
+      // Each piece runs on its own clock and lands just as the scroll would
+      // have carried it to its spot, so it only ever rises: it never
+      // overshoots the header and drops back into it (the wordmark used to,
+      // by ~40px on a laptop), and it arrives with no speed left.
+      const t = Math.min(Math.max(scrollY / (q.span ?? span), 0), 1);
+      const qe = t * t * (3 - 2 * t);
       const nowY = q.from.y - scrollY; // where it sits in the flow right now
       // after a reroll the subject in the header is a different width, so
       // the line that follows it lands somewhere else
@@ -116,11 +127,11 @@
         q.after?.pair.dest && q.after.pair.to instanceof HTMLElement
           ? q.after.pair.dest.x + q.after.pair.to.offsetWidth + q.after.gap
           : q.dest.x;
-      const dx = (destX - q.from.x) * e;
+      const dx = (destX - q.from.x) * qe;
       // the die is already up by the header, so it stays put on screen and
       // glides straight into its slot instead of scrolling away first
-      const dy = q.pin ? scrollY + (q.dest.y - q.from.y) * e : (q.dest.y - nowY) * e;
-      const s = 1 + (q.dest.s - 1) * e;
+      const dy = q.pin ? scrollY + (q.dest.y - q.from.y) * qe : (q.dest.y - nowY) * qe;
+      const s = 1 + (q.dest.s - 1) * qe;
       q.el.style.transform = `translate(${dx}px,${dy}px) scale(${s})`;
     }
     bar.style.setProperty("--p", String(e));
