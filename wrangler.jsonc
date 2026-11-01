@@ -34,6 +34,14 @@
     // a token.
     "CF_ACCESS_AUDIENCE": "b6b316406fef4d06b6426b1b47d30ab1359c683f3bc3c997efbae6c3463d58c9"
   },
+  // Workers Cache keys on the path, not the hostname, so it must not sit in
+  // front of the default entry (which sends admin.alxjrvs.com to the admin);
+  // only the public site's `Site` entrypoint is cached. See src/worker.ts.
+  "cache": { "enabled": true },
+  "exports": {
+    "default": { "type": "worker", "cache": { "enabled": false } },
+    "Site": { "type": "worker", "cache": { "enabled": true } }
+  },
   // EmDash's scheduled publishing and housekeeping.
   "triggers": { "crons": ["* * * * *"] },
   // alxjrvs.com is a proxied zone on this account. A zone route (rather than a
