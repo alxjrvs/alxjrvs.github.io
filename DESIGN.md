@@ -155,12 +155,13 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | Splash recede     | The wordmark, tagline and die shrink and travel into the header over the first 60% of the splash, with smoothstep easing. The die stays pinned on screen while it travels. |
 | Section snap      | Desktop: scrolling is free. Once it has slowed right down, a soft, critically damped spring (stiffness 42, damping 1, so no bounce) picks up from the scroll's own speed and eases to the next section if you moved past 10% of a screen, otherwise back. Touch: the browser's proximity snapping, so a swipe can pass sections and only eases on when it ends near one. About is not a snap point (the page bottom is its resting place), which keeps the phone browser bar from bouncing the page near the footer. The splash recede updates in the same frame as the scroll, so it never lags a frame behind. |
 | Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the project order all land one after another. A reel never shows the same word twice in one roll: it runs through a shuffle of the other options (fewer, longer ticks for short lists) before landing. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
+| Grid pulse        | A roll sends a pulse out from the tagline across the splash's dice grid (about 0.8s to the farthest die, whatever the screen). As it passes each die, the die rerolls to a different face and swells to 130% and back (600ms, `cubic-bezier(.2,.8,.2,1)`). The dice stay in `pattern`. Only the splash grid; off screen the faces just change. |
 | Card shuffle      | About 7 shuffles, each slower than the last. Each move is a FLIP slide with `cubic-bezier(.2,.8,.2,1)`. The last one takes 700ms. |
 | Theme change      | 0.25s background/colour fade.                                 |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |
 
 `prefers-reduced-motion` turns off smooth scrolling, the spring, the roll
-animations and the pip flicker. The content still changes, but instantly.
+animations, the pip flicker and the grid pulse (the grid's faces all change at once). The content still changes, but instantly.
 
 ---
 
@@ -186,7 +187,9 @@ animations and the pip flicker. The content still changes, but instantly.
   the dice, lit up in `die`. It's at full strength down to about the
   middle of the splash, still clearly there at three quarters, and fades out
   just before the bottom. It's a CSS mask on `.intro::before`,
-  so its colour follows the theme.
+  so its colour follows the theme. With JS, the script swaps in the same grid
+  as real dice (an SVG, `fill: pattern`, same fade) so a roll can pulse
+  through it; the CSS copy is the fallback.
 - **Scroll cue:** a thin chevron in `fg-subtle` (and `fg` on hover), centred at
   the foot of the splash, that hints there's more below. It bobs gently (2.4s,
   still under reduced motion), links to Projects, and fades out (0.35s) as
