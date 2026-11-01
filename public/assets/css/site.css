@@ -290,8 +290,6 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   position: relative;
   z-index: 60;
   align-self: flex-start;
-  transform-origin: 0 0;
-  will-change: transform;
   margin: 0;
   font-weight: 500;
   font-size: clamp(30px, 4.7vw, 60px);
@@ -304,8 +302,15 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .tagline em, .bar-tag em { font-style: normal; color: var(--tag-object); }
 .roll { display: inline-block; }
 /* the splash tagline breaks after its subject, so "I make …" starts a new
-   line; the header's copy stays on one line */
-.tagline .roll-subject { display: block; width: fit-content; }
+   line; the header's copy stays on one line. Each line moves on its own as
+   the splash recedes (src/client/recede.ts), so the two lines split and land
+   side by side in the header */
+.tagline .tag-a, .tagline .tag-b {
+  display: block;
+  width: fit-content;
+  transform-origin: 0 0;
+  will-change: transform;
+}
 /* once docked, the header's own copies take over from the splash */
 .docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
 
