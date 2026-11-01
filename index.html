@@ -11,7 +11,9 @@ layout: default
 {%- assign projects = site.projects | sort: "order" -%}
 <section class="screen wrap" id="projects" aria-labelledby="projects-head">
   <h2 id="projects-head">Projects</h2>
-  <div class="cards">
+  <div class="carousel">
+  <button class="nudge prev" type="button" aria-label="Previous project" aria-controls="cards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button>
+  <div class="cards" id="cards">
     {%- for p in projects -%}
     <article class="card" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
       {%- if p.shot -%}
@@ -22,6 +24,8 @@ layout: default
       <a class="visit" href="{{ p.link }}">Visit {{ p.link_label | default: p.title }} <span aria-hidden="true">↗</span></a>
     </article>
     {%- endfor -%}
+  </div>
+  <button class="nudge next" type="button" aria-label="Next project" aria-controls="cards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
   </div>
 </section>
 
@@ -136,8 +140,12 @@ layout: default
     }
     // The cards' reel: a few quick shuffles, each slower than the last, then
     // a final one that eases into place.
+    // (on phones the carousel steps aside while they shuffle; see below)
     function rollCards(done) {
       if (!cards) return done();
+      cards.dispatchEvent(new Event('shufflestart'));
+      var finish = done;
+      done = function () { cards.dispatchEvent(new Event('shuffleend')); finish(); };
       var final = shuffle([].slice.call(cards.children));
       if (reduce.matches) { place(final); return done(); }
       var ticks = 7, i = 0;
@@ -224,6 +232,94 @@ layout: default
       });
     }
     dice.forEach(function (d) { d.addEventListener('click', roll); });
+  })();
+
+  // Phones: the projects are a sideways carousel. Each swipe or arrow tap
+  // moves one card and snaps to it, and it loops: past the last card comes
+  // the first again. The loop is two copies of the cards at each end
+  // (hidden from screen readers and the keyboard); once a scroll settles on
+  // a copy, it jumps to the real card it copies, which looks identical.
+  // Nothing moves on its own.
+  (function () {
+    var cards = document.querySelector('.cards');
+    if (!cards) return;
+    var box = cards.parentNode;
+    var phone = matchMedia('(max-width: 760px)');
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    var PAD = 2, on = false, timer;
+
+    function real() { return [].slice.call(cards.querySelectorAll('.card:not(.copy)')); }
+    function copy(el) {
+      var c = el.cloneNode(true);
+      c.classList.add('copy');
+      c.setAttribute('aria-hidden', 'true');
+      c.setAttribute('inert', '');
+      c.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
+      return c;
+    }
+    function step() {   // one card plus the gap after it
+      var r = real();
+      return r.length > 1 ? r[1].offsetLeft - r[0].offsetLeft : cards.clientWidth;
+    }
+    function jump(left) {
+      cards.style.scrollSnapType = 'none';
+      cards.scrollTo({ left: left, behavior: 'instant' });
+      cards.offsetWidth;
+      cards.style.scrollSnapType = '';
+    }
+
+    function build() {
+      unbuild();
+      var r = real();
+      if (r.length < 2) return;
+      // card k (copies included) snaps at scrollLeft k * step()
+      r.slice(-PAD).reverse().forEach(function (el) { cards.insertBefore(copy(el), cards.firstChild); });
+      r.slice(0, PAD).forEach(function (el) { cards.appendChild(copy(el)); });
+      on = true;
+      jump(PAD * step());
+      aim();
+    }
+    function unbuild() {
+      cards.querySelectorAll('.copy').forEach(function (c) { c.remove(); });
+      on = false;
+    }
+    // the arrows sit level with the middle of the screenshots
+    function aim() {
+      var img = cards.querySelector('.shot img');
+      if (img) box.style.setProperty('--nudge-y', (img.offsetTop + img.offsetHeight / 2) + 'px');
+    }
+
+    // after a scroll comes to rest: if it's on a copy, swap to the real card
+    function settle() {
+      if (!on) return;
+      var n = real().length, s = step();
+      var i = Math.round(cards.scrollLeft / s) - PAD;   // -PAD..n+PAD-1
+      if (i < 0 || i >= n) jump(cards.scrollLeft + (i < 0 ? n : -n) * s);
+    }
+    cards.addEventListener('scroll', function () {
+      clearTimeout(timer);
+      timer = setTimeout(settle, 140);
+    }, { passive: true });
+    if ('onscrollend' in window) cards.addEventListener('scrollend', function () { clearTimeout(timer); settle(); });
+
+    function nudge(dir) {
+      settle();   // start from the real card, so a fast double tap still loops
+      var s = step();
+      var at = Math.round(cards.scrollLeft / s) * s;
+      cards.scrollTo({ left: at + dir * s, behavior: reduce.matches ? 'instant' : 'smooth' });
+    }
+    box.querySelector('.prev').addEventListener('click', function () { nudge(-1); });
+    box.querySelector('.next').addEventListener('click', function () { nudge(1); });
+
+    // the die shuffles the real cards; the copies wait it out
+    cards.addEventListener('shufflestart', function () { if (on) { unbuild(); cards.scrollLeft = 0; } });
+    cards.addEventListener('shuffleend', function () { if (phone.matches) build(); });
+
+    function sync() { if (phone.matches) build(); else unbuild(); }
+    phone.addEventListener('change', sync);
+    addEventListener('resize', function () { if (on) { aim(); settle(); } });
+    addEventListener('load', aim);
+    sync();
   })();
 
   // The splash receding into the header. Over the first part of the scroll
