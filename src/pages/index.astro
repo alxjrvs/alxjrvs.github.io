@@ -9,12 +9,12 @@ import InlineScript from "../components/InlineScript.astro";
 import PostList from "../components/PostList.astro";
 import Prose from "../components/Prose.astro";
 import Base from "../layouts/Base.astro";
-import { getEntryPoints, getPlaces, getProjects, getRolls, getSection } from "../lib/content";
+import { getFrontPage, getPlaces, getProjects, getRolls, getSection } from "../lib/content";
 
 const [projects, posts, rolls, projectsHead, writingHead, about, places] = await Promise.all([
   getProjects(Astro),
-  // where a new reader can start: no part 3s of a thread on the front page
-  getEntryPoints(Astro),
+  // every piece, where a new reader can start listed first
+  getFrontPage(Astro),
   getRolls(Astro),
   getSection(Astro, "projects"),
   getSection(Astro, "writing"),

@@ -407,6 +407,18 @@ export async function getEntryPoints(astro: AstroLike): Promise<Post[]> {
   return posts.filter((p) => !p.thread || firsts.has(p.id));
 }
 
+/**
+ * Every published piece for the home page's Writing list: the entry points
+ * first (so a new reader sees where to start), then every other part of a
+ * thread, each group newest first. Filtering to entry points alone left the
+ * list two items long while most of the writing is one long thread.
+ */
+export async function getFrontPage(astro: AstroLike): Promise<Post[]> {
+  const [posts, starts] = await Promise.all([getPosts(astro), getEntryPoints(astro)]);
+  const first = new Set(starts.map((p) => p.id));
+  return [...starts, ...posts.filter((p) => !first.has(p.id))];
+}
+
 /** A piece's place in its thread, or undefined if it isn't in one. */
 export async function getPlace(astro: AstroLike, post: Post): Promise<Place | undefined> {
   if (!post.thread) return undefined;
