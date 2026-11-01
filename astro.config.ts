@@ -29,9 +29,13 @@ function inlineScripts(): Plugin {
 // sits in the Workers cache. EmDash purges a collection's tag whenever
 // something in it is published or changed, so an edit shows up within
 // seconds. "all" is never purged automatically: it's the emergency switch.
+// The cache is kept short anyway, so a missed purge (a change written
+// straight to the database, say) shows up everywhere within a few minutes:
+// a copy is fresh for a minute, then served at most five more while a new
+// one renders.
 const cached = {
-  maxAge: 86_400,
-  swr: 604_800,
+  maxAge: 60,
+  swr: 300,
   tags: ["posts", "projects", "sections", "randomizers", "all"],
 };
 
