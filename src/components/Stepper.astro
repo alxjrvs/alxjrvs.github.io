@@ -58,7 +58,7 @@ const side = [
       <>
         {control}
         <span class="label step-count" aria-live={buttons ? "polite" : undefined}>
-          {name && <><a href={name.href}>{name.title}</a> · </>}
+          {name && <span class="step-name"><a href={name.href}>{name.title}</a> · </span>}
           {noun} <span data-now>{n}</span> of {total}
         </span>
       </>

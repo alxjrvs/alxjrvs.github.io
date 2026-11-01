@@ -8,6 +8,7 @@
 /* Self-hosted (latin subset, SIL OFL) so the first paint doesn't wait on a
    third-party stylesheet. The grotesk is preloaded in _layouts/default.html. */
 @font-face { font-family: 'Familjen Grotesk'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('../fonts/familjen-grotesk-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Familjen Grotesk'; font-style: italic; font-weight: 400 700; font-display: swap; src: url('../fonts/familjen-grotesk-italic-latin.woff2') format('woff2'); }
 @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('../fonts/ibm-plex-mono-400-latin.woff2') format('woff2'); }
 @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('../fonts/ibm-plex-mono-500-latin.woff2') format('woff2'); }
 
@@ -527,7 +528,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .ruled + .ruled > * { border-top: 1px solid var(--line); }
 .ruled + .ruled > .margin { border-top-color: transparent; }
 .year-mark { position: sticky; top: calc(var(--bar-h) + 40px); align-self: start; font: 500 1.5rem/1 var(--mono); letter-spacing: -.02em; color: var(--fg-subtle); }
-.ruled .margin.label { line-height: 2.2; }
+.ruled .margin.label, .ruled .margin > h2.label { line-height: 2.2; }
+.ruled .margin > h2.label { margin: 0; }
+.all-threads { display: inline-block; }
 
 [style*="--accent"] { --accent: var(--accent-dark); }
 [data-theme="light"] [style*="--accent"] { --accent: var(--accent-light); }
@@ -629,6 +632,13 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 /* threads: chains of pieces that read together. Everything about a thread is
    quiet mono in fg-subtle, like the tags; the part you're on is fg with the
    nav-active underline, the same "you are here" as a current tag. */
+/* the thread's own description, wherever the thread shows: italic, so it
+   never reads as a piece's dek, with a faint rule on its left like a note
+   pinned to the pad */
+.thread-about { margin: 0; max-width: var(--measure); padding-left: 14px; border-left: 2px solid var(--line-strong); font-style: italic; color: var(--fg-muted); font-size: 1.0625rem; line-height: 1.5; }
+.post-head .thread-about { margin: 22px 0 26px; }
+.writing-aside .thread-about { margin: 0 0 12px; font-size: 1.1875rem; }
+.lines .x.thread-about { margin-top: 2px; }
 .thread-mark, .thread-go { color: var(--fg-subtle); text-decoration: none; }
 .thread-mark::before { content: "\21B3"; margin-right: 6px; opacity: .6; }
 .thread-mark:hover, .thread-go:hover { color: var(--fg); }
@@ -696,6 +706,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .comic-pages { gap: 16px; }
   .stepper { gap: 12px; }
   .stepper .step { padding: 8px 10px; }
+  /* the thread's name is in the margin row just above, so the count stays one line */
+  .stepper .step-name { display: none; }
+  .stepper .step-count { white-space: nowrap; }
   .post-head .dek { font-size: 1.125rem; }
   .pager { grid-template-columns: 1fr; }
   .pager .prev { text-align: left; align-items: flex-start; border-top: 1px solid var(--line); }
