@@ -15,9 +15,14 @@ interface Props {
   title?: string | undefined;
   description?: string | undefined;
   published?: Date | undefined;
+  /** a reading-progress line under the header (pieces of writing) */
+  progress?: boolean | undefined;
 }
 
 const isHome = Astro.url.pathname === "/";
+// Away from the home page, the nav link for the page's own section is current.
+const section = Astro.url.pathname.startsWith("/writing") ? "/#writing" : undefined;
+const { progress, ...seo } = Astro.props;
 const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
 const tagline = `${rolls.subjects[0]}. ${rolls.lead} ${rolls.objects[0]}.`;
 // changes on every build, so a deploy's CSS is never served from a stale cache
@@ -34,7 +39,7 @@ const v = Math.floor(Date.now() / 1000);
   <link rel="preload" href="/assets/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={`/assets/css/site.css?v=${v}`}>
   <link type="application/atom+xml" rel="alternate" href={`${site.url}/feed.xml`} title={text.title}>
-  <Seo {...Astro.props} site={text} tagline={tagline} />
+  <Seo {...seo} site={text} tagline={tagline} />
 </head>
 <body class={isHome ? "home" : "inner"}>
   <a class="skip" href="#main">Skip to content</a>
@@ -50,13 +55,14 @@ const v = Math.floor(Date.now() / 1000);
       {isHome && <p class="bar-tag" aria-hidden="true"><span class="tag-a"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span></span> <span class="tag-b">{rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></span></p>}
     </div>
     <nav class="nav" aria-label="Primary">
-      {nav.map((item) => <a href={item.url}>{item.name}</a>)}
+      {nav.map((item) => <a href={isHome || item.url !== section ? item.url : "/writing/"} aria-current={item.url === section ? "page" : undefined}>{item.name}</a>)}
       <button id="theme-toggle" class="theme" type="button" aria-label="Switch to light theme">
         <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>
         <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1z"/></svg>
       </button>
       {isHome && <Die class="die-bar" />}
     </nav>
+    {progress && <span class="read-progress" id="read-progress" aria-hidden="true"></span>}
   </header>
 
   <main id="main">

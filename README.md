@@ -83,9 +83,10 @@ for fresh databases and the admin's Content Types screen for the live one.
 Everything below happens in the admin at [admin.alxjrvs.com](https://admin.alxjrvs.com). Edits are drafts until you
 press **Publish**; publishing shows up on the site within seconds.
 
-- **Posts**: title, dek, optional project slug (links the post and its project card both ways),
-  and the body in the rich-text editor. A post lands at `/writing/<slug>/`, dated when it was
-  first published; scheduling works too. Until the first post is published, the Writing nav link
+- **Writing** (the `posts` collection): title, dek, optional project slug (links the post and its project card both ways),
+  and the body in the rich-text editor. Only **published** pieces appear on the site; drafts and
+  unpublished ones never do. A piece lands at `/writing/<slug>/`, dated when it was
+  first published; scheduling works too. Until the first piece is published, the Writing nav link
   and the home-page writing section stay hidden and `/writing/` shows the empty state.
 - **Projects**: one entry per card, in `order`. Unpublish one to hide its card. Screenshots
   are files: the Screenshots workflow captures `public/assets/work/<slug>.webp` for every
