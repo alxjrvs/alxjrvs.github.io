@@ -367,6 +367,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   padding-bottom: 2px;
 }
 .visit:hover { color: var(--accent); }
+/* the carousel's arrows: phones only (see below) */
+.carousel { position: relative; }
+.nudge { display: none; }
 
 /* writing */
 .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 28px; }
@@ -468,7 +471,34 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
     scrollbar-width: none;
   }
   .cards::-webkit-scrollbar { display: none; }
-  .card { scroll-snap-align: start; gap: 10px; }
+  .card { scroll-snap-align: start; scroll-snap-stop: always; gap: 10px; }
+  /* light arrows over the screenshots' edges, hinting there's more; they
+     loop, so both are always there */
+  .nudge {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: var(--nudge-y, 30%);
+    z-index: 1;
+    width: 34px;
+    height: 34px;
+    margin-top: -17px;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--surface-bar);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: var(--fg-subtle);
+    opacity: .85;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nudge.prev { left: calc(var(--gutter) * -1 + 6px); }
+  .nudge.next { right: calc(var(--gutter) * -1 + 6px); }
+  .nudge svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .nudge:active { color: var(--fg); opacity: 1; }
+  .nudge:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .shot img { aspect-ratio: 4 / 3; }
   .summary { font-size: .9375rem; }
   .about h2 { margin-bottom: 16px; }
