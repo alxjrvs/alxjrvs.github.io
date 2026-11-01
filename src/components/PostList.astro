@@ -16,7 +16,7 @@ const { posts, projects, places } = Astro.props;
     const proj = projects.find((p) => p.id === post.project);
     const place = places.get(post.id);
     return (
-      <li style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+      <li style={proj && `--accent:${proj.accent_dark}`}>
         <time class="d" datetime={post.date.toISOString()}>{longDate(post.date)}</time>
         <div class="entry">
           <a class="t" href={`/writing/${post.id}/`}>{post.title}{post.description && <span class="x">{post.description}</span>}</a>
