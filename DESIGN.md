@@ -133,8 +133,10 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   padding clears the header (`bar-h + 40px`, or `+ 20px` on phones).
 - **Projects:** a sideways carousel at every width, one project at a time.
   Each swipe, trackpad flick or arrow press moves exactly one project and
-  snaps to it, and it loops (past the last comes the first). It never moves on
-  its own. Wider than 760px a slide is the screenshot on the left (3fr) and
+  snaps to it, and it loops (past the last comes the first). It moves on by
+  itself after 4 seconds of stillness, but only while it's at least half on
+  screen and the tab is visible; hovering, touching or focusing it pauses
+  that, any swipe restarts the count, and reduced motion turns it off. Wider than 760px a slide is the screenshot on the left (3fr) and
   the title, summary and link on the right (2fr). On phones the card stacks at
   84% width with the next one peeking in. One subtle round arrow (`line`
   border, `fg-subtle` chevron, 70% opacity) sits in the right-hand margin,

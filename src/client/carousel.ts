@@ -3,7 +3,9 @@
 // loops: past the last card comes the first again. The loop is two copies of
 // the cards at each end (hidden from screen readers and the keyboard); once a
 // scroll settles on a copy, it jumps to the real card it copies, which looks
-// identical. Nothing moves on its own.
+// identical. It also moves on by itself every 4 seconds, but only while it's
+// on screen and nobody is using it: hovering, touching or focusing it pauses
+// the cycle, any swipe restarts the count, and reduced motion turns it off.
 (() => {
   const cards = document.querySelector<HTMLElement>(".cards");
   const box = cards?.parentElement;
@@ -70,6 +72,7 @@
     () => {
       clearTimeout(timer);
       timer = setTimeout(settle, 140);
+      cycle(); // any movement, ours or the visitor's, restarts the count
     },
     { passive: true },
   );
@@ -88,6 +91,41 @@
     cards.scrollTo({ left: at + dir * s, behavior: reduce.matches ? "instant" : "smooth" });
   }
   box.querySelector(".next")?.addEventListener("click", () => nudge(1));
+
+  // The auto-advance: every 4s of stillness, move on one card.
+  const EVERY = 4000;
+  let auto: ReturnType<typeof setTimeout> | undefined;
+  let seen = false;
+  let hovered = false;
+  let touching = false;
+  function cycle() {
+    clearTimeout(auto);
+    auto = setTimeout(() => {
+      const idle = !hovered && !touching && !box?.contains(document.activeElement);
+      if (on && seen && idle && !document.hidden && !reduce.matches) nudge(1);
+      cycle();
+    }, EVERY);
+  }
+  new IntersectionObserver(
+    ([e]) => {
+      seen = !!e && e.intersectionRatio >= 0.5;
+      cycle();
+    },
+    { threshold: [0, 0.5, 1] },
+  ).observe(box);
+  box.addEventListener("pointerenter", (e) => {
+    if (e.pointerType === "mouse") hovered = true;
+  });
+  box.addEventListener("pointerleave", () => {
+    hovered = false;
+    cycle();
+  });
+  box.addEventListener("touchstart", () => (touching = true), { passive: true });
+  box.addEventListener("touchend", () => {
+    touching = false;
+    cycle();
+  });
+  box.addEventListener("focusout", cycle);
 
   // the die shuffles the real cards; the copies wait it out
   cards.addEventListener("shufflestart", () => {
