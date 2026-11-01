@@ -17,6 +17,11 @@
     // /writing → /writing/, and /writing/index.html → /writing/.
     "html_handling": "auto-trailing-slash"
   },
+  // alxjrvs.com is a proxied zone on this account. A zone route (rather than a
+  // custom domain) leaves the DNS records alone, so cutting over or back is a
+  // deploy, never a DNS change. www.alxjrvs.com is 301'd to the apex by a
+  // zone Redirect Rule, which runs before Workers.
+  "routes": [{ "pattern": "alxjrvs.com/*", "zone_name": "alxjrvs.com" }],
   // The workers.dev copy stays on so a deploy can be checked before (and
   // without) the custom domain. It's noindexed in public/_headers.
   "workers_dev": true,

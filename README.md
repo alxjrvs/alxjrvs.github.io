@@ -31,7 +31,8 @@ bun run format       # let Biome fix formatting
 `.github/workflows/deploy.yml` builds and runs `wrangler deploy` on every push to `main`, and
 uploads a preview version for every PR (its URL is in the run summary). It needs the
 `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets; without them it builds
-and skips the deploy. The Worker, its domains and asset handling are in `wrangler.jsonc`.
+and skips the deploy. The Worker, its route on `alxjrvs.com/*` and its asset handling are in `wrangler.jsonc`;
+the `alxjrvs.com` zone (DNS, the www → apex redirect) is on the same Cloudflare account.
 
 ## Structure
 
