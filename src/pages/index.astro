@@ -1,6 +1,5 @@
 ---
 import carouselSrc from "../client/carousel.ts?inline-script";
-import dieSrc from "../client/die.ts?inline-script";
 import gridSrc from "../client/grid.ts?inline-script";
 import recedeSrc from "../client/recede.ts?inline-script";
 import snapSrc from "../client/snap.ts?inline-script";
@@ -21,10 +20,6 @@ const [projects, posts, rolls, projectsHead, writingHead, about] = await Promise
   getSection(Astro, "about"),
 ]);
 const { subjects, objects, lead, likes, likesLead } = rolls;
-const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds: rolls.rareOdds, likes }).replace(
-  /</g,
-  "\\u003c",
-);
 ---
 <Base>
 <section class="screen intro" aria-label="Introduction">
@@ -79,8 +74,6 @@ const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds:
 </section>
 
 <Fragment slot="scripts">
-  <script is:inline type="application/json" id="roll-data" set:html={rollData} />
-  <InlineScript src={dieSrc} name="die.ts" />
   <InlineScript src={gridSrc} name="grid.ts" />
   <InlineScript src={carouselSrc} name="carousel.ts" />
   <InlineScript src={recedeSrc} name="recede.ts" />

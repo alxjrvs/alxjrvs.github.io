@@ -185,11 +185,12 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   and there's no reveal once the splash has started receding.
 - **Tagline:** "subject." (`tag-subject`), verb (`tag-verb`), "object."
   (`tag-object`), with each full stop part of its rolling word. A copy of it lives in the
-  header (hidden on narrow screens).
+  header on every page (hidden on narrow screens).
 - **Die:** a rounded square in the `die` colour, with a 3×3 grid of pips cut
   out of `surface`. At rest, the lit pips spell the favicon's "j". There's one
-  in the splash corner and one as the header's rightmost button. Either one
-  re-rolls the page, and its pips roll too. On hover it grows slightly
+  in the splash corner and one as the header's rightmost button, on every
+  page. Either one re-rolls the page (away from home, just the header
+  tagline), and its pips roll too. On hover it grows slightly
   (12%, 0.2s).
 - **Dice grid:** the splash background is rows of faint die faces in
   `pattern`, with random faces and the pips cut out. Each cell is the size of the
