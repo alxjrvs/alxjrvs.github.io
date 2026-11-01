@@ -17,6 +17,13 @@
       "labelSingular": "Tag",
       "hierarchical": false,
       "collections": ["posts"]
+    },
+    {
+      "name": "thread",
+      "label": "Threads",
+      "labelSingular": "Thread",
+      "hierarchical": false,
+      "collections": ["posts"]
     }
   ],
   "collections": [
@@ -43,6 +50,11 @@
           "slug": "project",
           "label": "Project (its slug, e.g. randsum): links the post and the project card",
           "type": "string"
+        },
+        {
+          "slug": "part",
+          "label": "Part (its place in its Thread; leave empty to go by publish date)",
+          "type": "integer"
         },
         {
           "slug": "pages",

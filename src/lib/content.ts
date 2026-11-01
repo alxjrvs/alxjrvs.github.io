@@ -194,6 +194,10 @@ export interface Post {
   tags: Tag[];
   /** a comic's pages, in reading order; a piece with any pages is a comic */
   pages: ComicPage[];
+  /** the thread it belongs to (the Threads taxonomy), if any */
+  thread?: Tag | undefined;
+  /** its place in its thread, as set in the admin (gaps are fine) */
+  part?: number | undefined;
 }
 
 export interface ComicPage {
@@ -243,6 +247,8 @@ export async function getPosts(astro: AstroLike): Promise<Post[]> {
       content: data.content,
       tags: termsOf(data, "tag"),
       pages: pagesOf(data),
+      thread: termsOf(data, "thread")[0],
+      part: typeof data.part === "number" ? data.part : undefined,
     };
   });
 }
@@ -266,6 +272,83 @@ export function getTags(astro: AstroLike): Promise<Tag[]> {
     }
     return [...tags.values()].sort((a, b) => a.label.localeCompare(b.label));
   });
+}
+
+// --- Threads ----------------------------------------------------------------
+
+/** A chain of pieces that read together, in order. */
+export interface Thread {
+  /** the URL is /writing/threads/<slug>/ */
+  slug: string;
+  label: string;
+  /** the term's description in the admin, shown as the thread's dek */
+  description?: string | undefined;
+  /** its published pieces, first part first */
+  parts: Post[];
+}
+
+/** Where a piece sits in its thread: part `n` of `thread.parts.length`. */
+export interface Place {
+  thread: Thread;
+  /** 1-based */
+  n: number;
+  prev?: Post | undefined;
+  next?: Post | undefined;
+}
+
+/**
+ * Every thread with at least one published piece, newest activity first.
+ * Parts go by their Part number, then by publish date, so leaving Part empty
+ * just means "in the order they came out".
+ */
+export function getThreads(astro: AstroLike): Promise<Thread[]> {
+  return once(astro, "threads", async () => {
+    const [{ data: terms, cacheHint }, posts] = await Promise.all([
+      getTaxonomyTermsWithCacheHint("thread", { includeCounts: false }),
+      getPosts(astro),
+    ]);
+    // The hint makes renaming a thread purge the pages that show it.
+    if (astro.cache?.enabled) astro.cache.set(cacheHint);
+    const about = new Map(
+      (terms as { slug: string; description?: string }[]).map((t) => [t.slug, str(t.description)]),
+    );
+    const threads = new Map<string, Thread>();
+    for (const post of posts) {
+      if (!post.thread) continue;
+      const { slug, label } = post.thread;
+      const thread = threads.get(slug) ?? { slug, label, description: about.get(slug), parts: [] };
+      thread.parts.push(post);
+      threads.set(slug, thread);
+    }
+    const key = (p: Post) => p.part ?? Number.POSITIVE_INFINITY;
+    const latest = (t: Thread) => Math.max(...t.parts.map((p) => p.date.getTime()));
+    return [...threads.values()]
+      .map((t) => ({
+        ...t,
+        parts: t.parts.toSorted((a, b) => key(a) - key(b) || a.date.getTime() - b.date.getTime()),
+      }))
+      .sort((a, b) => latest(b) - latest(a));
+  });
+}
+
+/** A piece's place in its thread, or undefined if it isn't in one. */
+export async function getPlace(astro: AstroLike, post: Post): Promise<Place | undefined> {
+  if (!post.thread) return undefined;
+  const thread = (await getThreads(astro)).find((t) => t.slug === post.thread?.slug);
+  const i = thread?.parts.findIndex((p) => p.id === post.id) ?? -1;
+  if (!thread || i < 0) return undefined;
+  return { thread, n: i + 1, prev: thread.parts[i - 1], next: thread.parts[i + 1] };
+}
+
+/** Every piece's place, by piece id: for lists that show "Part 2 of 3". */
+export async function getPlaces(astro: AstroLike): Promise<Map<string, Place>> {
+  const places = new Map<string, Place>();
+  for (const thread of await getThreads(astro)) {
+    thread.parts.forEach((p, i) => {
+      places.set(p.id, { thread, n: i + 1, prev: thread.parts[i - 1], next: thread.parts[i + 1] });
+    });
+  }
+  return places;
 }
 
 /** The header nav: every section with a nav label, Writing only once there's a post. */

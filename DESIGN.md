@@ -254,6 +254,28 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   Any words become a note under the reader. The margin's Reading becomes
   "Comic · 12 pages", and lists show "12 pages" where prose shows minutes.
   Without JS the pages simply stack.
+- **Threads:** an ordered chain of pieces that read together (prose or
+  comics alike). A piece joins one by picking a term in EmDash's Threads
+  taxonomy; the term's name is the thread's title and its description the
+  dek. Parts go by the piece's Part number, then by publish date, and only
+  published parts count, so "Part 2 of 3" is always true of what's live.
+  Everything thread-ish is mono in `fg-subtle`, like the tags, and the part
+  you're on is `fg` with the `nav-active` underline.
+  - On the index, a "Threads" margin row sits between Latest and the years:
+    one ruled line per thread (name and dek linking to its page; part count
+    and date span on the right; "Start at part 1 →" and "Newest: part N"
+    underneath), newest activity first. Pieces still appear in their year,
+    with "↳ Thread · Part 2 of 3" in their line meta (and in Latest's meta).
+  - A thread's page (`/writing/threads/<slug>/`): "← Writing" and its name,
+    the dek and "A thread · N parts" on the right, then the parts as
+    numbered ruled lines (01, 02…, title, dek, date and minutes) and "Start
+    reading →".
+  - On a piece: "← Thread · Part 2 of 3 →" in mono above the title (the
+    arrows step through the thread and dim at either end). The margin gets a
+    Thread fact: its name, "Part 2 of 3" and the numbered parts (dropped
+    under 860px). Under the words, the pager walks the thread instead of the
+    archive (Part 1 ← / → Part 3; the last part offers "More writing"), then
+    the full list of parts again.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** the die at rest, matching the on-page button: a `die`
   (`brand-2`) face with the four pips of the curved "j" in `surface`. It

@@ -3,16 +3,19 @@ import { decodeSlug } from "emdash";
 import Comic from "../../components/Comic.astro";
 import Prose from "../../components/Prose.astro";
 import Tags from "../../components/Tags.astro";
+import ThreadParts from "../../components/ThreadParts.astro";
 import progressSrc from "../../client/progress.ts?inline-script";
 import InlineScript from "../../components/InlineScript.astro";
 import Base from "../../layouts/Base.astro";
-import { getPosts, getProjects, longDate, measure, shortDate, year } from "../../lib/content";
+import { getPlace, getPosts, getProjects, longDate, measure, shortDate, year } from "../../lib/content";
 
 // One piece of writing, rendered on request from the published posts in
 // EmDash (newest first, so the next one along is older). Unknown or
 // unpublished slugs get the 404. The details sit in the left-hand margin,
-// the words in a 40rem column beside it. A comic shows its pages there
-// instead, one at a time, with any words underneath as a note.
+// the words in a 40rem column beside it. A piece in a thread also gets "Part
+// 2 of 3" above its title, the thread's parts in the margin, and a pager that
+// walks the thread instead of the archive. A comic shows its pages in place
+// of the words, one at a time, with any words underneath as a note.
 const slug = decodeSlug(Astro.params.slug);
 const posts = await getPosts(Astro);
 const i = posts.findIndex((p) => p.id === slug);
@@ -25,6 +28,9 @@ const proj = post.project
   : undefined;
 const comic = post.pages.length > 0;
 const hasWords = Array.isArray(post.content) && post.content.length > 0;
+const place = await getPlace(Astro, post);
+const total = place?.thread.parts.length ?? 0;
+const threadUrl = place && `/writing/threads/${place.thread.slug}/`;
 const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
 ---
 <Base title={post.title} description={post.description} published={post.date} progress>
@@ -35,12 +41,29 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
       <div><dt class="label">Published</dt><dd><time datetime={post.date.toISOString()}>{longDate(post.date)}</time></dd></div>
       <div><dt class="label">{comic ? "Comic" : "Reading"}</dt><dd>{measure(post)}</dd></div>
       {proj && <div><dt class="label">Project</dt><dd><a class="tag" href={proj.link}>{proj.title} <span aria-hidden="true">↗</span></a></dd></div>}
+      {place && (
+        <div class="thread-fact">
+          <dt class="label">Thread</dt>
+          <dd>
+            <a class="thread-name" href={threadUrl}>{place.thread.label}</a>
+            <span class="of">Part {place.n} of {total}</span>
+            <ThreadParts parts={place.thread.parts} current={post.id} class="margin-parts" />
+          </dd>
+        </div>
+      )}
       {post.tags.length > 0 && <div><dt class="label">Tags</dt><dd><Tags tags={post.tags} /></dd></div>}
     </dl>
   </aside>
 
   <div class="post-body" id="read">
     <header class="post-head">
+      {place && (
+        <nav class="part-bar label" aria-label="This thread">
+          {place.prev ? <a href={`/writing/${place.prev.id}/`} rel="prev" aria-label={`Part ${place.n - 1}: ${place.prev.title}`}>←</a> : <span aria-hidden="true">←</span>}
+          <a href={threadUrl}>{place.thread.label} · Part {place.n} of {total}</a>
+          {place.next ? <a href={`/writing/${place.next.id}/`} rel="next" aria-label={`Part ${place.n + 1}: ${place.next.title}`}>→</a> : <span aria-hidden="true">→</span>}
+        </nav>
+      )}
       <h1>{post.title}</h1>
       {post.description && <p class="dek">{post.description}</p>}
     </header>
@@ -53,7 +76,24 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
     )}
     <p class="fin" aria-hidden="true"><span class="pip"></span></p>
 
-    {(older || newer) && (
+    {place ? (
+      <>
+        <nav class="pager" aria-label="This thread">
+          {place.prev ? (
+            <a class="next" href={`/writing/${place.prev.id}/`} rel="prev"><span class="label"><span aria-hidden="true">←</span> Part {place.n - 1}</span><span class="t">{place.prev.title}</span></a>
+          ) : <span />}
+          {place.next ? (
+            <a class="prev" href={`/writing/${place.next.id}/`} rel="next"><span class="label">Part {place.n + 1} <span aria-hidden="true">→</span></span><span class="t">{place.next.title}</span></a>
+          ) : (
+            <a class="prev" href="/writing/"><span class="label">End of the thread</span><span class="t">More writing <span aria-hidden="true">→</span></span></a>
+          )}
+        </nav>
+        <section class="thread-end" aria-labelledby="thread-end">
+          <h2 class="label" id="thread-end"><a href={threadUrl}>{place.thread.label}</a> · {total} {total === 1 ? "part" : "parts"}</h2>
+          <ThreadParts parts={place.thread.parts} current={post.id} />
+        </section>
+      </>
+    ) : (older || newer) ? (
       <nav class="pager" aria-label="More writing">
         {newer ? (
           <a class="next" href={`/writing/${newer.id}/`}><span class="label"><span aria-hidden="true">←</span> Newer · {when(newer.date)}</span><span class="t">{newer.title}</span></a>
@@ -62,7 +102,7 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
           <a class="prev" href={`/writing/${older.id}/`}><span class="label">Older · {when(older.date)} <span aria-hidden="true">→</span></span><span class="t">{older.title}</span></a>
         ) : <span />}
       </nav>
-    )}
+    ) : null}
   </div>
 </article>
 {!comic && <InlineScript slot="scripts" src={progressSrc} name="progress.ts" />}
