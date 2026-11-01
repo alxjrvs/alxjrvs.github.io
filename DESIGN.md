@@ -132,7 +132,10 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 - **Gutter:** `clamp(16px, 5vw, 64px)`. The header is 60px tall and floats
   12px from the top (8px on phones).
-- **Sections:** every home-page section is one screen tall (`100svh`). Its
+- **Sections:** every home-page section is one screen tall (`100svh`), and
+  its content must fit in it, or the snapping lets go of it. Writing shows as
+  many of the latest five as fit: three on phones, four under 760px tall,
+  three under 660px. Its
   padding clears the header (`bar-h + 40px`, or `+ 20px` on phones).
 - **Projects:** a sideways carousel at every width, one project at a time.
   Each swipe, trackpad flick or arrow press moves exactly one project and

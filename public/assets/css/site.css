@@ -456,6 +456,21 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .archive .t { font-weight: 700; font-size: 1.5rem; line-height: 1.2; letter-spacing: -.02em; }
 .archive .x { display: block; margin-top: 4px; font-weight: 400; font-size: 1.0625rem; letter-spacing: 0; color: var(--fg-muted); }
 .archive a:hover .t { text-decoration: underline; text-underline-offset: .15em; text-decoration-thickness: 2px; }
+/* The home page's Writing is one screen, like every other section, so the
+   snapping can rest on it: it shows as many of the latest five as fit. A
+   section taller than the screen is something you scroll through, and the
+   snapping lets go of it. */
+@media (max-height: 760px) { #writing .archive li:nth-child(n+5) { display: none; } }
+@media (max-height: 660px) { #writing .archive li:nth-child(n+4) { display: none; } }
+@media (max-width: 760px) {
+  #writing .section-head { margin-bottom: 16px; }
+  #writing .archive li:nth-child(n+4) { display: none; }
+  #writing .archive a { padding: 12px 0; gap: 2px; }
+  #writing .archive .d { line-height: 1.6; }
+  #writing .archive .t { font-size: 1.25rem; }
+  #writing .archive .x { margin-top: 2px; font-size: .9375rem; line-height: 1.4; }
+}
+@media (max-width: 760px) and (max-height: 600px) { #writing .archive .x { display: none; } }
 
 /* about */
 .about { justify-content: space-between; padding-bottom: 0; }
