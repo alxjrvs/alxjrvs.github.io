@@ -17,7 +17,8 @@ import { getPlace, getPosts, getProjects, longDate, measure, type Post, shortDat
 // the words in a 40rem column beside it. A piece in a thread also gets "Part
 // 2 of 3" and the thread's description (in italics) above its title, the thread's parts in the margin, and a pager that
 // walks the thread instead of the archive. A comic shows its pages in place
-// of the words, one at a time, with any words underneath as a note.
+// of the words, one at a time, with any words underneath as a note: its title
+// and the page in view fill one screen, with nothing to scroll (.comic-screen).
 const slug = decodeSlug(Astro.params.slug);
 const posts = await getPosts(Astro);
 const i = posts.findIndex((p) => p.id === slug);
@@ -38,7 +39,7 @@ const back = (p: Post) => `/writing/${p.id}/${p.pages.length > 1 ? `#page-${p.pa
 const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
 ---
 <Base title={post.title} description={post.description} published={post.date} progress>
-<article class="post wrap ruled" style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+<article class:list={["post wrap ruled", { "is-comic": comic }]} style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
   <aside class="margin post-margin">
     <a class="crumb label" href="/writing/"><span aria-hidden="true">←</span> Writing</a>
     <dl class="facts">
@@ -60,6 +61,7 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
   </aside>
 
   <div class="post-body" id="read">
+    <div class:list={{ "comic-screen": comic }}>
     <header class="post-head">
       {place && (
         <Stepper
@@ -86,6 +88,7 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
         beyond={place && { prev: place.prev && back(place.prev), next: place.next && `/writing/${place.next.id}/` }}
       />
     )}
+    </div>
     {(!comic || hasWords) && (
       <div class:list={["prose", { "comic-note": comic }]}>
         <Prose value={post.content} />
