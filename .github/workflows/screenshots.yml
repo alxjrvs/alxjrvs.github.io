@@ -20,6 +20,7 @@ on:
 permissions:
   contents: write
   actions: write # to dispatch CI on the bot branch
+  pull-requests: write # to open and merge the bot PR
 
 concurrency:
   group: screenshots-${{ github.ref }}
@@ -87,20 +88,24 @@ jobs:
             exit 0
           fi
 
-          # main only accepts commits that already have a green "build" check,
-          # so push to a throwaway branch, run CI there, then fast-forward main
-          # to that exact commit.
+          # main only takes a commit through a PR whose head has a green
+          # "build" check. A PR opened with this token doesn't trigger CI on its
+          # own, so dispatch CI on the bot branch, wait for it, then squash-merge.
+          base="${{ github.ref_name }}"
           branch="bot/screenshots-${{ github.run_id }}"
           git push origin "HEAD:refs/heads/$branch"
-          trap 'git push origin --delete "$branch" || true' EXIT
+          trap 'gh pr close "$branch" --delete-branch 2>/dev/null || git push origin --delete "$branch" || true' ERR
+          gh pr create --base "$base" --head "$branch" --title "Refresh project screenshots" \
+            --body "Nightly re-capture of each project's live site (run ${{ github.run_id }})."
           gh workflow run ci.yml --ref "$branch"
           sha=$(git rev-parse HEAD)
+          run_id=""
           for i in $(seq 1 30); do
             run_id=$(gh run list --workflow ci.yml --branch "$branch" --event workflow_dispatch \
               --json databaseId,headSha -q ".[] | select(.headSha == \"$sha\") | .databaseId" | head -n1)
             [ -n "$run_id" ] && break
             sleep 5
           done
-          [ -n "$run_id" ] || { echo "CI run never appeared"; exit 1; }
+          [ -n "$run_id" ] || { echo "CI run never appeared"; false; }
           gh run watch "$run_id" --exit-status
-          git push origin "HEAD:${{ github.ref_name }}"
+          gh pr merge "$branch" --squash --delete-branch
