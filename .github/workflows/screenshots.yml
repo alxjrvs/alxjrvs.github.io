@@ -19,7 +19,6 @@ on:
 
 permissions:
   contents: write
-  actions: write # to dispatch CI on the bot branch
   pull-requests: write # to open and merge the bot PR
 
 concurrency:
@@ -50,6 +49,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
+          # A personal token (when set) makes the bot's pushes and PRs trigger
+          # CI like anyone else's; the default Actions token can't.
+          token: ${{ github.event_name != 'pull_request' && secrets.SCREENSHOTS_TOKEN || github.token }}
 
       - if: steps.gate.outputs.skip != '1'
         uses: actions/setup-node@v4
@@ -72,7 +74,8 @@ jobs:
       - if: steps.gate.outputs.skip != '1'
         name: Commit changed screenshots
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.SCREENSHOTS_TOKEN || github.token }}
+          HAS_TOKEN: ${{ secrets.SCREENSHOTS_TOKEN != '' }}
         run: |
           git add -A assets/work
           if git diff --cached --quiet; then
@@ -88,28 +91,21 @@ jobs:
             exit 0
           fi
 
-          # main only takes a commit through a PR whose head has a green
-          # "build" check. A PR opened with this token doesn't trigger CI on its
-          # own, so dispatch CI on the bot branch, wait for it, then squash-merge.
+          # main only takes a commit through a PR whose own CI passed. With
+          # SCREENSHOTS_TOKEN the bot PR gets normal CI and is merged once
+          # green; without it the PR is left open for a person to merge.
           base="${{ github.ref_name }}"
           branch="bot/screenshots-${{ github.run_id }}"
           git push origin "HEAD:refs/heads/$branch"
-          trap 'gh pr close "$branch" --delete-branch 2>/dev/null || git push origin --delete "$branch" || true' ERR
           gh pr create --base "$base" --head "$branch" --title "Refresh project screenshots" \
-            --body "Nightly re-capture of each project's live site (run ${{ github.run_id }})."
-          gh workflow run ci.yml --ref "$branch"
-          sha=$(git rev-parse HEAD)
-          run_id=""
-          for i in $(seq 1 30); do
-            run_id=$(gh run list --workflow ci.yml --branch "$branch" --event workflow_dispatch \
-              --json databaseId,headSha -q ".[] | select(.headSha == \"$sha\") | .databaseId" | head -n1)
-            [ -n "$run_id" ] && break
-            sleep 5
-          done
-          [ -n "$run_id" ] || { echo "CI run never appeared"; false; }
-          gh run watch "$run_id" --exit-status
-          # GitHub recomputes mergeability a little after the check lands, so
-          # an immediate merge can still read as blocked. Retry for a while.
+            --body "Re-capture of each project's live site (run ${{ github.run_id }})."
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "No SCREENSHOTS_TOKEN secret, so leaving the PR open to merge by hand."
+            exit 0
+          fi
+          trap 'gh pr close "$branch" --delete-branch || true' ERR
+          sleep 15 # let the PR's CI register before watching it
+          gh pr checks "$branch" --watch --required --interval 15
           for i in $(seq 1 12); do
             gh pr merge "$branch" --squash --delete-branch && exit 0
             sleep 10
