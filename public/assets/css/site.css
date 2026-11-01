@@ -154,6 +154,28 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .nav a[aria-current] { color: var(--fg); }
 .nav a[aria-current]::after { transform: none; }
 
+/* a piece's title, docked: once the big title has travelled up into the
+   header (client/title.ts, which sets --t 0 → 1 on the way and .titled on
+   arrival), the header reads "alxjrvs · tagline … ← Title → · die". The nav
+   links fade out on the way up to make room and come back on the way down. */
+.stepper.bar-read { display: none; }
+.js .titled .stepper.bar-read { display: flex; flex: 0 1 auto; min-width: 0; margin-left: auto; gap: 14px; margin-right: 8px; animation: bar-read-in .25s ease-out; }
+.js .reading .nav > a { opacity: calc(1 - var(--t, 0) * 2.5); }
+.js .titled .nav > a { display: none; }
+.js .titled .bar-id { flex-shrink: 0; }
+.stepper.bar-read .step { width: 36px; height: 36px; padding: 0; justify-content: center; font-size: 1rem; }
+.bar-title {
+  min-width: 0; max-width: 34ch; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-weight: 700; font-size: 17px; line-height: 1.2; letter-spacing: -.035em; color: var(--fg);
+}
+.post-head h1 .w { display: inline-block; transform-origin: 0 0; }
+/* on the way up, the words pass over the header's glass */
+.js .reading .post-head h1 { position: relative; z-index: 51; }
+.js .titled .post-head h1 { visibility: hidden; }
+@keyframes bar-read-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .js .titled .stepper.bar-read { animation: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
 /* back to top: only visible while scrolling */
 .to-top {
   position: fixed;

@@ -62,6 +62,8 @@ const v = Math.floor(Date.now() / 1000);
       <a class="brand" href="/"><Wordmark /></a>
       <p class="bar-tag" aria-hidden="true"><span class="tag-a"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span></span> <span class="tag-b">{rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></span></p>
     </div>
+    {/* a piece's title and its Back/Next, once the title has docked (client/title.ts) */}
+    <slot name="bar" />
     <nav class="nav" aria-label="Primary">
       {nav.map((item) => <a href={isHome || item.url !== section ? item.url : "/writing/"} aria-current={item.url === section ? "page" : undefined}>{item.name}</a>)}
       <Die class="die-bar" />
