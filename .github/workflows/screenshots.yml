@@ -108,4 +108,10 @@ jobs:
           done
           [ -n "$run_id" ] || { echo "CI run never appeared"; false; }
           gh run watch "$run_id" --exit-status
-          gh pr merge "$branch" --squash --delete-branch
+          # GitHub recomputes mergeability a little after the check lands, so
+          # an immediate merge can still read as blocked. Retry for a while.
+          for i in $(seq 1 12); do
+            gh pr merge "$branch" --squash --delete-branch && exit 0
+            sleep 10
+          done
+          false
