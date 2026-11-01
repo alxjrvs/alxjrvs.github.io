@@ -6,7 +6,8 @@
 // links bow out to make room. Scrolling back up reverses all of it. Words the
 // header has no room for slide to its edge and fade into the ellipsis. With
 // reduced motion the title simply appears in the header once the big one has
-// scrolled under it.
+// scrolled under it. On phones (760px and under) none of this happens: the
+// title stays put and the header stays as it is.
 (() => {
   const bar = document.getElementById("bar");
   const h1 = document.querySelector<HTMLElement>(".post-head h1");
@@ -14,6 +15,7 @@
   if (!bar || !h1 || !copy) return;
   const body = document.body;
   const still = matchMedia("(prefers-reduced-motion: reduce)");
+  const phone = matchMedia("(max-width: 760px)");
   const words = Array.from(h1.querySelectorAll<HTMLElement>(".w"));
   const twins = Array.from(copy.querySelectorAll<HTMLElement>(".w"));
   type Word = {
@@ -37,6 +39,14 @@
     for (const w of words) {
       w.style.transform = "";
       w.style.opacity = "";
+    }
+    // .reading lifts the big title over the header's glass for the trip
+    body.classList.toggle("reading", !phone.matches);
+    if (phone.matches) {
+      list = [];
+      bar.style.removeProperty("--t");
+      body.classList.remove("titled");
+      return;
     }
     // the header's copy only has a place once docked, so measure it docked
     body.classList.add("titled");
@@ -78,7 +88,7 @@
   }
 
   function update() {
-    if (!bar) return;
+    if (!bar || phone.matches) return;
     const p = Math.min(Math.max((scrollY - start) / span, 0), 1);
     if (still.matches) {
       for (const w of list) w.el.style.transform = "";
@@ -108,10 +118,10 @@
     body.classList.toggle("titled", p >= 1);
   }
 
-  body.classList.add("reading");
   addEventListener("scroll", update, { passive: true });
   addEventListener("resize", measure);
   still.addEventListener("change", measure);
+  phone.addEventListener("change", measure);
   measure();
   if (document.fonts?.ready) document.fonts.ready.then(measure);
 })();
