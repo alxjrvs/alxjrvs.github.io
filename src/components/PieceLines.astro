@@ -28,7 +28,7 @@ const project = (post: Post) => projects.find((p) => p.id === post.project);
         const proj = project(post);
         const place = places?.get(post.id);
         return (
-          <li style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+          <li style={proj && `--accent:${proj.accent_dark}`}>
             <a class="line" href={`/writing/${post.id}/`}>
               <span class="t">{post.title}</span>
               {post.description && <span class="x">{post.description}</span>}

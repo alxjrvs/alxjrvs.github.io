@@ -1,9 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <!-- the site's die at rest: purple face, pips spelling the curved "j".
-       Colours follow the theme like the on-page die (die / surface). -->
+       Same colours as the on-page die (die / surface). -->
   <style>
     .face { fill: #a986d6; } .pip { fill: #14161f; }
-    @media (prefers-color-scheme: light) { .face { fill: #6b3fa0; } .pip { fill: #fbf3c4; } }
   </style>
   <rect class="face" width="32" height="32" rx="6"/>
   <g class="pip"><circle cx="23" cy="9" r="2.9"/><circle cx="9" cy="16" r="2.9"/><circle cx="23" cy="16" r="2.9"/><circle cx="16" cy="23" r="2.9"/></g>

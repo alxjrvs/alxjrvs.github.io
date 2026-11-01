@@ -39,7 +39,7 @@ const back = (p: Post) => `/writing/${p.id}/${p.pages.length > 1 ? `#page-${p.pa
 const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
 ---
 <Base title={post.title} description={post.description} published={post.date} progress>
-<article class:list={["post wrap ruled", { "is-comic": comic }]} style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+<article class:list={["post wrap ruled", { "is-comic": comic }]} style={proj && `--accent:${proj.accent_dark}`}>
   <aside class="margin post-margin">
     <a class="crumb label" href="/writing/"><span aria-hidden="true">←</span> Writing</a>
     <dl class="facts">

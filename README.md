@@ -69,9 +69,9 @@ for fresh databases and the admin's Content Types screen for the live one.
 | `src/pages/[...redirect].astro` | `/about/`, `/projects/` and old `/work/...` URLs, 301'd to the matching section |
 | `src/pages/feed.xml.ts`, `sitemap.xml.ts` | The Atom feed and the sitemap |
 | `src/pages/projects.json.ts` | The project list, for the Screenshots workflow |
-| `src/layouts/`               | `Base.astro` (floating header, theme toggle, back-to-top, footer) |
+| `src/layouts/`               | `Base.astro` (floating header, back-to-top, footer) |
 | `src/components/`            | The die, the wordmark, SEO tags, the post list, rich text (`Prose.astro`), inline scripts |
-| `src/client/`                | The page scripts, in TypeScript: theme, header, die roll, wordmark recede, section snapping. Compiled at build time and rendered inline (see `InlineScript.astro`) |
+| `src/client/`                | The page scripts, in TypeScript: header, die roll, wordmark recede, section snapping. Compiled at build time and rendered inline (see `InlineScript.astro`) |
 | `src/worker.ts`              | The Worker entry: Astro, plus EmDash's cron for scheduled publishing |
 | `public/assets/css/site.css` | The whole design |
 | `public/assets/work/`        | Project screenshots (WebP, 1280×800 + 640×400), refreshed by the Screenshots workflow |
@@ -108,5 +108,4 @@ press **Publish**; publishing shows up on the site within seconds.
 - **Colour**: see [DESIGN.md](DESIGN.md) for the palette, roles and the rest of the design language.
 - **Header**: hidden on the first screen; it slides in as you scroll while the wordmark shrinks
   into its brand slot. Without JS it's simply always there.
-- **Theme**: follows the OS light/dark setting, live, set before first paint so there's no
-  flash. The toggle overrides it only while it disagrees with the OS.
+- **Theme**: dark only (`color-scheme: dark`). No light mode, no toggle.

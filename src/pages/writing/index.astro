@@ -52,7 +52,7 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
   <>
     <section class="ruled" aria-labelledby="latest">
       <h2 class="margin label" id="latest">Latest</h2>
-      <div class="lead" style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+      <div class="lead" style={proj && `--accent:${proj.accent_dark}`}>
         <p class="label meta">
           <time datetime={lead.date.toISOString()}>{longDate(lead.date)}</time>
           <span>{lead.pages.length ? measure(lead) : `${measure(lead)} read`}</span>
