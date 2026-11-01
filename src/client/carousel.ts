@@ -6,6 +6,7 @@
 // identical. It also moves on by itself every 4 seconds, but only while it's
 // on screen and nobody is using it: hovering, touching or focusing it pauses
 // the cycle, any swipe restarts the count, and reduced motion turns it off.
+// The die's roll spins it round to a random project (see below).
 (() => {
   const cards = document.querySelector<HTMLElement>(".cards");
   const box = cards?.parentElement;
@@ -14,6 +15,7 @@
   const PAD = 2;
   let on = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let landNow: (() => void) | null = null; // set while the die's roll is spinning
 
   const real = () => Array.from(cards.querySelectorAll<HTMLElement>(".card:not(.copy)"));
   function copy(el: HTMLElement): HTMLElement {
@@ -61,7 +63,7 @@
 
   // after a scroll comes to rest: if it's on a copy, swap to the real card
   function settle() {
-    if (!on || !cards) return;
+    if (!on || !cards || landNow) return; // not mid-roll
     const n = real().length;
     const s = step();
     const i = Math.round(cards.scrollLeft / s) - PAD; // -PAD..n+PAD-1
@@ -101,7 +103,7 @@
   function cycle() {
     clearTimeout(auto);
     auto = setTimeout(() => {
-      const idle = !hovered && !touching && !box?.contains(document.activeElement);
+      const idle = !landNow && !hovered && !touching && !box?.contains(document.activeElement);
       if (on && seen && idle && !document.hidden && !reduce.matches) nudge(1);
       cycle();
     }, EVERY);
@@ -127,14 +129,60 @@
   });
   box.addEventListener("focusout", cycle);
 
-  // the die shuffles the real cards; the copies wait it out
-  cards.addEventListener("shufflestart", () => {
-    if (on && cards) {
-      unbuild();
-      cards.scrollLeft = 0;
+  // The die's roll: the carousel whips through the projects, a few times
+  // round, and slows down to land on a different one, like a wheel. It's
+  // driven frame by frame with snapping off; the loop's copies make the wrap
+  // from last to first invisible. The auto-advance waits for it; touching or
+  // scrolling the carousel lands it at once. Off screen, or with reduced
+  // motion, it just lands.
+  // the screenshots it whips past should already be here
+  function warm() {
+    for (const img of cards?.querySelectorAll<HTMLImageElement>(".shot img") ?? [])
+      img.loading = "eager";
+  }
+  cards.addEventListener("rollsoon", warm);
+
+  const SPIN_MS = 1900;
+  cards.addEventListener("roll", (e) => {
+    const done = (e as CustomEvent<() => void>).detail;
+    if (!on || !cards) return;
+    e.preventDefault(); // tells the die we've got it
+    landNow?.();
+    warm();
+    settle();
+    const n = real().length;
+    const s = step();
+    const from = (((Math.round(cards.scrollLeft / s) - PAD) % n) + n) % n;
+    const to = (from + 1 + Math.floor(Math.random() * (n - 1))) % n;
+    // card x (in cards, may run past n) sits at scrollLeft (PAD + x mod n) * s
+    const at = (x: number) => (PAD + (((x % n) + n) % n)) * s;
+    let frame = 0;
+    function land() {
+      landNow = null;
+      cancelAnimationFrame(frame);
+      jump(at(to));
+      cycle();
+      done();
     }
+    if (reduce.matches || !seen) return land();
+    landNow = land;
+    // two or three times round, then on to the one it lands on
+    const loops = n < 4 ? 3 : 2;
+    const dist = loops * n + ((to - from + n) % n);
+    cards.style.scrollSnapType = "none";
+    const t0 = performance.now();
+    (function tick(now: number) {
+      const t = Math.min(1, (now - t0) / SPIN_MS);
+      const eased = 1 - (1 - t) ** 4; // quick start, long slow finish
+      cards.scrollLeft = at(from + eased * dist);
+      if (t < 1) frame = requestAnimationFrame(tick);
+      else land();
+    })(t0);
   });
-  cards.addEventListener("shuffleend", build);
+  // any hand on the carousel lands the roll
+  for (const type of ["pointerdown", "wheel", "keydown"]) {
+    box.addEventListener(type, () => landNow?.(), { passive: true });
+  }
 
   // a resize changes the card width, so put the current card back in place
   let resizing: ReturnType<typeof setTimeout> | undefined;
