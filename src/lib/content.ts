@@ -9,6 +9,7 @@ import {
   getEmDashCollection,
   getSiteSettingsWithCacheHint,
   getTaxonomyTermsWithCacheHint,
+  type ImageValue,
 } from "emdash";
 import { site } from "../site";
 
@@ -191,10 +192,28 @@ export interface Post {
   content: unknown;
   /** its tags (EmDash's built-in Tags taxonomy), in the order they were added */
   tags: Tag[];
+  /** a comic's pages, in reading order; a piece with any pages is a comic */
+  pages: ComicPage[];
   /** the thread it belongs to (the Threads taxonomy), if any */
   thread?: Tag | undefined;
   /** its place in its thread, as set in the admin (gaps are fine) */
   part?: number | undefined;
+}
+
+export interface ComicPage {
+  /** EmDash's image value, rendered by emdash/ui's <Image> */
+  image: ImageValue;
+  /** what's on the page, for screen readers (falls back to the image's own alt) */
+  alt: string;
+}
+
+function pagesOf(data: Data): ComicPage[] {
+  if (!Array.isArray(data.pages)) return [];
+  return data.pages.flatMap((row: Data) => {
+    const image = row?.image as ImageValue | undefined;
+    if (!image || typeof image !== "object" || !(image.id || image.src)) return [];
+    return [{ image, alt: str(row.alt) ?? str(image.alt) ?? "" }];
+  });
 }
 
 export interface Tag {
@@ -227,6 +246,7 @@ export async function getPosts(astro: AstroLike): Promise<Post[]> {
       date: date instanceof Date ? date : new Date(String(date)),
       content: data.content,
       tags: termsOf(data, "tag"),
+      pages: pagesOf(data),
       thread: termsOf(data, "thread")[0],
       part: typeof data.part === "number" ? data.part : undefined,
     };
@@ -388,4 +408,11 @@ export function readingMinutes(content: unknown): number {
   const text = Array.isArray(content) ? extractPlainText(content) : "";
   const words = text.split(/\s+/).filter(Boolean).length;
   return Math.floor(words / 220) + 1;
+}
+
+/** How long a piece is, for list meta: "4 min" of reading, or a comic's "12 pages". */
+export function measure(post: Post): string {
+  const n = post.pages.length;
+  if (n) return `${n} ${n === 1 ? "page" : "pages"}`;
+  return `${readingMinutes(post.content)} min`;
 }

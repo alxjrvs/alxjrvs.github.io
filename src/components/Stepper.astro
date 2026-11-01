@@ -1,0 +1,67 @@
+---
+// The one way to step through a sequence on the writing pages: a thread's
+// parts ("← Back · The Long Road · Part 2 of 3 · Next →", above a piece's
+// title) and a comic's pages ("← Back · Page 3 of 12 · Next →", under them).
+// A thread's are links (rel prev/next); a comic's are buttons that
+// client/comic.ts drives, hidden without JS, when the pages simply stack.
+// client/stepper.ts makes ← → and a sideways swipe on [data-swipe] press the
+// Back and Next of the stepper marked `keys`, so both read the same way.
+interface Step {
+  href: string;
+  /** where it goes, for screen readers ("Part 1: Title") */
+  title: string;
+}
+interface Props {
+  /** what's being stepped through, for screen readers ("This thread", "Pages") */
+  label: string;
+  /** "Part", "Page" */
+  noun: string;
+  n: number;
+  total: number;
+  prev?: Step | undefined;
+  next?: Step | undefined;
+  /** before the count, linked: the thread's name and page */
+  name?: Step | undefined;
+  /** buttons for a script to drive, instead of links */
+  buttons?: boolean | undefined;
+  /** data-prev-href / data-next-href: where Back and Next go past either end */
+  beyond?: { prev?: string | undefined; next?: string | undefined } | undefined;
+  /** this is the stepper ← → and swipes press (one per page) */
+  keys?: boolean | undefined;
+  class?: string | undefined;
+}
+const { label, noun, n, total, prev, next, name, buttons, beyond, keys, class: cls } = Astro.props;
+const side = [
+  { step: -1, to: prev, text: "Back", rel: "prev" },
+  { step: 1, to: next, text: "Next", rel: "next" },
+] as const;
+---
+<nav
+  class:list={["stepper", cls]}
+  data-stepper
+  data-keys={keys ? "" : undefined}
+  aria-label={label}
+  hidden={buttons}
+  data-prev-href={beyond?.prev}
+  data-next-href={beyond?.next}
+>
+  {side.map(({ step, to, text, rel }, i) => {
+    const inner = step < 0 ? <><span aria-hidden="true">←</span> {text}</> : <>{text} <span aria-hidden="true">→</span></>;
+    const control = buttons ? (
+      <button type="button" class="step" data-step={step}>{inner}</button>
+    ) : to ? (
+      <a class="step" href={to.href} rel={rel} data-step={step} title={to.title}>{inner}</a>
+    ) : (
+      <span class="step" aria-disabled="true">{inner}</span>
+    );
+    return i === 0 ? (
+      <>
+        {control}
+        <span class="label step-count" aria-live={buttons ? "polite" : undefined}>
+          {name && <><a href={name.href}>{name.title}</a> · </>}
+          {noun} <span data-now>{n}</span> of {total}
+        </span>
+      </>
+    ) : control;
+  })}
+</nav>

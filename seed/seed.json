@@ -57,6 +57,26 @@
           "type": "integer"
         },
         {
+          "slug": "pages",
+          "label": "Comic pages: add page images to make this piece a comic. Readers click or swipe through them in this order; the Content field becomes the note under the comic.",
+          "type": "repeater",
+          "validation": {
+            "subFields": [
+              {
+                "slug": "image",
+                "type": "image",
+                "label": "Page",
+                "required": true
+              },
+              {
+                "slug": "alt",
+                "type": "text",
+                "label": "What's on the page (for screen readers)"
+              }
+            ]
+          }
+        },
+        {
           "slug": "content",
           "label": "Content",
           "type": "portableText"

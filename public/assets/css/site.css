@@ -594,16 +594,44 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .pager .t { font-weight: 700; font-size: 1.25rem; line-height: 1.2; letter-spacing: -.02em; }
 .pager a:hover .t { text-decoration: underline; text-underline-offset: .15em; text-decoration-thickness: 2px; }
 
+/* a comic: its pages stack (no JS), or show one at a time (.paged) with a
+   stepper under them. Pages fit the screen's height on
+   bigger screens, and the cursor shows which way a click on the page goes. */
+.comic { margin-top: 48px; scroll-margin-top: calc(var(--bar-h) + 24px); }
+.comic-pages { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+.comic-page img { display: block; max-width: 100%; height: auto; object-fit: contain; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--line); }
+.comic.paged .comic-pages { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.comic.paged .comic-pages[data-side="back"] { cursor: w-resize; }
+.comic.paged .comic-pages[data-side="next"] { cursor: e-resize; }
+.comic.paged .comic-page img { max-height: calc(100svh - var(--bar-h) - 150px); width: auto; }
+.post .comic-note { margin-top: 40px; }
+
+/* the stepper: Back · Page 3 of 12 · Next, the same for a comic's pages
+   (buttons, under them) and a thread's parts (links, above a piece's title).
+   Back and Next look like the header's buttons; the count is mono, the
+   number you're on in fg; a dead end dims. */
+.stepper { display: flex; align-items: center; gap: 16px; max-width: var(--measure); }
+.stepper[hidden] { display: none; }
+.stepper .step {
+  display: inline-flex; gap: 6px; align-items: center; font: inherit; font-weight: 600; font-size: .9375rem; line-height: 1;
+  color: var(--fg-muted); background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px;
+  flex: none; text-decoration: none; cursor: pointer;
+}
+.stepper .step:hover:not(:disabled, [aria-disabled]) { color: var(--fg); border-color: var(--fg-subtle); }
+.stepper .step:disabled, .stepper .step[aria-disabled] { opacity: .4; cursor: default; }
+.stepper .step-count { min-width: 0; text-align: center; }
+.stepper .step-count a { color: var(--fg-subtle); text-decoration: none; }
+.stepper .step-count a:hover { color: var(--fg); }
+.stepper [data-now] { color: var(--fg); }
+.comic .stepper { margin-top: 20px; }
+.part-bar { margin: 0 0 20px; }
+
 /* threads: chains of pieces that read together. Everything about a thread is
    quiet mono in fg-subtle, like the tags; the part you're on is fg with the
    nav-active underline, the same "you are here" as a current tag. */
 .thread-mark, .thread-go { color: var(--fg-subtle); text-decoration: none; }
 .thread-mark::before { content: "\21B3"; margin-right: 6px; opacity: .6; }
 .thread-mark:hover, .thread-go:hover { color: var(--fg); }
-.part-bar { display: flex; align-items: baseline; gap: 14px; margin: 0 0 14px; }
-.part-bar a { color: var(--fg-subtle); text-decoration: none; }
-.part-bar a:hover { color: var(--fg); }
-.part-bar span[aria-hidden] { color: var(--fg-subtle); opacity: .35; }
 .thread-fact .thread-name { color: var(--fg); text-decoration: none; }
 .thread-fact .thread-name:hover { text-decoration: underline; text-underline-offset: .2em; }
 .thread-fact .of { display: block; margin-top: 2px; font: .8125rem/1.6 var(--mono); color: var(--fg-subtle); }
@@ -663,6 +691,11 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .lines .line-meta { margin-top: 2px; }
   .lines .t { font-size: 1.3125rem; }
   .post .prose { font-size: 1.0625rem; line-height: 1.6; margin-top: 32px; }
+  .comic { margin-top: 32px; }
+  .comic.paged .comic-page img { max-height: none; width: 100%; }
+  .comic-pages { gap: 16px; }
+  .stepper { gap: 12px; }
+  .stepper .step { padding: 8px 10px; }
   .post-head .dek { font-size: 1.125rem; }
   .pager { grid-template-columns: 1fr; }
   .pager .prev { text-align: left; align-items: flex-start; border-top: 1px solid var(--line); }

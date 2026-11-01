@@ -1,7 +1,7 @@
 ---
 // A thread's parts as a numbered list, the current piece marked: in a piece's
 // margin, under its words, and on the thread's own page.
-import { type Post, readingMinutes, shortDate, year } from "../lib/content";
+import { measure, type Post, shortDate, year } from "../lib/content";
 
 interface Props {
   parts: Post[];
@@ -23,7 +23,7 @@ const { parts, current, full, class: cls } = Astro.props;
         {full && (
           <span class="label when">
             <time datetime={p.date.toISOString()}>{shortDate(p.date)}, {year(p.date)}</time>
-            <span>{readingMinutes(p.content)} min</span>
+            <span>{measure(p)}</span>
           </span>
         )}
       </a>

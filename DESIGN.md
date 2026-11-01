@@ -241,6 +241,20 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   each with its date. A 2px `progress` line along the bottom of the header
   fills as you read; it tracks the scroll, so reduced motion changes nothing.
   Under 860px the margin becomes one wrapped row above the title.
+- **A comic (`/writing/<slug>/` with pages):** a piece with comic pages is a
+  comic. It's the same page as a piece, but the pages take the words' place,
+  in the full width beside the margin, each in a 1px `line-strong` frame with
+  8px corners and fitted to the screen's height (full width on phones). One
+  page shows at a time. Clicking or tapping the left third of it goes back,
+  the rest goes on (the cursor shows which), as do ← and → and a sideways
+  swipe. Under it, the stepper (below) reads "← Back · Page 3 of 12 ·
+  Next →". In a thread, Back on the first page and Next on the last go to the
+  neighbouring parts, and going back into a comic lands on its last page.
+  The URL keeps `#page-N`, without adding history, and the `progress` line
+  shows the page you're on rather than the scroll. Turning a page is instant.
+  Any words become a note under the reader. The margin's Reading becomes
+  "Comic · 12 pages", and lists show "12 pages" where prose shows minutes.
+  Without JS the pages simply stack.
 - **Threads:** an ordered chain of pieces that read together (prose or
   comics alike). A piece joins one by picking a term in EmDash's Threads
   taxonomy; the term's name is the thread's title and its description the
@@ -257,12 +271,21 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
     the dek and "A thread · N parts" on the right, then the parts as
     numbered ruled lines (01, 02…, title, dek, date and minutes) and "Start
     reading →".
-  - On a piece: "← Thread · Part 2 of 3 →" in mono above the title (the
-    arrows step through the thread and dim at either end). The margin gets a
+  - On a piece: the stepper, "← Back · Thread · Part 2 of 3 · Next →",
+    above the title (the name links to the thread's page). The margin gets a
     Thread fact: its name, "Part 2 of 3" and the numbered parts (dropped
     under 860px). Under the words, the pager walks the thread instead of the
     archive (Part 1 ← / → Part 3; the last part offers "More writing"), then
     the full list of parts again.
+- **Stepper:** the one control for stepping through a sequence, used for
+  both a comic's pages (buttons, inside one piece) and a thread's parts
+  (links to other pieces). Back and Next in header-button style (1px `line`
+  border, 10px radius, `fg-muted`, `fg` on hover, dimmed at a dead end)
+  around a mono count with the number you're on in `fg`. It stays on one
+  line; the count wraps if it must. ← and → press the page's main stepper
+  (the comic's on a comic, the thread's otherwise), and a sideways swipe on a
+  comic's pages does the same, so a comic in a thread reads straight through
+  from part to part.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** the die at rest, matching the on-page button: a `die`
   (`brand-2`) face with the four pips of the curved "j" in `surface`. It
