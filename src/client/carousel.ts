@@ -130,7 +130,7 @@
   box.addEventListener("focusout", cycle);
 
   // The die's roll: the carousel whips through the projects, a few times
-  // round, and slows down to land on a different one, like a wheel. It's
+  // round, and slows down card by card to land on a different one. It's
   // driven frame by frame with snapping off; the loop's copies make the wrap
   // from last to first invisible. The auto-advance waits for it; touching or
   // scrolling the carousel lands it at once. Off screen, or with reduced
@@ -142,7 +142,27 @@
   }
   cards.addEventListener("rollsoon", warm);
 
-  const SPIN_MS = 1900;
+  // It keeps time with the die's other reels (die.ts): a tick per card, each
+  // gap longer than the last by the same base + i² curve, stretched over as
+  // many cards as it passes so it takes about as long as the tagline's object
+  // reel (15 ticks, base 30ms, curve 1.9) and slows down the same way. Each
+  // tick slides one card on, easing out, quick as the gaps while they're
+  // short; the last eases into place.
+  const TICKS = 15;
+  const BASE = 30;
+  const CURVE = 1.9;
+  const LAND_MS = 320;
+  const SLIDE_MAX = 240;
+  function schedule(k: number): { at: number[]; dur: number[] } {
+    const scale = TICKS / k;
+    const at = [0];
+    for (let j = 1; j < k; j++)
+      at.push((at[j - 1] as number) + (BASE + (j * scale) ** 2 * CURVE) * scale);
+    const dur = at.map((t, j) =>
+      j < k - 1 ? Math.min(SLIDE_MAX, (at[j + 1] as number) - t) : LAND_MS,
+    );
+    return { at, dur };
+  }
   cards.addEventListener("roll", (e) => {
     const done = (e as CustomEvent<() => void>).detail;
     if (!on || !cards) return;
@@ -170,12 +190,17 @@
     const loops = n < 4 ? 3 : 2;
     const dist = loops * n + ((to - from + n) % n);
     cards.style.scrollSnapType = "none";
+    const { at: starts, dur } = schedule(dist);
+    const end = (starts[dist - 1] as number) + (dur[dist - 1] as number);
     const t0 = performance.now();
+    let j = 0;
     (function tick(now: number) {
-      const t = Math.min(1, (now - t0) / SPIN_MS);
-      const eased = 1 - (1 - t) ** 4; // quick start, long slow finish
-      cards.scrollLeft = at(from + eased * dist);
-      if (t < 1) frame = requestAnimationFrame(tick);
+      const el = now - t0;
+      while (j < dist - 1 && el >= (starts[j + 1] as number)) j++;
+      const p = Math.min(1, Math.max(0, (el - (starts[j] as number)) / (dur[j] as number)));
+      const eased = j === dist - 1 ? 1 - (1 - p) ** 3 : 1 - (1 - p) ** 2;
+      cards.scrollLeft = at(from + j + eased);
+      if (el < end) frame = requestAnimationFrame(tick);
       else land();
     })(t0);
   });
