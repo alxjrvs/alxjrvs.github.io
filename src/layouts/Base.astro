@@ -1,9 +1,9 @@
 ---
-// Every page: the floating header, theme toggle, back-to-top button and,
+// Every page: the floating header, back-to-top button and,
 // away from the home page, the footer.
 import chromeSrc from "../client/chrome.ts?inline-script";
 import dieSrc from "../client/die.ts?inline-script";
-import themeInitSrc from "../client/theme-init.ts?inline-script";
+import jsFlagSrc from "../client/js-flag.ts?inline-script";
 import Die from "../components/Die.astro";
 import Footer from "../components/Footer.astro";
 import InlineScript from "../components/InlineScript.astro";
@@ -39,7 +39,9 @@ const v = Math.floor(Date.now() / 1000);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <InlineScript src={themeInitSrc} name="theme-init.ts" />
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#14161f">
+  <InlineScript src={jsFlagSrc} name="js-flag.ts" />
 
   <link rel="icon" href={`/assets/favicon.svg?v=${v}`} type="image/svg+xml">
   <link rel="preload" href="/assets/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -62,10 +64,6 @@ const v = Math.floor(Date.now() / 1000);
     </div>
     <nav class="nav" aria-label="Primary">
       {nav.map((item) => <a href={isHome || item.url !== section ? item.url : "/writing/"} aria-current={item.url === section ? "page" : undefined}>{item.name}</a>)}
-      <button id="theme-toggle" class="theme" type="button" aria-label="Switch to light theme">
-        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>
-        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1z"/></svg>
-      </button>
       <Die class="die-bar" />
     </nav>
     {progress && <span class="read-progress" id="read-progress" aria-hidden="true"></span>}

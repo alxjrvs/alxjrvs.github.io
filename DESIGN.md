@@ -17,8 +17,9 @@ saved for the die: the thing you roll.
 3. **Roles, not colours.** Components use role tokens (`--tag-subject`,
    `--die`…), never raw palette tokens or hex. Changing the palette means
    editing the palette block and nothing else.
-4. **Follow the visitor.** Light or dark comes from their system, live. The
-   toggle is only an override.
+4. **Dark, always.** The site has one theme: navy ink with the canary
+   highlight. There is no light mode and no theme toggle, whatever the
+   visitor's system says (`color-scheme: dark`).
 5. **Playful motion, never in the way.** Things roll and settle, and scrolling
    springs gently. Any input cancels motion at once. Reduced motion turns all of
    it into instant changes.
@@ -29,25 +30,25 @@ saved for the die: the thing you roll.
 
 ### 2.1 Palette: "Legal Pad"
 
-The palette is the only layer that changes between themes, or when the site
-is re-skinned.
+The palette is the only layer that changes when the site is re-skinned.
+There is one theme, dark.
 
-| Token          | Dark      | Light     | What it is                                   |
-| -------------- | --------- | --------- | -------------------------------------------- |
-| `surface`      | `#14161f` | `#fbf3c4` | page background (navy ink / canary pad)      |
-| `surface-bar`  | `#161822` at 74% | `#fdf8d6` at 80% | the floating header's glass   |
-| `line`         | `#262a38` | `#ece1a3` | dividers, borders, code backgrounds          |
-| `line-strong`  | `#353948` | `#d9cd8a` | screenshot frames                            |
-| `pattern`      | `#1c1f2c` | `#f5ebb5` | the dice grid behind the splash              |
-| `fg`           | `#f3f0dc` | `#14193a` | loudest text                                 |
-| `fg-body`      | `#e6e3ce` | `#212647` | running text                                 |
-| `fg-muted`     | `#c7c4ad` | `#3f4466` | secondary text                               |
-| `fg-subtle`    | `#aea57a` | `#75693a` | quietest text ("khaki pad", from the paper)  |
-| `brand`        | `#ffe45c` | `#1f3cb8` | signature colour (canary / ballpoint blue)   |
-| `brand-2`      | `#a986d6` | `#6b3fa0` | the pop (bruise purple)                      |
+| Token          | Value     | What it is                                   |
+| -------------- | --------- | -------------------------------------------- |
+| `surface`      | `#14161f` | page background (navy ink)      |
+| `surface-bar`  | `#161822` at 74% | the floating header's glass |
+| `line`         | `#262a38` | dividers, borders, code backgrounds          |
+| `line-strong`  | `#353948` | screenshot frames                            |
+| `pattern`      | `#1c1f2c` | the dice grid behind the splash              |
+| `fg`           | `#f3f0dc` | loudest text                                 |
+| `fg-body`      | `#e6e3ce` | running text                                 |
+| `fg-muted`     | `#c7c4ad` | secondary text                               |
+| `fg-subtle`    | `#aea57a` | quietest text ("khaki pad", from the paper)  |
+| `brand`        | `#ffe45c` | signature colour (canary)   |
+| `brand-2`      | `#a986d6` | the pop (bruise purple)                      |
 
-Projects bring their own `accent` (light) and `accent_dark` from
-their entry in the CMS (EmDash → Projects). They're used only inside that project's card or post.
+Projects bring their own `accent_dark` from their entry in the CMS
+(EmDash → Projects); the light `accent` field is unused. They're used only inside that project's card or post.
 
 ### 2.2 Text hierarchy
 
@@ -78,14 +79,14 @@ their entry in the CMS (EmDash → Projects). They're used only inside that proj
 
 ### 2.4 Contrast (WCAG, against `surface`)
 
-| Token       | Dark   | Light  |
-| ----------- | ------ | ------ |
-| `fg`        | 15.7:1 | 15.2:1 |
-| `fg-body`   | 14.0:1 | 13.1:1 |
-| `fg-muted`  | 10.2:1 | 8.4:1  |
-| `fg-subtle` | 7.3:1  | 4.9:1  |
-| `brand`     | 14.2:1 | 7.8:1  |
-| `brand-2`   | 6.1:1  | 6.6:1  |
+| Token       | Ratio  |
+| ----------- | ------ |
+| `fg`        | 15.7:1 |
+| `fg-body`   | 14.0:1 |
+| `fg-muted`  | 10.2:1 |
+| `fg-subtle` | 7.3:1  |
+| `brand`     | 14.2:1 |
+| `brand-2`   | 6.1:1  |
 
 Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
@@ -202,7 +203,7 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   the dice, lit up in `die`. It's at full strength down to about the
   middle of the splash, still clearly there at three quarters, and fades out
   just before the bottom. It's a CSS mask on `.intro::before`,
-  so its colour follows the theme. With JS, the script swaps in the same grid
+  so its colour comes from the palette. With JS, the script swaps in the same grid
   as real dice (an SVG, `fill: pattern`, same fade) so a roll can pulse
   through it; the CSS copy is the fallback.
 - **Scroll cue:** a thin chevron in `fg-subtle` (and `fg` on hover), centred at
@@ -214,8 +215,8 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   2px `nav-active` underline draws in from the left (0.3s). The current section
   is the last one whose top has passed 40% of the screen. On the splash, no
   link is current.
-- **Header:** floating glass bar with the wordmark, the tagline copy, nav, the
-  theme toggle and the die. On the home page it's hidden until the splash
+- **Header:** floating glass bar with the wordmark, the tagline copy, nav and
+  the die. On the home page it's hidden until the splash
   recedes into it.
 - **Project card:** screenshot (16:10, or 4:3 on phones; a WebP at 1280 and
   640 wide, picked with `srcset`, lazy-loaded), title, summary in
@@ -304,8 +305,8 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   from part to part.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** the die at rest, matching the on-page button: a `die`
-  (`brand-2`) face with the four pips of the curved "j" in `surface`. It
-  follows the browser's light or dark setting, like the page. The stylesheet
+  (`brand-2`) face with the four pips of the curved "j" in `surface`, the same
+  in light and dark browsers. The stylesheet
   and favicon links carry a `?v=` build stamp so a deploy is never hidden
   behind a cached copy.
 - **Social card:** `public/assets/social.png` (1200×630), used for every page's
@@ -318,8 +319,8 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
 
 ## 8. Changing the palette
 
-1. Edit only the two palette blocks at the top of `site.css`: `:root` for
-   dark, `[data-theme="light"]` for light.
+1. Edit only the palette block in `:root` at the top of `site.css`, and the
+   matching `theme-color` meta in `src/layouts/Base.astro`.
 2. Keep every text token at 4.5:1 or better against `surface`.
 3. `brand-2` must stay distinct from `brand`, because it is the pop.
 4. Update the favicon's colours in `public/assets/favicon.svg`, the social card's in

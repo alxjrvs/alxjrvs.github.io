@@ -1,6 +1,6 @@
 ---
 // Renders a TypeScript file from src/client/ as a classic inline <script>,
-// exactly where it's placed. Inline and synchronous on purpose: the theme has
+// exactly where it's placed. Inline and synchronous on purpose: the `js` class has
 // to be set before first paint, and the splash has to be measured before the
 // first frame, which a deferred module script (Astro's default) can't promise.
 // The source stays real TypeScript, so it's type-checked and linted; it's
