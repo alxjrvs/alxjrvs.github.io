@@ -244,6 +244,15 @@ export function dottedDate(date: Date): string {
   return `${p.year}·${p.month}·${(p.day ?? "").padStart(2, "0")}`;
 }
 
+/** "Oct 28", the index's date (the year is its group) */
+export function shortDate(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    timeZone: site.timezone,
+    month: "short",
+    day: "numeric",
+  });
+}
+
 /** "2026" */
 export function year(date: Date): string {
   return parts(date).year ?? "";

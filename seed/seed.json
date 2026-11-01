@@ -13,8 +13,9 @@
   "collections": [
     {
       "slug": "posts",
-      "label": "Posts",
-      "labelSingular": "Post",
+      "label": "Writing",
+      "labelSingular": "Piece",
+      "description": "The Writing section: alxjrvs.com/writing/ and the home page's latest writing. Only published pieces appear.",
       "urlPattern": "/writing/{slug}/",
       "supports": ["drafts", "revisions", "preview", "scheduling"],
       "fields": [

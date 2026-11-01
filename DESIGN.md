@@ -71,7 +71,10 @@ their entry in the CMS (EmDash → Projects). They're used only inside that proj
 | `die`          | `brand-2`   | both dice (splash corner, header)             |
 | `focus`        | `brand`     | keyboard focus rings                          |
 | `nav-active`   | `brand`     | underline under the current section's header link |
-| `accent`       | project     | "Visit" underline, post links                 |
+| `nav-active`   | `brand`     | (also current on inner pages: Writing on /writing/) |
+| `progress`     | `brand`     | the reading-progress line under the header, on a piece |
+| `margin-rule`  | `line-strong` | the legal pad's double margin rule on the writing pages |
+| `accent`       | project     | "Visit" underline, a piece's project dot and links |
 
 ### 2.4 Contrast (WCAG, against `surface`)
 
@@ -214,6 +217,22 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   640 wide, picked with `srcset`, lazy-loaded), title, summary in
   `fg-muted`, and a "Visit … ↗" link with an accent underline. No category
   label above the title.
+- **Writing index (`/writing/`):** ruled like a legal pad. The page head puts
+  the dek and a mono count ("4 pieces · since 2025") on the right. Below it, a
+  11rem margin column, a 4px double `margin-rule`, then the words. The newest
+  piece gets the big slot (margin label "Latest"; mono meta, a card-title-sized
+  title, the dek, "Read it →" with an accent underline). The rest are ruled
+  lines grouped by year, the year in mono in the margin and sticky under the
+  header; each line is title, dek and project dot on the left, short date and
+  minutes in mono on the right. Under 860px the margin stacks on top and the
+  rule goes; under 600px the date moves above the title.
+- **A piece (`/writing/<slug>/`):** the same margin and rule. The margin is
+  sticky and holds "← Writing", Published, Reading and Project (a dot in the
+  project's accent, linking out). The title, dek and 40rem prose sit beside
+  it. The words end on a small `fg-subtle` die showing one, then Newer/Older,
+  each with its date. A 2px `progress` line along the bottom of the header
+  fills as you read; it tracks the scroll, so reduced motion changes nothing.
+  Under 860px the margin becomes one wrapped row above the title.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** the die at rest, matching the on-page button: a `die`
   (`brand-2`) face with the four pips of the curved "j" in `surface`. It

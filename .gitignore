@@ -15,3 +15,4 @@ node_modules/
 
 # EmDash build metadata
 .emdash/
+emdash-env.d.ts
