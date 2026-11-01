@@ -15,6 +15,7 @@ export const GET: APIRoute = async (context) => {
     { loc: absoluteUrl("/writing/") },
     ...posts.map((p) => ({ loc: absoluteUrl(`/writing/${p.id}/`), lastmod: p.date.toISOString() })),
     ...tags.map((t) => ({ loc: absoluteUrl(`/writing/tags/${t.slug}/`) })),
+    ...(threads.length ? [{ loc: absoluteUrl("/writing/threads/") }] : []),
     ...threads.map((t) => ({ loc: absoluteUrl(`/writing/threads/${t.slug}/`) })),
   ];
   const body = urls

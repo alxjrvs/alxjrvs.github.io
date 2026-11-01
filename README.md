@@ -65,7 +65,7 @@ for fresh databases and the admin's Content Types screen for the live one.
 | `src/lib/content.ts`         | Every read from EmDash: posts, projects, sections, randomizers, site settings |
 | `src/site.ts`                | Settings that aren't copy: URL, time zone, social card, the Web Analytics token |
 | `src/pages/index.astro`      | The whole home page |
-| `src/pages/writing/`         | The archive at `/writing/`, grouped by year, one page per post, one per tag (`tags/`) and one per thread (`threads/`) |
+| `src/pages/writing/`         | The archive at `/writing/`, grouped by year, one page per post, one per tag (`tags/`), and the threads (`threads/`: an index and one page per thread) |
 | `src/pages/[...redirect].astro` | `/about/`, `/projects/` and old `/work/...` URLs, 301'd to the matching section |
 | `src/pages/feed.xml.ts`, `sitemap.xml.ts` | The Atom feed and the sitemap |
 | `src/pages/projects.json.ts` | The project list, for the Screenshots workflow |

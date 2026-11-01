@@ -4,7 +4,7 @@ import ThreadParts from "../../../components/ThreadParts.astro";
 import Base from "../../../layouts/Base.astro";
 import { getThreads } from "../../../lib/content";
 
-// One thread: its name and dek, then every published part in order, ruled
+// One thread: its name and description (in italics), then every published part in order, ruled
 // like the Writing index. A thread with no published part gets the 404.
 const slug = decodeSlug(Astro.params.thread);
 const thread = (await getThreads(Astro)).find((t) => t.slug === slug);
@@ -16,11 +16,11 @@ const [first] = thread.parts;
 <div class="wrap">
 <header class="pagehead writing-head">
   <div>
-    <a class="label crumb" href="/writing/"><span aria-hidden="true">←</span> Writing</a>
+    <a class="label crumb" href="/writing/threads/"><span aria-hidden="true">←</span> Threads</a>
     <h1>{thread.label}</h1>
   </div>
   <div class="writing-aside">
-    {thread.description && <p class="dek">{thread.description}</p>}
+    {thread.description && <p class="thread-about">{thread.description}</p>}
     <p class="label">A thread · {total} {total === 1 ? "part" : "parts"}</p>
   </div>
 </header>

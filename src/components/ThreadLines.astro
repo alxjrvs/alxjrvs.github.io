@@ -1,13 +1,18 @@
 ---
 // Threads as ruled lines under a "Threads" margin label: the thread's name
 // and dek (linking to its page), how many parts and when, and links to start
-// at part one or jump to the newest part. The Writing index, above the years.
+// at part one or jump to the newest part. The Writing index (above the years)
+// and the Threads index.
 import { type Thread, shortDate, year } from "../lib/content";
 
 interface Props {
   threads: Thread[];
+  /** the margin label */
+  heading?: string | undefined;
+  /** link to the Threads index under the label (the Writing index) */
+  more?: boolean | undefined;
 }
-const { threads } = Astro.props;
+const { threads, heading = "Threads", more } = Astro.props;
 const span = (t: Thread) => {
   const times = t.parts.map((p) => p.date);
   const first = new Date(Math.min(...times.map(Number)));
@@ -18,7 +23,10 @@ const span = (t: Thread) => {
 ---
 {threads.length > 0 && (
   <section class="ruled" aria-labelledby="threads">
-    <h2 class="margin label" id="threads">Threads</h2>
+    <div class="margin">
+      <h2 class="label" id="threads">{heading}</h2>
+      {more && <a class="label thread-go all-threads" href="/writing/threads/">All threads <span aria-hidden="true">→</span></a>}
+    </div>
     <ul class="lines threads">
       {threads.map((t) => {
         const [first] = t.parts;
@@ -28,7 +36,7 @@ const span = (t: Thread) => {
           <li>
             <a class="line" href={`/writing/threads/${t.slug}/`}>
               <span class="t">{t.label}</span>
-              {t.description && <span class="x">{t.description}</span>}
+              {t.description && <span class="x thread-about">{t.description}</span>}
             </a>
             <span class="label when">
               <span>{t.parts.length} {t.parts.length === 1 ? "part" : "parts"}</span>

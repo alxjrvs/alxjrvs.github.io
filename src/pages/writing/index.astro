@@ -67,7 +67,7 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
         <Tags tags={lead.tags} />
       </div>
     </section>
-    <ThreadLines threads={threads} />
+    <ThreadLines threads={threads} more />
     <PieceLines posts={rest} projects={projects} places={places} />
     {tags.length > 0 && (
       <section class="ruled" aria-labelledby="all-tags">
