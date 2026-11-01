@@ -1,0 +1,82 @@
+---
+import carouselSrc from "../client/carousel.ts?raw";
+import dieSrc from "../client/die.ts?raw";
+import gridSrc from "../client/grid.ts?raw";
+import recedeSrc from "../client/recede.ts?raw";
+import snapSrc from "../client/snap.ts?raw";
+import Die from "../components/Die.astro";
+import Footer from "../components/Footer.astro";
+import InlineScript from "../components/InlineScript.astro";
+import PostList from "../components/PostList.astro";
+import { Content as Bio } from "../data/about.md";
+import { likes } from "../data/likes";
+import { objects, rareOdds, rareSubject, subjects } from "../data/tagline";
+import Base from "../layouts/Base.astro";
+import { getPosts, getProjects } from "../lib/content";
+
+const projects = await getProjects();
+const posts = await getPosts();
+const rollData = JSON.stringify({ subjects, objects, rare: rareSubject, rareOdds, likes }).replace(
+  /</g,
+  "\\u003c",
+);
+---
+<Base>
+<section class="screen intro" aria-label="Introduction">
+  <Die class="die-corner" />
+  <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
+  <p class="tagline" id="tagline"><span class="roll roll-subject" data-suffix=".">{subjects[0]}.</span> I make <em class="roll roll-object" data-suffix=".">{objects[0]}.</em></p>
+  <a class="scroll-cue" href="#projects" aria-label="Scroll to projects"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></a>
+</section>
+
+<section class="screen wrap" id="projects" aria-labelledby="projects-head">
+  <h2 id="projects-head">Projects</h2>
+  <div class="carousel">
+  <div class="cards" id="cards">
+    {projects.map(({ data: p }) => {
+      const shot = p.shot && `/assets/work/${p.shot}`;
+      return (
+        <article class="card" style={`--accent-light:${p.accent};--accent-dark:${p.accent_dark}`}>
+          {shot && <a class="shot" href={p.link} tabindex="-1" aria-hidden="true"><img src={`${shot}.webp`} srcset={`${shot}-640.webp 640w, ${shot}.webp 1280w`} sizes="(max-width: 760px) 84vw, (max-width: 1100px) 45vw, 22vw" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>}
+          <h3>{p.title}</h3>
+          <p class="summary">{p.summary}</p>
+          <a class="visit" href={p.link}>Visit {p.link_label ?? p.title} <span aria-hidden="true">↗</span></a>
+        </article>
+      );
+    })}
+  </div>
+  <button class="nudge next" type="button" aria-label="Next project" aria-controls="cards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+  </div>
+</section>
+
+{/* Writing only exists on the page (and in the nav) once there's some. */}
+{posts.length > 0 && (
+  <section class="screen wrap" id="writing" aria-labelledby="writing-head">
+    <div class="section-head">
+      <h2 id="writing-head">Latest writing</h2>
+      <a href="/writing/">All writing <span aria-hidden="true">→</span></a>
+    </div>
+    <PostList posts={posts.slice(0, 5)} />
+  </section>
+)}
+
+<section class="screen wrap about" id="about" aria-labelledby="about-head">
+  <div class="about-body">
+    <h2 id="about-head">About</h2>
+    <div class="bio">
+      <Bio />
+      <p class="likes">I like <span id="likes"><span class="like">{likes[0][0]}</span>, <span class="like">{likes[1][0]}</span>, and <span class="like">{likes[2][0]}</span></span>.</p>
+    </div>
+  </div>
+  <Footer class="foot" />
+</section>
+
+<Fragment slot="scripts">
+  <script is:inline type="application/json" id="roll-data" set:html={rollData} />
+  <InlineScript src={dieSrc} name="die.ts" />
+  <InlineScript src={gridSrc} name="grid.ts" />
+  <InlineScript src={carouselSrc} name="carousel.ts" />
+  <InlineScript src={recedeSrc} name="recede.ts" />
+  <InlineScript src={snapSrc} name="snap.ts" />
+</Fragment>
+</Base>

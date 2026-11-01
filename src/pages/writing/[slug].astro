@@ -1,0 +1,49 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { getPosts, getProjects, longDate, type Post, readingMinutes } from "../../lib/content";
+
+export async function getStaticPaths() {
+  // newest first, so the next one along is older
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, older: posts[i + 1], newer: posts[i - 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  older?: Post;
+  newer?: Post;
+}
+
+const { post, older, newer } = Astro.props;
+const { Content } = await render(post);
+const proj = post.data.project
+  ? (await getProjects()).find((p) => p.id === post.data.project)?.data
+  : undefined;
+---
+<Base title={post.data.title} description={post.data.description} published={post.date}>
+<article class="post wrap" style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+  <header class="post-head">
+    <a class="crumb label" href="/writing/">Writing</a>
+    <h1>{post.data.title}</h1>
+    {post.data.description && <p class="dek">{post.data.description}</p>}
+    <p class="meta label">
+      <span>{longDate(post.date)}</span>
+      <span>{readingMinutes(post.body)} min read</span>
+      {proj && <a href={proj.link}>On {proj.title} <span aria-hidden="true">↗</span></a>}
+    </p>
+  </header>
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  <nav class="pager" aria-label="More writing">
+    {older && <a class="prev" href={`/writing/${older.id}/`}><span class="label">← Older</span><span class="t">{older.data.title}</span></a>}
+    {newer && <a class="next" href={`/writing/${newer.id}/`}><span class="label">Newer →</span><span class="t">{newer.data.title}</span></a>}
+  </nav>
+</article>
+</Base>

@@ -1,0 +1,18 @@
+---
+import { dottedDate, type Post } from "../lib/content";
+
+interface Props {
+  posts: Post[];
+}
+const { posts } = Astro.props;
+---
+<ul class="archive">
+  {posts.map((post) => (
+    <li>
+      <a href={`/writing/${post.id}/`}>
+        <span class="d">{dottedDate(post.date)}</span>
+        <span class="t">{post.data.title}{post.data.description && <span class="x">{post.data.description}</span>}</span>
+      </a>
+    </li>
+  ))}
+</ul>

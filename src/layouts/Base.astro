@@ -1,0 +1,77 @@
+---
+// Every page: the floating header, theme toggle, back-to-top button and,
+// away from the home page, the footer.
+import chromeSrc from "../client/chrome.ts?raw";
+import themeInitSrc from "../client/theme-init.ts?raw";
+import Die from "../components/Die.astro";
+import Footer from "../components/Footer.astro";
+import InlineScript from "../components/InlineScript.astro";
+import Seo from "../components/Seo.astro";
+import Wordmark from "../components/Wordmark.astro";
+import { objects, subjects } from "../data/tagline";
+import { getPosts } from "../lib/content";
+import { site } from "../site";
+
+interface Props {
+  title?: string | undefined;
+  description?: string | undefined;
+  published?: Date | undefined;
+}
+
+const isHome = Astro.url.pathname === "/";
+const hasPosts = (await getPosts()).length > 0;
+const nav = site.nav.filter((item) => !("needsPosts" in item && item.needsPosts) || hasPosts);
+// changes on every build, so a deploy's CSS is never served from a stale cache
+const v = Math.floor(Date.now() / 1000);
+---
+<!doctype html>
+<html lang={site.lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <InlineScript src={themeInitSrc} name="theme-init.ts" />
+
+  <link rel="icon" href={`/assets/favicon.svg?v=${v}`} type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href={`/assets/css/site.css?v=${v}`}>
+  <link type="application/atom+xml" rel="alternate" href={`${site.url}/feed.xml`} title={site.title}>
+  <Seo {...Astro.props} />
+</head>
+<body class={isHome ? "home" : "inner"}>
+  <a class="skip" href="#main">Skip to content</a>
+
+  {/*
+    The floating header. On the home page it starts hidden and slides in as
+    you scroll, while the big wordmark shrinks into the brand slot (see
+    src/client/recede.ts). Everywhere else it's simply there.
+  */}
+  <header class="bar" id="bar">
+    <div class="bar-id">
+      <a class="brand" href="/"><Wordmark /></a>
+      {isHome && <p class="bar-tag" aria-hidden="true"><span class="roll-subject" data-suffix=".">{subjects[0]}.</span> I make <em class="roll-object" data-suffix=".">{objects[0]}.</em></p>}
+    </div>
+    <nav class="nav" aria-label="Primary">
+      {nav.map((item) => <a href={item.url}>{item.name}</a>)}
+      <button id="theme-toggle" class="theme" type="button" aria-label="Switch to light theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1z"/></svg>
+      </button>
+      {isHome && <Die class="die-bar" />}
+    </nav>
+  </header>
+
+  <main id="main">
+    <slot />
+  </main>
+
+  {!isHome && <Footer class="foot wrap" />}
+
+  <a class="to-top" id="to-top" href="#main" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></a>
+
+  <InlineScript src={chromeSrc} name="chrome.ts" />
+  <slot name="scripts" />
+  {site.analyticsToken && (
+    <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: site.analyticsToken })} />
+  )}
+</body>
+</html>

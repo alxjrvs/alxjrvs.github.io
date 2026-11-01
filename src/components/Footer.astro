@@ -1,0 +1,12 @@
+---
+import Wordmark from "./Wordmark.astro";
+
+interface Props {
+  class: string;
+}
+const year = new Date().getFullYear();
+---
+<footer class={Astro.props.class}>
+  <span>© {year} <Wordmark /></span>
+  <a href="https://github.com/alxjrvs">GitHub <span aria-hidden="true">↗</span></a>
+</footer>

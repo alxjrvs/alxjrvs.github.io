@@ -1,0 +1,64 @@
+---
+// Title, description, canonical, Open Graph, Twitter and JSON-LD: the same
+// tags jekyll-seo-tag wrote for this site.
+import { absoluteUrl, site } from "../site";
+
+interface Props {
+  /** the page's own title; the home page has none */
+  title?: string | undefined;
+  description?: string | undefined;
+  /** set for posts */
+  published?: Date | undefined;
+}
+
+const { title, description = site.description, published } = Astro.props;
+// the 404 page is built as /404.html, the file Cloudflare serves for misses
+const path = Astro.url.pathname.replace(/^\/404\/?$/, "/404.html");
+const canonical = absoluteUrl(path);
+const isHome = Astro.url.pathname === "/";
+const fullTitle = title ? `${title} | ${site.title}` : `${site.title} | ${site.tagline}`;
+const ogTitle = title ?? site.title;
+const image = { ...site.image, url: absoluteUrl(site.image.path) };
+
+const ld = {
+  "@context": "https://schema.org",
+  "@type": published ? "BlogPosting" : isHome ? "WebSite" : "WebPage",
+  author: { "@type": "Person", name: site.author },
+  ...(published && {
+    dateModified: published.toISOString(),
+    datePublished: published.toISOString(),
+  }),
+  description,
+  headline: ogTitle,
+  image: {
+    width: image.width,
+    height: image.height,
+    alt: image.alt,
+    url: image.url,
+    "@type": "imageObject",
+  },
+  ...(published && { mainEntityOfPage: { "@type": "WebPage", "@id": canonical } }),
+  ...(isHome && { name: site.title }),
+  url: canonical,
+};
+---
+<title>{fullTitle}</title>
+<meta property="og:title" content={ogTitle}>
+<meta name="author" content={site.author}>
+<meta property="og:locale" content={site.lang}>
+<meta name="description" content={description}>
+<meta property="og:description" content={description}>
+<link rel="canonical" href={canonical}>
+<meta property="og:url" content={canonical}>
+<meta property="og:site_name" content={site.title}>
+<meta property="og:image" content={image.url}>
+<meta property="og:image:height" content={String(image.height)}>
+<meta property="og:image:width" content={String(image.width)}>
+<meta property="og:image:alt" content={image.alt}>
+<meta property="og:type" content={published ? "article" : "website"}>
+{published && <meta property="article:published_time" content={published.toISOString()}>}
+<meta name="twitter:card" content="summary_large_image">
+<meta property="twitter:image" content={image.url}>
+<meta name="twitter:image:alt" content={image.alt}>
+<meta property="twitter:title" content={ogTitle}>
+<script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />

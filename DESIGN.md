@@ -1,7 +1,7 @@
 # alxjrvs design language
 
 This is the source of truth for how the site looks, moves and reads. The CSS
-(`assets/css/site.css`) implements it. When the two disagree, fix one of them.
+(`public/assets/css/site.css`) implements it. When the two disagree, fix one of them.
 
 **In one line:** professional, with something a little wrong. The page is
 mostly calm navy and canary yellow, like a legal pad. One bruise-purple pop is
@@ -47,7 +47,7 @@ is re-skinned.
 | `brand-2`      | `#a986d6` | `#6b3fa0` | the pop (bruise purple)                      |
 
 Projects bring their own `accent` (light) and `accent_dark` from
-`_projects/*.md`. They're used only inside that project's card or post.
+`src/content/projects/*.md`. They're used only inside that project's card or post.
 
 ### 2.2 Text hierarchy
 
@@ -94,7 +94,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   700 with tight negative tracking.
 - **IBM Plex Mono** (400/500) for labels, dates and code. Labels are
   uppercase with `.08em` tracking.
-- Both are self-hosted from `assets/fonts/` (latin subset), and the grotesk is
+- Both are self-hosted from `public/assets/fonts/` (latin subset), and the grotesk is
   preloaded, so the splash never waits on a third-party stylesheet.
 
 | Style           | Size                                    | Weight | Tracking |
@@ -116,7 +116,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   In the splash it breaks after the subject, so "I make *object*." sits on
   its own line beneath it; the header's copy stays on one line.
   About 1 roll in 50 lands the subject on the rare "Undiagnosed, but, come on."
-  (`_data/tagline.yml`), which brings its own full stop.
+  (`src/data/tagline.ts`), which brings its own full stop.
 - Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
   splash wordmark spells out "alex jarvis" on hover, with the extra letters in grey.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.
@@ -212,7 +212,7 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   follows the browser's light or dark setting, like the page. The stylesheet
   and favicon links carry a `?v=` build stamp so a deploy is never hidden
   behind a cached copy.
-- **Social card:** `assets/social.png` (1200×630), used for every page's
+- **Social card:** `public/assets/social.png` (1200×630), used for every page's
   Open Graph and Twitter preview. It's the dark splash in miniature: the dice
   grid fading down, the purple die on its "j", the wordmark, the default
   tagline and `alxjrvs.com` as a mono label. Edit `scripts/social-card.html`
@@ -226,5 +226,5 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
    dark, `[data-theme="light"]` for light.
 2. Keep every text token at 4.5:1 or better against `surface`.
 3. `brand-2` must stay distinct from `brand`, because it is the pop.
-4. Update the favicon's colours in `assets/favicon.svg`, the social card's in
+4. Update the favicon's colours in `public/assets/favicon.svg`, the social card's in
    `scripts/social-card.html` (then re-render it), and the tables above.

@@ -1,10 +1,10 @@
 name: CI
 
-# Preview == prod: build the site with the same github-pages gem set that
-# GitHub Pages uses server-side, then link-check the output. Runs on PRs (the
-# gate) and on pushes to main (a post-merge canary). The Screenshots workflow
-# dispatches it on its bot branch, because main requires a green "build" check
-# on a commit before it can be pushed there.
+# The gate: format, lint and typecheck, then build the site and check every
+# internal link in the output. Runs on PRs and on pushes to main (a post-merge
+# canary). Deploying is deploy.yml's job. The Screenshots workflow dispatches
+# it on its bot branch, because main requires a green "build" check on a
+# commit before it can be pushed there.
 on:
   workflow_dispatch:
   pull_request:
@@ -14,34 +14,40 @@ on:
 permissions:
   contents: read
 
-# One in-flight run per ref; a newer push cancels the older one.
+# One run per ref. PR runs are superseded by the next push; main runs are not
+# cancelled, so every commit on main keeps a real verdict.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Format
+        run: bun run format:check
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bun run typecheck
+
   build:
     name: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.3"
-          bundler-cache: true
+      - name: Build
+        run: bun run build
 
-      - name: Build site
-        run: bundle exec jekyll build --trace
-        env:
-          JEKYLL_ENV: production
-
-      - name: Link-check the built site
-        run: |
-          gem install html-proofer -v "~> 5.0"
-          htmlproofer ./_site \
-            --disable-external \
-            --allow-hash-href \
-            --ignore-empty-alt \
-            --no-enforce-https
+      - name: Check links
+        run: bun run check:links
