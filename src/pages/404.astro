@@ -6,7 +6,7 @@ import { getSection } from "../lib/content";
 const page = await getSection(Astro, "not-found");
 Astro.response.status = 404;
 ---
-<Base title={page?.title ?? "Not found"}>
+<Base title={page?.title ?? "Not found"} noindex>
 <section class="notfound wrap">
   <h1>{page?.kicker ?? "404"}</h1>
   {page && <Prose value={page.body} />}

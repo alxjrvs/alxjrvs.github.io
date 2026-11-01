@@ -9,7 +9,15 @@ const targets: Record<string, string> = {
   "work/boom": "/#projects",
   "work/dotfiles": "/#projects",
 };
-const target = targets[(Astro.params.redirect ?? "").replace(/\/$/, "").toLowerCase()];
+const key = (Astro.params.redirect ?? "").replace(/\/$/, "").toLowerCase();
+// Ajar's old standalone reader (/ajarcomic/, /ajarcomic/3, /ajarcomic/end):
+// one home now, the comic on the Writing page, at the same page.
+const ajar = /^ajarcomic(?:\/(\d+|end)(?:\.html)?)?$/.exec(key);
+if (ajar) {
+  const n = Number(ajar[1]);
+  return Astro.redirect(n > 1 ? `/writing/ajar/#page-${n}` : "/writing/ajar/", 301);
+}
+const target = targets[key];
 if (target) return Astro.redirect(target, 301);
 return Astro.rewrite("/404");
 ---

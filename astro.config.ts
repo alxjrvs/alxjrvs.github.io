@@ -92,5 +92,6 @@ export default defineConfig({
     "/feed.xml": cached,
     "/sitemap.xml": cached,
     "/projects.json": cached,
+    "/llms.txt": cached,
   },
 });

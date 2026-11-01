@@ -21,8 +21,16 @@ const [projects, posts, rolls, projectsHead, writingHead, about, places] = await
   getPlaces(Astro),
 ]);
 const { subjects, objects, lead, likes, likesLead } = rolls;
+// the projects, for search engines: an ItemList on the profile page
+const ld = {
+  hasPart: {
+    "@type": "ItemList",
+    name: projectsHead?.title ?? "Projects",
+    itemListElement: projects.map((p, i) => ({ "@type": "ListItem", position: i + 1, name: p.title, url: p.link, description: p.summary })),
+  },
+};
 ---
-<Base>
+<Base ld={ld}>
 <section class="screen intro" aria-label="Introduction">
   <Die class="die-corner" />
   <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
@@ -38,7 +46,7 @@ const { subjects, objects, lead, likes, likesLead } = rolls;
       const shot = p.shot && `/assets/work/${p.shot}`;
       return (
         <article class="card" style={`--accent:${p.accent_dark}`} aria-roledescription="slide" aria-label={`${i + 1} of ${projects.length}: ${p.title}`}>
-          {shot && <a class="shot" href={p.link} tabindex="-1" aria-hidden="true"><img src={`${shot}.webp`} srcset={`${shot}-640.webp 640w, ${shot}.webp 1280w`} sizes="(max-width: 760px) 84vw, 60vw" alt="" width="1280" height="800" loading="lazy" decoding="async"></a>}
+          {shot && <a class="shot" href={p.link} tabindex="-1" aria-hidden="true"><img src={`${shot}.webp`} srcset={`${shot}-640.webp 640w, ${shot}.webp 1280w`} sizes="(max-width: 760px) 84vw, 60vw" alt="" width="1280" height="800" loading="lazy" fetchpriority="low" decoding="async"></a>}
           <div class="card-body">
             <h3>{p.title}</h3>
             <p class="summary">{p.summary}</p>

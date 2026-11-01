@@ -2,11 +2,14 @@
 # a section of the home page are redirect pages in src/pages/[...redirect].astro
 # instead, because a URL fragment can't be written here.
 
+# Other feed names readers guess at.
+/rss.xml   /feed.xml 301
+/atom.xml  /feed.xml 301
+/rss       /feed.xml 301
+
 # GitHub Pages project sites. While alxjrvs.com was served by GitHub Pages,
-# every repo's Pages site also appeared under it (alxjrvs.com/ajarcomic/…). They
-# live on at alxjrvs.github.io/<repo>/ once the custom domain is removed from
-# this repo's Pages settings.
-/ajarcomic       https://alxjrvs.github.io/ajarcomic/ 301
+# every repo's Pages site also appeared under it (alxjrvs.com/FulcrumWorks/…).
+# They live on at alxjrvs.github.io/<repo>/. (Ajar's old reader, /ajarcomic,
+# now has one home, /writing/ajar/: see src/pages/[...redirect].astro.)
 /FulcrumWorks    https://alxjrvs.github.io/FulcrumWorks/ 301
-/ajarcomic/*     https://alxjrvs.github.io/ajarcomic/:splat     301
 /FulcrumWorks/*  https://alxjrvs.github.io/FulcrumWorks/:splat  301

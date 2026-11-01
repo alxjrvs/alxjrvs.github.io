@@ -2,9 +2,16 @@
 // tagline and every other bit of copy live in EmDash (see src/lib/content.ts).
 
 export const site = {
-  author: "alxjrvs",
+  /** the person behind it, by name (the site's title, "alxjrvs", is the handle) */
+  author: "Alex Jarvis",
   url: "https://alxjrvs.com",
   lang: "en",
+  /** Open Graph wants a territory too */
+  locale: "en_US",
+  /** profiles that are also me (schema.org sameAs, rel="me") */
+  sameAs: ["https://github.com/alxjrvs"],
+  /** shown on the page as "alxjrvs (at) gmail (dot) com", made a link by script */
+  email: { user: "alxjrvs", domain: "gmail.com" },
   // Post dates are written and shown in this zone.
   timezone: "America/New_York",
 
