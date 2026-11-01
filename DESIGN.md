@@ -209,7 +209,8 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   as real dice (an SVG, `fill: pattern`, same fade) so a roll can pulse
   through it; the CSS copy is the fallback.
 - **Scroll cue:** a thin chevron in `fg-subtle` (and `fg` on hover), centred at
-  the foot of the splash, that hints there's more below. It bobs gently (2.4s,
+  the foot of the splash, that hints there's more below, with a small mono
+  "Scroll down" label above it in the same colour. The chevron bobs gently (2.4s,
   still under reduced motion), links to Projects, and fades out (0.35s) as
   soon as the page scrolls, coming back only at the very top.
 - **Header nav:** links are `fg-muted`, and `fg` on hover. The link for the
