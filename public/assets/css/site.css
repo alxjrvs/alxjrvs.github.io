@@ -791,3 +791,31 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .about h2 { font-size: 1.875rem; margin-bottom: 10px; }
   .bio { font-size: .9375rem; line-height: 1.4; }
 }
+
+/* ── a piece's head, on phones ──────────────────────── */
+/* Above the title there's only what helps you start reading: "← Writing"
+   with the date and minutes on the same line, then the credits and project,
+   unlabelled where the value says what it is. The thread's name moves into
+   the stepper, and the tags wait under the words. */
+.end-tags { display: none; }
+@media (max-width: 600px) {
+  .inner main:has(.post:not(.is-comic)) { padding-top: calc(var(--bar-h) + 24px); }
+  .ruled.post .post-margin { gap: 6px 16px; padding: 0 0 14px; }
+  .post .facts { display: contents; }
+  .post .facts > div { order: 2; gap: 6px; }
+  .post .facts > .when-fact { order: 1; }
+  .post .when-fact dt, .post .project-fact dt, .post .thread-fact, .post .tags-fact { display: none; }
+  .post:not(.is-comic) .reading-fact dd::after { content: " read"; }
+  .post .facts dd { font-size: .875rem; }
+  .post .facts .credit dt { font-size: .6875rem; }
+  .post .post-body { padding-top: 16px; }
+  .post-head h1 { font-size: 2.25rem; line-height: 1; }
+  .post-head .dek { margin-top: 12px; font-size: 1.0625rem; }
+  .part-bar { margin: 0 0 14px; }
+  .part-bar .step-count { white-space: normal; line-height: 1.5; }
+  .part-bar .step-name { display: block; text-transform: none; letter-spacing: 0; }
+  .part-bar .step-name .sep { display: none; }
+  .post-head .thread-about { margin: 0 0 18px; font-size: 1rem; line-height: 1.45; }
+  .post .prose { margin-top: 24px; }
+  .end-tags { display: flex; margin-top: 20px; }
+}

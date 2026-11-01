@@ -63,9 +63,9 @@ const barNext = place
       {post.credits.map((c) => (
         <div class="credit"><dt class="label">{c.role}</dt><dd>{c.link ? <a href={c.link}>{c.name} <span aria-hidden="true">↗</span></a> : c.name}</dd></div>
       ))}
-      <div><dt class="label">Published</dt><dd><time datetime={post.date.toISOString()}>{longDate(post.date)}</time></dd></div>
-      <div><dt class="label">{comic ? "Comic" : "Reading"}</dt><dd>{measure(post)}</dd></div>
-      {proj && <div><dt class="label">Project</dt><dd><a class="tag" href={proj.link}>{proj.title} <span aria-hidden="true">↗</span></a></dd></div>}
+      <div class="when-fact"><dt class="label">Published</dt><dd><time datetime={post.date.toISOString()}>{longDate(post.date)}</time></dd></div>
+      <div class="when-fact reading-fact"><dt class="label">{comic ? "Comic" : "Reading"}</dt><dd>{measure(post)}</dd></div>
+      {proj && <div class="project-fact"><dt class="label">Project</dt><dd><a class="tag" href={proj.link}>{proj.title} <span aria-hidden="true">↗</span></a></dd></div>}
       {place && (
         <div class="thread-fact">
           <dt class="label">Thread</dt>
@@ -76,7 +76,7 @@ const barNext = place
           </dd>
         </div>
       )}
-      {post.tags.length > 0 && <div><dt class="label">Tags</dt><dd><Tags tags={post.tags} /></dd></div>}
+      {post.tags.length > 0 && <div class="tags-fact"><dt class="label">Tags</dt><dd><Tags tags={post.tags} /></dd></div>}
     </dl>
   </aside>
 
@@ -115,6 +115,8 @@ const barNext = place
       </div>
     )}
     <p class="fin" aria-hidden="true"><span class="pip"></span></p>
+    {/* on phones the tags wait here, under the words, instead of above the title */}
+    <Tags tags={post.tags} class="end-tags" />
 
     {place ? (
       <>
