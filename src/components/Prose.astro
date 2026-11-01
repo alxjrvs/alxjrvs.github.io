@@ -1,0 +1,12 @@
+---
+// EmDash rich text (Portable Text), with this site's code blocks and links.
+import { PortableText } from "emdash/ui";
+import Code from "./prose/Code.astro";
+import Link from "./prose/Link.astro";
+
+interface Props {
+  value: unknown;
+}
+const components = { type: { code: Code }, mark: { link: Link } };
+---
+<PortableText value={Astro.props.value as never} components={components} />

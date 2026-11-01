@@ -1,0 +1,12 @@
+---
+// A link in EmDash rich text, on one line: EmDash's own puts the text on its
+// own line, and with compressHTML off that whitespace gets underlined.
+import { sanitizeHref } from "emdash";
+
+interface Props {
+  node: { markDef: { href: string; blank?: boolean } };
+}
+const href = sanitizeHref(Astro.props.node.markDef.href);
+const blank = !href.startsWith("#") && Astro.props.node.markDef.blank;
+---
+<a href={href} target={blank ? "_blank" : undefined} rel={blank ? "noopener noreferrer" : undefined}><slot /></a>

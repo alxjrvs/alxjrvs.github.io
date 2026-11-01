@@ -4,8 +4,8 @@ import type { APIRoute } from "astro";
 import { getPosts } from "../lib/content";
 import { absoluteUrl } from "../site";
 
-export const GET: APIRoute = async () => {
-  const posts = await getPosts();
+export const GET: APIRoute = async (context) => {
+  const posts = await getPosts(context);
   const urls = [
     { loc: absoluteUrl("/") },
     { loc: absoluteUrl("/writing/") },

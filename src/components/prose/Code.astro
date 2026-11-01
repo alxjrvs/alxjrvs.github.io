@@ -1,0 +1,18 @@
+---
+// A code block in a post, as a bare <pre><code>: site.css's .prose styles it
+// (no token colours), like the Markdown posts were. Replaces EmDash's own
+// dark-themed block.
+interface Props {
+  node: { code: string; language?: string; filename?: string };
+}
+const { code, language, filename } = Astro.props.node;
+const lang = language ? `language-${language}` : undefined;
+---
+{code && (filename ? (
+  <figure class="code">
+    <figcaption>{filename}</figcaption>
+    <pre class={lang}><code class={lang}>{code}</code></pre>
+  </figure>
+) : (
+  <pre class={lang}><code class={lang}>{code}</code></pre>
+))}

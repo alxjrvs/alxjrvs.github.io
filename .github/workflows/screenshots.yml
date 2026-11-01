@@ -1,9 +1,10 @@
 name: Screenshots
 
 # Re-captures each project's live site into public/assets/work/ and commits the result
-# when anything changed. Runs on demand and every day at 3am US Eastern. On PRs that touch the
-# project list or this tooling it only captures projects with no screenshot
-# yet, committing those back to the PR branch.
+# when anything changed. Runs on demand and every day at 3am US Eastern. The
+# project list comes from the live site's /projects.json (projects live in
+# EmDash, not the repo), so a project added in the CMS gets its screenshot on
+# the next run.
 on:
   workflow_dispatch:
   # GitHub cron is UTC-only, so both 07:00 and 08:00 UTC fire and the job
@@ -11,11 +12,6 @@ on:
   schedule:
     - cron: "0 7 * * *"
     - cron: "0 8 * * *"
-  pull_request:
-    paths:
-      - "src/content/projects/**"
-      - "scripts/screenshots.mjs"
-      - ".github/workflows/screenshots.yml"
 
 permissions:
   contents: write

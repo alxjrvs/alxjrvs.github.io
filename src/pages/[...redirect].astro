@@ -1,20 +1,15 @@
 ---
-// Old URLs, sent to the matching section of the home page.
-import Redirect from "../components/Redirect.astro";
-
-export function getStaticPaths() {
-  const to = (path: string, target: string) => ({ params: { redirect: path }, props: { target } });
-  return [
-    to("about", "/#about"),
-    to("projects", "/#projects"),
-    to("work", "/#projects"),
-    to("work/boom", "/#projects"),
-    to("work/dotfiles", "/#projects"),
-  ];
-}
-
-interface Props {
-  target: string;
-}
+// Old URLs, sent to the matching section of the home page with a real 301
+// (a fragment can't go in Cloudflare's _redirects, where # starts a comment).
+// Anything else unknown gets the 404 page.
+const targets: Record<string, string> = {
+  about: "/#about",
+  projects: "/#projects",
+  work: "/#projects",
+  "work/boom": "/#projects",
+  "work/dotfiles": "/#projects",
+};
+const target = targets[(Astro.params.redirect ?? "").replace(/\/$/, "").toLowerCase()];
+if (target) return Astro.redirect(target, 301);
+return Astro.rewrite("/404");
 ---
-<Redirect to={Astro.props.target} />

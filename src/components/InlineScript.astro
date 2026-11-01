@@ -3,17 +3,17 @@
 // exactly where it's placed. Inline and synchronous on purpose: the theme has
 // to be set before first paint, and the splash has to be measured before the
 // first frame, which a deferred module script (Astro's default) can't promise.
-// The source stays real TypeScript, so it's type-checked and linted.
-import { transformWithOxc } from "vite";
+// The source stays real TypeScript, so it's type-checked and linted; it's
+// compiled to JavaScript at build time by the `?inline-script` import
+// (inlineScripts() in astro.config.ts), since pages now render in the Worker.
 
 interface Props {
-  /** the file's source, imported with `?raw` */
+  /** the compiled file, imported with `?inline-script` */
   src: string;
   /** its name, for error messages */
   name: string;
 }
 
-const { src, name } = Astro.props;
-const { code } = await transformWithOxc(src, name, { lang: "ts" });
+const { src } = Astro.props;
 ---
-<script is:inline set:html={code} />
+<script is:inline set:html={src} />

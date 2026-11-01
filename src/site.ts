@@ -1,9 +1,7 @@
-// Site-wide settings: what `_config.yml` held before the move off Jekyll.
+// Site-wide settings that aren't words on the page. The title, description,
+// tagline and every other bit of copy live in EmDash (see src/lib/content.ts).
 
 export const site = {
-  title: "alxjrvs",
-  tagline: "Enthusiast. I make stuff.",
-  description: "Alex Jarvis makes stuff.",
   author: "alxjrvs",
   url: "https://alxjrvs.com",
   lang: "en",
@@ -19,15 +17,6 @@ export const site = {
     height: 630,
     alt: "alxjrvs, over a field of dice: Enthusiast. I make stuff.",
   },
-
-  // Each item scrolls to a section of the home page. Items with `needsPosts`
-  // only appear once there is a post, so the Writing link shows up on its own
-  // with the first one.
-  nav: [
-    { name: "Projects", url: "/#projects" },
-    { name: "Writing", url: "/#writing", needsPosts: true },
-    { name: "About", url: "/#about" },
-  ],
 
   // Cloudflare Web Analytics site token (Web Analytics → the alxjrvs.com site
   // → "Manage site" → the token in the JS snippet). It is public by design:
