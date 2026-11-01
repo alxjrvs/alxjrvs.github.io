@@ -4,3 +4,6 @@ declare module "*?inline-script" {
   const code: string;
   export default code;
 }
+
+/** A per-build id (astro.config.ts), stamped into asset URLs as `?v=`. */
+declare const __BUILD_ID__: string;

@@ -17,7 +17,8 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check:links": "bun scripts/check-links.ts",
-    "check": "bun run format:check && bun run lint && bun run typecheck",
+    "test": "bun test src",
+    "check": "bun run format:check && bun run lint && bun run typecheck && bun run test",
     "check:full": "bun run check && bun run build && bun run check:links",
     "screenshots": "node scripts/screenshots.mjs",
     "social-card": "node scripts/social-card.mjs"

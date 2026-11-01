@@ -31,8 +31,9 @@ const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds:
   /</g,
   "\\u003c",
 );
-// changes on every build, so a deploy's CSS is never served from a stale cache
-const v = Math.floor(Date.now() / 1000);
+// changes on every build (astro.config.ts), so a deploy's CSS is never served
+// from a stale cache, and stays put between builds so browsers can keep it
+const v = __BUILD_ID__;
 ---
 <!doctype html>
 <html lang={site.lang}>

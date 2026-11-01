@@ -1,0 +1,28 @@
+# Weekly dependency updates, grouped so they arrive as a few PRs, not dozens.
+# EmDash and Astro get a group of their own and are never merged without a
+# person looking: a new EmDash can carry database migrations, and production
+# runs them on its first request after the deploy.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      cms-and-framework:
+        patterns: ["emdash", "@emdash-cms/*", "astro", "@astrojs/*"]
+      tooling:
+        patterns: ["@biomejs/*", "typescript", "wrangler", "vite", "@types/*"]
+      runtime:
+        patterns: ["react", "react-dom"]
+    labels: ["dependencies"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+    labels: ["dependencies"]

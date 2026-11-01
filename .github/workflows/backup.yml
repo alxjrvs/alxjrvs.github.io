@@ -1,0 +1,54 @@
+name: Back up the database
+
+# A weekly copy of EmDash's D1 database (every post, project, setting and
+# account), kept outside Cloudflare as an encrypted workflow artifact for 90
+# days. Cloudflare's Time Travel already undoes bad writes from the last 30
+# days; this covers losing the account or the database itself.
+#
+# The dump holds account data, and this repository is public, so it is
+# encrypted with BACKUP_PASSPHRASE (a repository secret, also kept in
+# 1Password, vault "Personal Site", item "alxjrvs-d1-backup"). Without it the
+# job skips. To restore:
+#   gpg --decrypt alxjrvs-emdash.sql.gz.gpg | gunzip > dump.sql
+#   bunx wrangler d1 execute alxjrvs-emdash --remote --file dump.sql
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Export and encrypt
+        id: export
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BACKUP_PASSPHRASE:-}" ] || [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::warning::BACKUP_PASSPHRASE or CLOUDFLARE_API_TOKEN isn't set; no backup taken."
+            exit 0
+          fi
+          bunx wrangler d1 export alxjrvs-emdash --remote --output dump.sql
+          gzip -9 dump.sql
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" \
+            --symmetric --cipher-algo AES256 -o alxjrvs-emdash.sql.gz.gpg dump.sql.gz
+          rm dump.sql.gz
+          echo "made=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        if: steps.export.outputs.made == 'true'
+        with:
+          name: alxjrvs-emdash-${{ github.run_number }}
+          path: alxjrvs-emdash.sql.gz.gpg
+          retention-days: 90

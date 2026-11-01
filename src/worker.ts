@@ -8,6 +8,10 @@
 // uploaded media, which posts on the public site link to. On the admin host,
 // every page of the public site (/, /writing/, …) sends you to the admin.
 //
+// Everything else on the public hostnames is normalised first (src/gateway.ts):
+// http goes to https, paths are decoded so `//_emdash` can't sneak past, and
+// the request is rebuilt on https://alxjrvs.com without tracking parameters.
+//
 // Caching: Workers Cache keys on the path, not the hostname, so if it sat in
 // front of this entry, a cached alxjrvs.com/ would be served for
 // admin.alxjrvs.com/ without this code ever running. So the default entry
@@ -16,11 +20,9 @@
 // touches the cache.
 import { WorkerEntrypoint } from "cloudflare:workers";
 import handler, { createScheduledHandler, PluginBridge } from "@emdash-cms/cloudflare/worker";
+import { ADMIN_HOST, HSTS, MEDIA_CACHE, route, SECURITY_HEADERS } from "./gateway";
 
 export { PluginBridge };
-
-const ADMIN_HOST = "admin.alxjrvs.com";
-const PUBLIC_EMDASH = "/_emdash/api/media/file/";
 
 type Fetch = (request: Request, env: unknown, ctx: unknown) => Response | Promise<Response>;
 const astro = handler.fetch as unknown as Fetch;
@@ -48,23 +50,35 @@ export class Site extends WorkerEntrypoint {
 }
 
 const fetch = async (request: Request, env: unknown, ctx: GatewayContext): Promise<Response> => {
-  const url = new URL(request.url);
-  if (url.hostname === ADMIN_HOST) {
-    // EmDash and Astro's own endpoints all start with "/_"; anything else is
-    // a public page.
-    if (!url.pathname.startsWith("/_")) {
+  const r = route(request.url);
+  switch (r.kind) {
+    case "admin-home":
       return noStore(Response.redirect(`https://${ADMIN_HOST}/_emdash/admin/`, 302));
+    case "admin":
+      return noStore(await astro(request, env, ctx));
+    case "dev":
+      return ctx.exports.Site.fetch(request);
+    case "redirect":
+      return Response.redirect(r.location, r.status);
+    case "not-found":
+      return new Response("Not found", {
+        status: 404,
+        headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      });
+    case "site": {
+      const response = await ctx.exports.Site.fetch(new Request(r.url, request));
+      if (response.status === 101) return response;
+      const out = new Response(response.body, response);
+      // EmDash's timings describe its internals, and would be cached with the page.
+      out.headers.delete("Server-Timing");
+      for (const [name, value] of Object.entries(SECURITY_HEADERS)) out.headers.set(name, value);
+      if (r.hsts) out.headers.set("Strict-Transport-Security", HSTS);
+      if (r.noindex) out.headers.set("X-Robots-Tag", "noindex");
+      // Uploaded media is stored under a fresh id, so it never changes in place.
+      if (r.media && response.status === 200) out.headers.set("Cache-Control", MEDIA_CACHE);
+      return out;
     }
-    return noStore(await astro(request, env, ctx));
   }
-  if (
-    url.pathname.startsWith("/_emdash") &&
-    !url.pathname.startsWith(PUBLIC_EMDASH) &&
-    url.hostname !== "localhost"
-  ) {
-    return Response.redirect(`https://${ADMIN_HOST}${url.pathname}${url.search}`, 302);
-  }
-  return ctx.exports.Site.fetch(request);
 };
 
 export default {

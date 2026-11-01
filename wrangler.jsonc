@@ -42,6 +42,9 @@
     "default": { "type": "worker", "cache": { "enabled": false } },
     "Site": { "type": "worker", "cache": { "enabled": true } }
   },
+  // Logs and invocation metrics in the dashboard (Workers → alxjrvs → Logs),
+  // so errors on the live site are visible.
+  "observability": { "enabled": true },
   // EmDash's scheduled publishing and housekeeping.
   "triggers": { "crons": ["* * * * *"] },
   // alxjrvs.com is a proxied zone on this account. A zone route (rather than a
