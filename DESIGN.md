@@ -251,7 +251,13 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   it. The words end on a small `fg-subtle` die showing one, then Newer/Older,
   each with its date. A 2px `progress` line along the bottom of the header
   fills as you read; it tracks the scroll, so reduced motion changes nothing.
-  Under 860px the margin becomes one wrapped row above the title.
+  Under 860px the margin becomes one wrapped row above the title. On phones
+  (600px and under) the head tightens: "← Writing" shares its line with the
+  date and "2 min read" (no labels), then the credits (role labels kept, a
+  size smaller) and the project dot. The Thread fact goes, because the
+  stepper's count carries the thread's name on a line above "Part 2 of 3",
+  and the tags move under the words, after the die. The page starts
+  `bar-h + 24px` down.
   Once you scroll past the title it docks into the header (see Motion): the
   header then reads "alxjrvs · tagline … ← Title → · die", the title in `fg`
   at 17px, one line of at most 34ch with an ellipsis, between a compact
