@@ -102,7 +102,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | Wordmark        | `clamp(64px, min(23vw, 36vh), 300px)`   | 700    | very tight |
 | Tagline         | `clamp(30px, 4.7vw, 60px)`              | 500    | `-.02em` |
 | Section heading | `clamp(2.5rem, 6vw, 3.5rem)` (phones 2.25rem) | 700 | `-.04em` |
-| Card title      | `clamp(1.75rem, 3.6vw, 2.25rem)`        | 700    | tight    |
+| Card title      | `clamp(2rem, 3.4vw, 3rem)` (phones `clamp(1.75rem, 3.6vw, 2.25rem)`) | 700 | tight |
 | Body            | `1.125rem / 1.55`                       | 400    | 0        |
 | Bio / prose     | `1.1875rem / 1.6` (phones 1rem / 1.45)  | 400    | 0        |
 | Header wordmark | 28px (phones 24px)                      | 700    | tight    |
@@ -131,9 +131,17 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   12px from the top (8px on phones).
 - **Sections:** every home-page section is one screen tall (`100svh`). Its
   padding clears the header (`bar-h + 40px`, or `+ 20px` on phones).
-- **Projects:** four columns on wide screens, two at 1100px and below. On
-  phones (760px and below) they become a sideways swipe at 84% card width, with
-  the next card peeking in.
+- **Projects:** a sideways carousel at every width, one project at a time.
+  Each swipe, trackpad flick or arrow press moves exactly one project and
+  snaps to it, and it loops (past the last comes the first). It moves on by
+  itself after 4 seconds of stillness, but only while it's at least half on
+  screen and the tab is visible; hovering, touching or focusing it pauses
+  that, any swipe restarts the count, and reduced motion turns it off. Wider than 760px a slide is the screenshot on the left (3fr) and
+  the title, summary and link on the right (2fr). On phones the card stacks at
+  84% width with the next one peeking in. One subtle round arrow (`line`
+  border, `fg-subtle` chevron, 70% opacity) sits in the right-hand margin,
+  level with the screenshots; there's no back arrow, since it loops and you
+  can swipe back.
 - **Reading width:** `40rem` for prose, `45rem` for the bio.
 
 ---

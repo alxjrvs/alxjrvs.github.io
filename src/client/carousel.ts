@@ -1,14 +1,15 @@
-// Phones: the projects are a sideways carousel. Each swipe or arrow tap moves
-// one card and snaps to it (the one arrow points onward), and it loops: past
-// the last card comes the first again. The loop is two copies of the cards at
-// each end (hidden from screen readers and the keyboard); once a scroll
-// settles on a copy, it jumps to the real card it copies, which looks
-// identical. Nothing moves on its own.
+// The projects are a sideways carousel at every width. Each swipe or arrow
+// press moves one card and snaps to it (the one arrow points onward), and it
+// loops: past the last card comes the first again. The loop is two copies of
+// the cards at each end (hidden from screen readers and the keyboard); once a
+// scroll settles on a copy, it jumps to the real card it copies, which looks
+// identical. It also moves on by itself every 4 seconds, but only while it's
+// on screen and nobody is using it: hovering, touching or focusing it pauses
+// the cycle, any swipe restarts the count, and reduced motion turns it off.
 (() => {
   const cards = document.querySelector<HTMLElement>(".cards");
   const box = cards?.parentElement;
   if (!cards || !box) return;
-  const phone = matchMedia("(max-width: 760px)");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const PAD = 2;
   let on = false;
@@ -71,6 +72,7 @@
     () => {
       clearTimeout(timer);
       timer = setTimeout(settle, 140);
+      cycle(); // any movement, ours or the visitor's, restarts the count
     },
     { passive: true },
   );
@@ -90,6 +92,41 @@
   }
   box.querySelector(".next")?.addEventListener("click", () => nudge(1));
 
+  // The auto-advance: every 4s of stillness, move on one card.
+  const EVERY = 4000;
+  let auto: ReturnType<typeof setTimeout> | undefined;
+  let seen = false;
+  let hovered = false;
+  let touching = false;
+  function cycle() {
+    clearTimeout(auto);
+    auto = setTimeout(() => {
+      const idle = !hovered && !touching && !box?.contains(document.activeElement);
+      if (on && seen && idle && !document.hidden && !reduce.matches) nudge(1);
+      cycle();
+    }, EVERY);
+  }
+  new IntersectionObserver(
+    ([e]) => {
+      seen = !!e && e.intersectionRatio >= 0.5;
+      cycle();
+    },
+    { threshold: [0, 0.5, 1] },
+  ).observe(box);
+  box.addEventListener("pointerenter", (e) => {
+    if (e.pointerType === "mouse") hovered = true;
+  });
+  box.addEventListener("pointerleave", () => {
+    hovered = false;
+    cycle();
+  });
+  box.addEventListener("touchstart", () => (touching = true), { passive: true });
+  box.addEventListener("touchend", () => {
+    touching = false;
+    cycle();
+  });
+  box.addEventListener("focusout", cycle);
+
   // the die shuffles the real cards; the copies wait it out
   cards.addEventListener("shufflestart", () => {
     if (on && cards) {
@@ -97,21 +134,20 @@
       cards.scrollLeft = 0;
     }
   });
-  cards.addEventListener("shuffleend", () => {
-    if (phone.matches) build();
-  });
+  cards.addEventListener("shuffleend", build);
 
-  function sync() {
-    if (phone.matches) build();
-    else unbuild();
-  }
-  phone.addEventListener("change", sync);
+  // a resize changes the card width, so put the current card back in place
+  let resizing: ReturnType<typeof setTimeout> | undefined;
   addEventListener("resize", () => {
-    if (on) {
-      aim();
+    aim();
+    clearTimeout(resizing);
+    resizing = setTimeout(() => {
+      if (!on || !cards) return;
+      const s = step();
+      jump(Math.round(cards.scrollLeft / s) * s);
       settle();
-    }
+    }, 100);
   });
   addEventListener("load", aim);
-  sync();
+  build();
 })();
