@@ -1,14 +1,33 @@
 ---
+import notFoundSrc from "../client/notfound.ts?inline-script";
+import InlineScript from "../components/InlineScript.astro";
 import Prose from "../components/Prose.astro";
 import Base from "../layouts/Base.astro";
-import { getSection } from "../lib/content";
+import { getEncounters, getSection } from "../lib/content";
 
-const page = await getSection(Astro, "not-found");
+// The 404: EmDash's "not-found" section, then a random encounter table. The
+// rows are ordinary links (they work without JS); the button rolls a die the
+// size of the table and lights up where you've ended up (client/notfound.ts).
+const [page, encounters] = await Promise.all([getSection(Astro, "not-found"), getEncounters(Astro)]);
+const { lead, rows } = encounters;
 Astro.response.status = 404;
 ---
 <Base title={page?.title ?? "Not found"} noindex>
 <section class="notfound wrap">
   <h1>{page?.kicker ?? "404"}</h1>
   {page && <Prose value={page.body} />}
+  <div class="encounters" id="encounters">
+    <div class="encounters-head">
+      <h2 class="label" id="encounters-head">{lead} <span class="encounters-die">(d{rows.length})</span></h2>
+      <button class="encounter-roll" type="button" hidden aria-describedby="encounters-head">Roll d{rows.length}</button>
+    </div>
+    <ol class="encounter-table" aria-labelledby="encounters-head">
+      {rows.map((row, i) => (
+        <li><span class="encounter-n label" aria-hidden="true">{i + 1}</span><a href={row.href}>{row.label}</a></li>
+      ))}
+    </ol>
+    <p class="encounter-result" role="status"></p>
+  </div>
 </section>
+<InlineScript slot="scripts" src={notFoundSrc} name="notfound.ts" />
 </Base>

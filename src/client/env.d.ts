@@ -2,4 +2,6 @@
 interface Window {
   /** The splash-into-header animation's frame update; the snapping spring calls it. */
   __recede?: () => void;
+  /** the die, from the console (die.ts) */
+  roll?: () => string;
 }

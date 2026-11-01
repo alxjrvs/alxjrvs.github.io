@@ -555,6 +555,30 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .empty { margin: 32px 0 0; max-width: var(--measure); color: var(--fg-muted); }
 .empty a, .notfound a { color: var(--fg); text-underline-offset: .18em; }
 .notfound p { color: var(--fg-muted); max-width: var(--measure); }
+/* the end of a piece: roll for another */
+.roll-piece { margin: 40px 0 0; text-align: center; }
+.roll-piece a { color: var(--fg-subtle); text-decoration: none; border-bottom: 1px solid var(--line-strong); padding-bottom: 4px; }
+.roll-piece a:hover { color: var(--fg); border-color: var(--fg-subtle); }
+/* the 404's encounter table (client/notfound.ts) */
+.encounters { margin-top: 48px; max-width: 34rem; }
+.encounters-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.encounters-head h2 { margin: 0; }
+.encounter-roll {
+  font: 500 .75rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg); background: none; border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 8px 14px; cursor: pointer;
+}
+.encounter-roll:hover { border-color: var(--fg-subtle); }
+.encounter-roll[aria-disabled] { opacity: .5; cursor: default; }
+.encounter-roll:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.encounter-table { list-style: none; margin: 0; padding: 0; }
+.encounter-table li { display: grid; grid-template-columns: 2.5rem 1fr; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); transition: background-color .15s; }
+.encounter-table li.lit { background: var(--line); }
+.encounter-table li.lit .encounter-n { color: var(--fg); }
+.encounter-n { padding-left: 8px; }
+.notfound .encounter-table a { text-decoration: none; }
+.notfound .encounter-table a:hover { text-decoration: underline; }
+.encounter-result { margin-top: 12px; min-height: 1.5em; }
 
 .prose { max-width: var(--measure); margin-top: 40px; font-size: 1.1875rem; line-height: 1.65; color: var(--fg-body); }
 .prose > :first-child { margin-top: 0; }
