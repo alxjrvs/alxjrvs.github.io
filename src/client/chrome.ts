@@ -66,3 +66,13 @@
   addEventListener("resize", update);
   update();
 })();
+
+// The footer's email, written out as "alxjrvs (at) gmail (dot) com" so
+// scrapers reading the HTML don't get an address; for people it's a link.
+for (const span of document.querySelectorAll<HTMLElement>(".mail[data-user]")) {
+  const a = document.createElement("a");
+  a.className = "mail";
+  a.href = `mailto:${span.dataset.user}@${span.dataset.domain}`;
+  a.textContent = span.textContent;
+  span.replaceWith(a);
+}

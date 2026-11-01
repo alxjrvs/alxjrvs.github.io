@@ -1,8 +1,19 @@
 ---
-// Title, description, canonical, Open Graph, Twitter and JSON-LD: the same
-// tags jekyll-seo-tag wrote for this site.
+// Title, description, canonical, Open Graph, Twitter and JSON-LD.
+//
+// The JSON-LD is one @graph: the Person (Alex Jarvis, with the profiles that
+// are also him), the WebSite, and the page itself (ProfilePage at home, a
+// BlogPosting for a piece, WebPage elsewhere), plus anything the page adds
+// (`ld`: the projects list, a comic's credits).
 import type { SiteText } from "../lib/content";
 import { absoluteUrl, site } from "../site";
+
+export interface SeoImage {
+  url: string;
+  width?: number | undefined;
+  height?: number | undefined;
+  alt: string;
+}
 
 interface Props {
   /** the page's own title; the home page has none */
@@ -10,61 +21,98 @@ interface Props {
   description?: string | undefined;
   /** set for posts */
   published?: Date | undefined;
+  /** the share card, if not the site's own */
+  image?: SeoImage | undefined;
+  /** more schema.org for the page's main entity (merged in) */
+  ld?: Record<string, unknown> | undefined;
+  /** keep it out of search (the 404) */
+  noindex?: boolean | undefined;
   /** the title and description from EmDash's site settings */
   site: SiteText;
-  /** "Enthusiast. I make stuff.", for the home page's title */
-  tagline: string;
 }
 
-const { title, published, site: text, tagline } = Astro.props;
+const { title, published, site: text, ld: extra, noindex } = Astro.props;
 const description = Astro.props.description ?? text.description;
-// the 404 page is built as /404.html, the file Cloudflare serves for misses
-const path = Astro.url.pathname.replace(/^\/404\/?$/, "/404.html");
-const canonical = absoluteUrl(path);
 const isHome = Astro.url.pathname === "/";
-const fullTitle = title ? `${title} | ${text.title}` : `${text.title} | ${tagline}`;
-const ogTitle = title ?? text.title;
-const image = { ...site.image, url: absoluteUrl(site.image.path) };
-
-const ld = {
-  "@context": "https://schema.org",
-  "@type": published ? "BlogPosting" : isHome ? "WebSite" : "WebPage",
-  author: { "@type": "Person", name: site.author },
-  ...(published && {
-    dateModified: published.toISOString(),
-    datePublished: published.toISOString(),
-  }),
-  description,
-  headline: ogTitle,
-  image: {
-    width: image.width,
-    height: image.height,
-    alt: image.alt,
-    url: image.url,
-    "@type": "imageObject",
-  },
-  ...(published && { mainEntityOfPage: { "@type": "WebPage", "@id": canonical } }),
-  ...(isHome && { name: text.title }),
-  url: canonical,
+// pages live at a trailing slash (/writing/, /writing/some-piece/); files don't
+const path = Astro.url.pathname;
+const canonical = absoluteUrl(/\/$|\.[a-z0-9]+$/i.test(path) ? path : `${path}/`);
+// pinned, not rolled: who it is and what he does, for search results and
+// whoever's deciding whether to work with him
+const fullTitle = title ? `${title} | ${text.title}` : `${site.author} (${text.title})`;
+const ogTitle = title ?? `${site.author} (${text.title})`;
+const image: SeoImage = Astro.props.image ?? {
+  url: absoluteUrl(site.image.path),
+  width: site.image.width,
+  height: site.image.height,
+  alt: site.image.alt,
 };
+
+const personId = `${site.url}/#person`;
+const websiteId = `${site.url}/#website`;
+const pageType = published ? "BlogPosting" : isHome ? "ProfilePage" : "WebPage";
+const graph = [
+  {
+    "@type": "Person",
+    "@id": personId,
+    name: site.author,
+    alternateName: text.title,
+    url: `${site.url}/`,
+    sameAs: site.sameAs,
+  },
+  {
+    "@type": "WebSite",
+    "@id": websiteId,
+    name: text.title,
+    url: `${site.url}/`,
+    inLanguage: site.lang,
+    publisher: { "@id": personId },
+  },
+  {
+    "@type": pageType,
+    "@id": `${canonical}#page`,
+    url: canonical,
+    name: ogTitle,
+    headline: published ? ogTitle : undefined,
+    description,
+    isPartOf: { "@id": websiteId },
+    ...(isHome ? { mainEntity: { "@id": personId } } : { author: { "@id": personId } }),
+    ...(published && {
+      datePublished: published.toISOString(),
+      dateModified: published.toISOString(),
+      mainEntityOfPage: canonical,
+    }),
+    image: {
+      "@type": "ImageObject",
+      url: image.url,
+      width: image.width,
+      height: image.height,
+      caption: image.alt,
+    },
+    ...extra,
+  },
+];
+const ld = { "@context": "https://schema.org", "@graph": graph };
 ---
 <title>{fullTitle}</title>
 <meta property="og:title" content={ogTitle}>
 <meta name="author" content={site.author}>
-<meta property="og:locale" content={site.lang}>
+<meta property="og:locale" content={site.locale}>
 <meta name="description" content={description}>
 <meta property="og:description" content={description}>
-<link rel="canonical" href={canonical}>
-<meta property="og:url" content={canonical}>
+{noindex ? <meta name="robots" content="noindex"> : <link rel="canonical" href={canonical}>}
+{!noindex && <meta property="og:url" content={canonical}>}
 <meta property="og:site_name" content={text.title}>
 <meta property="og:image" content={image.url}>
-<meta property="og:image:height" content={String(image.height)}>
-<meta property="og:image:width" content={String(image.width)}>
+{image.height && <meta property="og:image:height" content={String(image.height)}>}
+{image.width && <meta property="og:image:width" content={String(image.width)}>}
 <meta property="og:image:alt" content={image.alt}>
-<meta property="og:type" content={published ? "article" : "website"}>
+<meta property="og:type" content={published ? "article" : isHome ? "profile" : "website"}>
 {published && <meta property="article:published_time" content={published.toISOString()}>}
+{published && <meta property="article:author" content={`${site.url}/`}>}
 <meta name="twitter:card" content="summary_large_image">
-<meta property="twitter:image" content={image.url}>
+<meta name="twitter:image" content={image.url}>
 <meta name="twitter:image:alt" content={image.alt}>
-<meta property="twitter:title" content={ogTitle}>
-<script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />
+<meta name="twitter:title" content={ogTitle}>
+{site.sameAs.map((href) => <link rel="me" href={href}>)}
+<script is:inline type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, "\\u003c")} />

@@ -7,7 +7,7 @@ import jsFlagSrc from "../client/js-flag.ts?inline-script";
 import Die from "../components/Die.astro";
 import Footer from "../components/Footer.astro";
 import InlineScript from "../components/InlineScript.astro";
-import Seo from "../components/Seo.astro";
+import Seo, { type SeoImage } from "../components/Seo.astro";
 import Wordmark from "../components/Wordmark.astro";
 import { getNav, getRolls, getSiteText } from "../lib/content";
 import { site } from "../site";
@@ -18,6 +18,11 @@ interface Props {
   published?: Date | undefined;
   /** a reading-progress line under the header (pieces of writing) */
   progress?: boolean | undefined;
+  /** the share card, if not the site's own (a comic's first page) */
+  image?: SeoImage | undefined;
+  /** more schema.org for the page (see Seo.astro) */
+  ld?: Record<string, unknown> | undefined;
+  noindex?: boolean | undefined;
 }
 
 const isHome = Astro.url.pathname === "/";
@@ -25,7 +30,6 @@ const isHome = Astro.url.pathname === "/";
 const section = Astro.url.pathname.startsWith("/writing") ? "/#writing" : undefined;
 const { progress, ...seo } = Astro.props;
 const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
-const tagline = `${rolls.subjects[0]}. ${rolls.lead} ${rolls.objects[0]}.`;
 const { subjects, objects, likes } = rolls;
 const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds: rolls.rareOdds, likes }).replace(
   /</g,
@@ -48,7 +52,9 @@ const v = __BUILD_ID__;
   <link rel="preload" href="/assets/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={`/assets/css/site.css?v=${v}`}>
   <link type="application/atom+xml" rel="alternate" href={`${site.url}/feed.xml`} title={text.title}>
-  <Seo {...seo} site={text} tagline={tagline} />
+  <Seo {...seo} site={text} />
+  {/* fetch a link's page as soon as the pointer settles on it (Chromium) */}
+  <script is:inline type="speculationrules" set:html={JSON.stringify({ prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/_*" } }] }, eagerness: "moderate" }] })} />
 </head>
 <body class={isHome ? "home" : "inner"}>
   <a class="skip" href="#main">Skip to content</a>

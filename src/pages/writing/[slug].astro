@@ -11,6 +11,8 @@ import titleSrc from "../../client/title.ts?inline-script";
 import InlineScript from "../../components/InlineScript.astro";
 import Base from "../../layouts/Base.astro";
 import { getPlace, getPosts, getProjects, longDate, measure, type Post, shortDate, year } from "../../lib/content";
+import { mediaPath } from "../../lib/media";
+import { absoluteUrl, site } from "../../site";
 
 // One piece of writing, rendered on request from the published posts in
 // EmDash (newest first, so the next one along is older). Unknown or
@@ -51,8 +53,36 @@ const barPrev = place
 const barNext = place
   ? place.next && { href: `/writing/${place.next.id}/`, title: `Part ${place.n + 1}: ${place.next.title}` }
   : older && { href: `/writing/${older.id}/`, title: `Older: ${older.title}` };
+// For search and share cards: the thread in the title, a description even
+// when the piece has none, a comic's own first page as its card, and who made
+// it as schema.org credits.
+const seoTitle = place ? `${post.title} (${place.thread.label}, part ${place.n})` : post.title;
+const seoDescription =
+  post.description ??
+  (comic
+    ? `${post.title}: a comic in ${post.pages.length} ${post.pages.length === 1 ? "page" : "pages"}${place ? `, part ${place.n} of ${place.thread.label}` : ""}.`
+    : `${post.title}, by ${site.author}.`);
+const cover = comic ? post.pages[0] : undefined;
+const coverPath = cover && mediaPath(cover.image);
+const image = cover && coverPath
+  ? { url: absoluteUrl(coverPath), width: cover.image.width, height: cover.image.height, alt: cover.alt || `${post.title}, page 1` }
+  : undefined;
+// credits by schema.org property: writers are authors, artists illustrators,
+// everyone else a contributor (Alex links to the site's Person)
+const roles: Record<string, string> = { author: "author", writer: "author", by: "author", artist: "illustrator", illustrator: "illustrator" };
+const credited: Record<string, unknown[]> = {};
+for (const c of post.credits) {
+  const key = roles[c.role.toLowerCase()] ?? "contributor";
+  const person = c.name === site.author ? { "@id": `${site.url}/#person` } : { "@type": "Person", name: c.name, ...(c.link && { url: c.link }) };
+  credited[key] = [...(credited[key] ?? []), person];
+}
+const ld = {
+  ...(comic && { "@type": ["BlogPosting", "ComicStory"] }),
+  ...credited,
+  ...(place && threadUrl && { isPartOf: [{ "@id": `${site.url}/#website` }, { "@type": "CreativeWorkSeries", name: place.thread.label, url: absoluteUrl(threadUrl) }], position: place.n }),
+};
 ---
-<Base title={post.title} description={post.description} published={post.date} progress>
+<Base title={seoTitle} description={seoDescription} published={post.date} image={image} ld={ld} progress>
 <Stepper slot="bar" class="bar-read" label={place ? "Parts, in the header" : "More writing, in the header"} compact prev={barPrev} next={barNext}>
   <span class="bar-title" aria-hidden="true">{words.map((w, i) => <>{i > 0 && " "}<span class="w">{w}</span></>)}</span>
 </Stepper>

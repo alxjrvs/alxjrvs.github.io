@@ -1,4 +1,5 @@
 ---
+import { site } from "../site";
 import Wordmark from "./Wordmark.astro";
 
 interface Props {
@@ -8,5 +9,9 @@ const year = new Date().getFullYear();
 ---
 <footer class={Astro.props.class} role="contentinfo">
   <span>© {year} <Wordmark /></span>
-  <a href="https://github.com/alxjrvs">GitHub <span aria-hidden="true">↗</span></a>
+  <span class="foot-links">
+    {/* spelled out for people, not bots; client/chrome.ts turns it into a mailto: link */}
+    <span class="mail" data-user={site.email.user} data-domain={site.email.domain}>{site.email.user} (at) {site.email.domain.replace(".", " (dot) ")}</span>
+    <a href="https://github.com/alxjrvs" rel="me">GitHub <span aria-hidden="true">↗</span></a>
+  </span>
 </footer>
