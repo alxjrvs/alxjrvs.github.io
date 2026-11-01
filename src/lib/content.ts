@@ -135,8 +135,6 @@ export interface Randomizer {
   /** what it rolls, first item shown before any roll */
   items: string[];
   lead?: string | undefined;
-  rare?: string | undefined;
-  rareOdds?: number | undefined;
 }
 
 /** By slug: tagline-subjects, tagline-objects, likes-1, likes-2, likes-3. */
@@ -151,8 +149,6 @@ export async function getRandomizers(astro: AstroLike): Promise<Map<string, Rand
           .map((line) => line.trim())
           .filter(Boolean),
         lead: str(data.lead),
-        rare: str(data.rare),
-        rareOdds: typeof data.rare_odds === "number" ? data.rare_odds : undefined,
       },
     ]),
   );
@@ -165,13 +161,10 @@ export async function getRolls(astro: AstroLike) {
     const list = r.get(slug)?.items ?? [];
     return list.length ? list : ["stuff"];
   };
-  const subjects = r.get("tagline-subjects");
   return {
     subjects: items("tagline-subjects"),
     objects: items("tagline-objects"),
     lead: r.get("tagline-objects")?.lead ?? "I make",
-    rare: subjects?.rare ?? "",
-    rareOdds: subjects?.rareOdds ?? 0,
     likesLead: r.get("likes-1")?.lead ?? "I like",
     likes: [items("likes-1"), items("likes-2"), items("likes-3")] as [string[], string[], string[]],
   };

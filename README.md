@@ -102,7 +102,7 @@ press **Publish**; publishing shows up on the site within seconds.
   puts them in the header), `writing-archive` (the `/writing/` page and its empty state), `threads-archive` (the `/writing/threads/` heading and blurb) and
   `not-found` (the 404 page).
 - **Randomizers**: the die's lists, one item per line, the first line being what shows before
-  any roll: `tagline-subjects` (plus the rare roll and its odds), `tagline-objects` (its lead-in
+  any roll: `tagline-subjects`, `tagline-objects` (its lead-in
   is the "I make"), and `likes-1` to `likes-3` (the first one's lead-in is "I like").
 - **Settings**: the site title, and the tagline field, which is the meta description.
 

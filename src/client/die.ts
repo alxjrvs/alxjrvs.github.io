@@ -11,14 +11,10 @@
   const data = JSON.parse(dataEl.textContent) as {
     subjects: string[];
     objects: string[];
-    rare: string;
-    rareOdds: number;
     likes: string[][];
   };
   const SUBJECTS = data.subjects;
   const OBJECTS = data.objects;
-  const RARE = data.rare;
-  const RARE_ODDS = data.rareOdds || 50;
   const LIKES = data.likes;
   const dice = Array.from(document.querySelectorAll<HTMLElement>(".die-btn"));
   const subjs = Array.from(document.querySelectorAll<HTMLElement>(".roll-subject"));
@@ -73,7 +69,7 @@
 
   // A reel's label, plus any punctuation that rides along with it (the
   // tagline's full stops are part of their word). A word that already ends
-  // in its punctuation, like the rare roll, keeps it.
+  // in its punctuation, like "Undiagnosed, but, come on.", keeps it.
   function setText(el: HTMLElement, v: string) {
     const sfx = el.getAttribute("data-suffix") || "";
     el.textContent = sfx && v.slice(-sfx.length) === sfx ? v : v + sfx;
@@ -262,8 +258,7 @@
 
   function roll() {
     if (rolling) return;
-    // now and then the subject lands on the rare roll instead
-    const finalS = RARE && Math.random() * RARE_ODDS < 1 ? RARE : pick(SUBJECTS);
+    const finalS = pick(SUBJECTS);
     const finalO = pick(OBJECTS);
     const finalL = likes.map((_, i) => nextLike(i));
     const finalW = pool.length > 1 ? dealWriting() : [];

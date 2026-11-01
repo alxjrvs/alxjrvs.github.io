@@ -40,10 +40,7 @@ const section = Astro.url.pathname.startsWith("/writing") ? "/#writing" : undefi
 const { progress, menu, ...seo } = Astro.props;
 const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
 const { subjects, objects, likes } = rolls;
-const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds: rolls.rareOdds, likes }).replace(
-  /</g,
-  "\\u003c",
-);
+const rollData = JSON.stringify({ subjects, objects, likes }).replace(/</g, "\\u003c");
 // changes on every build (astro.config.ts), so a deploy's CSS is never served
 // from a stale cache, and stays put between builds so browsers can keep it
 const v = __BUILD_ID__;
