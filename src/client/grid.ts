@@ -1,8 +1,8 @@
 // The dice grid behind the splash. The CSS draws a static copy of it (the
 // fallback without JS); this swaps in real dice, one per cell and lined up the
 // same way, so a roll can reach them. Each roll sends a pulse out from the
-// tagline: as it passes a die, the die rerolls to a new face and swells a
-// little, then settles. Under reduced motion every face changes at once.
+// tagline: as it passes a die, the die rerolls to a new face. Under reduced
+// motion every face changes at once.
 (() => {
   const intro = document.querySelector<HTMLElement>(".intro");
   const corner = intro?.querySelector<HTMLElement>(".die-corner");
@@ -116,14 +116,6 @@
       for (; i < queue.length && (queue[i]?.d ?? 0) <= reach; i++) {
         const c = (queue[i] as { c: Cell }).c;
         setFace(c, rand(faces[c.key]));
-        c.el.animate(
-          [
-            { transform: "scale(1)" },
-            { transform: "scale(1.3)", offset: 0.3 },
-            { transform: "scale(1)" },
-          ],
-          { duration: 600, easing: "cubic-bezier(.2,.8,.2,1)" },
-        );
       }
       running = i < queue.length ? requestAnimationFrame(frame) : null;
     })(start);
