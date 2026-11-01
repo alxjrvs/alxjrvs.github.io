@@ -1,16 +1,18 @@
 ---
 import { decodeSlug } from "emdash";
+import Comic from "../../components/Comic.astro";
 import Prose from "../../components/Prose.astro";
 import Tags from "../../components/Tags.astro";
 import progressSrc from "../../client/progress.ts?inline-script";
 import InlineScript from "../../components/InlineScript.astro";
 import Base from "../../layouts/Base.astro";
-import { getPosts, getProjects, longDate, readingMinutes, shortDate, year } from "../../lib/content";
+import { getPosts, getProjects, longDate, measure, shortDate, year } from "../../lib/content";
 
 // One piece of writing, rendered on request from the published posts in
 // EmDash (newest first, so the next one along is older). Unknown or
 // unpublished slugs get the 404. The details sit in the left-hand margin,
-// the words in a 40rem column beside it.
+// the words in a 40rem column beside it. A comic shows its pages there
+// instead, one at a time, with any words underneath as a note.
 const slug = decodeSlug(Astro.params.slug);
 const posts = await getPosts(Astro);
 const i = posts.findIndex((p) => p.id === slug);
@@ -21,7 +23,8 @@ const newer = posts[i - 1];
 const proj = post.project
   ? (await getProjects(Astro)).find((p) => p.id === post.project)
   : undefined;
-const minutes = readingMinutes(post.content);
+const comic = post.pages.length > 0;
+const hasWords = Array.isArray(post.content) && post.content.length > 0;
 const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
 ---
 <Base title={post.title} description={post.description} published={post.date} progress>
@@ -30,7 +33,7 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
     <a class="crumb label" href="/writing/"><span aria-hidden="true">←</span> Writing</a>
     <dl class="facts">
       <div><dt class="label">Published</dt><dd><time datetime={post.date.toISOString()}>{longDate(post.date)}</time></dd></div>
-      <div><dt class="label">Reading</dt><dd>{minutes} min</dd></div>
+      <div><dt class="label">{comic ? "Comic" : "Reading"}</dt><dd>{measure(post)}</dd></div>
       {proj && <div><dt class="label">Project</dt><dd><a class="tag" href={proj.link}>{proj.title} <span aria-hidden="true">↗</span></a></dd></div>}
       {post.tags.length > 0 && <div><dt class="label">Tags</dt><dd><Tags tags={post.tags} /></dd></div>}
     </dl>
@@ -42,9 +45,12 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
       {post.description && <p class="dek">{post.description}</p>}
     </header>
 
-    <div class="prose">
-      <Prose value={post.content} />
-    </div>
+    {comic && <Comic pages={post.pages} title={post.title} />}
+    {(!comic || hasWords) && (
+      <div class:list={["prose", { "comic-note": comic }]}>
+        <Prose value={post.content} />
+      </div>
+    )}
     <p class="fin" aria-hidden="true"><span class="pip"></span></p>
 
     {(older || newer) && (
@@ -59,5 +65,5 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
     )}
   </div>
 </article>
-<InlineScript slot="scripts" src={progressSrc} name="progress.ts" />
+{!comic && <InlineScript slot="scripts" src={progressSrc} name="progress.ts" />}
 </Base>

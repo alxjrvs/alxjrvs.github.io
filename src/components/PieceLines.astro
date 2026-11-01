@@ -1,7 +1,7 @@
 ---
 // Pieces of writing as ruled lines grouped by year, the year in the
 // left-hand margin: the Writing index (after the newest piece) and tag pages.
-import { type Post, type Project, readingMinutes, shortDate, year } from "../lib/content";
+import { measure, type Post, type Project, shortDate, year } from "../lib/content";
 import Tags from "./Tags.astro";
 
 interface Props {
@@ -32,7 +32,7 @@ const project = (post: Post) => projects.find((p) => p.id === post.project);
             </a>
             <span class="label when">
               <time datetime={post.date.toISOString()}>{shortDate(post.date)}</time>
-              <span>{readingMinutes(post.content)} min</span>
+              <span>{measure(post)}</span>
             </span>
             {(proj || post.tags.length > 0) && (
               <div class="line-meta">

@@ -241,6 +241,19 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   each with its date. A 2px `progress` line along the bottom of the header
   fills as you read; it tracks the scroll, so reduced motion changes nothing.
   Under 860px the margin becomes one wrapped row above the title.
+- **A comic (`/writing/<slug>/` with pages):** a piece with comic pages is a
+  comic. It's the same page as a piece, but the pages take the words' place,
+  in the full width beside the margin, each in a 1px `line-strong` frame with
+  8px corners and fitted to the screen's height (full width on phones). One
+  page shows at a time. Clicking or tapping the left third of it goes back,
+  the rest goes on (the cursor shows which), as do ← and → and a sideways
+  swipe. Under it, Back and Next (header-button style: 1px `line` border,
+  10px radius, `fg-muted`, dimmed at either end) around a mono "Page 3 of 12".
+  The URL keeps `#page-N`, without adding history, and the `progress` line
+  shows the page you're on rather than the scroll. Turning a page is instant.
+  Any words become a note under the reader. The margin's Reading becomes
+  "Comic · 12 pages", and lists show "12 pages" where prose shows minutes.
+  Without JS the pages simply stack.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
 - **Favicon:** the die at rest, matching the on-page button: a `die`
   (`brand-2`) face with the four pips of the curved "j" in `surface`. It

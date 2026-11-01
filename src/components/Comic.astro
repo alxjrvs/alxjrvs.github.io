@@ -1,0 +1,33 @@
+---
+// A comic: its pages, one at a time, webcomic style. Without JavaScript the
+// pages simply stack, in order; client/comic.ts turns that into a reader you
+// click, tap, swipe or arrow-key through (#page-3 links to a page).
+import { Image } from "emdash/ui";
+import comicSrc from "../client/comic.ts?inline-script";
+import type { ComicPage } from "../lib/content";
+import InlineScript from "./InlineScript.astro";
+
+interface Props {
+  pages: ComicPage[];
+  title: string;
+}
+const { pages, title } = Astro.props;
+const n = pages.length;
+---
+<section class="comic" id="comic" aria-label={`${title}, a comic in ${n} ${n === 1 ? "page" : "pages"}`}>
+  <ol class="comic-pages">
+    {pages.map((page, i) => (
+      <li class="comic-page" id={`page-${i + 1}`} aria-label={`Page ${i + 1} of ${n}`}>
+        <Image image={page.image} alt={page.alt} priority={i === 0} placeholder={false} />
+      </li>
+    ))}
+  </ol>
+  {n > 1 && (
+    <nav class="comic-nav" aria-label="Pages" hidden>
+      <button class="comic-btn" type="button" data-step="-1"><span aria-hidden="true">←</span> Back</button>
+      <span class="label comic-count" aria-live="polite">Page <span data-now>1</span> of {n}</span>
+      <button class="comic-btn" type="button" data-step="1">Next <span aria-hidden="true">→</span></button>
+    </nav>
+  )}
+</section>
+{n > 1 && <InlineScript src={comicSrc} name="comic.ts" />}

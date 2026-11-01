@@ -594,6 +594,29 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .pager .t { font-weight: 700; font-size: 1.25rem; line-height: 1.2; letter-spacing: -.02em; }
 .pager a:hover .t { text-decoration: underline; text-underline-offset: .15em; text-decoration-thickness: 2px; }
 
+/* a comic: its pages stack (no JS), or show one at a time (.paged) with a
+   Back / Page N of M / Next bar under them. Pages fit the screen's height on
+   bigger screens, and the cursor shows which way a click on the page goes. */
+.comic { margin-top: 48px; scroll-margin-top: calc(var(--bar-h) + 24px); }
+.comic-pages { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+.comic-page img { display: block; max-width: 100%; height: auto; object-fit: contain; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--line); }
+.comic.paged .comic-pages { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.comic.paged .comic-pages[data-side="back"] { cursor: w-resize; }
+.comic.paged .comic-pages[data-side="next"] { cursor: e-resize; }
+.comic.paged .comic-page img { max-height: calc(100svh - var(--bar-h) - 150px); width: auto; }
+.comic-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; max-width: var(--measure); margin-top: 20px; }
+.comic-nav[hidden] { display: none; }
+.comic-btn {
+  justify-self: start; font: inherit; font-weight: 600; font-size: 1rem; color: var(--fg-muted);
+  background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer;
+}
+.comic-nav > :last-child { justify-self: end; }
+.comic-btn:hover:not(:disabled) { color: var(--fg); border-color: var(--fg-subtle); }
+.comic-btn:disabled { opacity: .4; cursor: default; }
+.comic-count { text-align: center; }
+.comic-count [data-now] { color: var(--fg); }
+.post .comic-note { margin-top: 40px; }
+
 /* reading progress: a line along the bottom of the floating header */
 .read-progress {
   position: absolute; left: 16px; right: 16px; bottom: -1px; height: 2px;
@@ -625,6 +648,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .lines .line-meta { margin-top: 2px; }
   .lines .t { font-size: 1.3125rem; }
   .post .prose { font-size: 1.0625rem; line-height: 1.6; margin-top: 32px; }
+  .comic { margin-top: 32px; }
+  .comic.paged .comic-page img { max-height: none; width: 100%; }
+  .comic-pages { gap: 16px; }
   .post-head .dek { font-size: 1.125rem; }
   .pager { grid-template-columns: 1fr; }
   .pager .prev { text-align: left; align-items: flex-start; border-top: 1px solid var(--line); }

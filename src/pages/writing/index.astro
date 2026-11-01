@@ -9,7 +9,7 @@ import {
   getSection,
   getTags,
   longDate,
-  readingMinutes,
+  measure,
   year,
 } from "../../lib/content";
 
@@ -48,7 +48,7 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
       <div class="lead" style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
         <p class="label meta">
           <time datetime={lead.date.toISOString()}>{longDate(lead.date)}</time>
-          <span>{readingMinutes(lead.content)} min read</span>
+          <span>{lead.pages.length ? measure(lead) : `${measure(lead)} read`}</span>
           {proj && <span class="tag">{proj.title}</span>}
         </p>
         <a class="lead-link" href={`/writing/${lead.id}/`}>
