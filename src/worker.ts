@@ -20,7 +20,7 @@
 // touches the cache.
 import { WorkerEntrypoint } from "cloudflare:workers";
 import handler, { createScheduledHandler, PluginBridge } from "@emdash-cms/cloudflare/worker";
-import { ADMIN_HOST, HSTS, MEDIA_CACHE, route, SECURITY_HEADERS } from "./gateway";
+import { ADMIN_HOST, HSTS, MEDIA_CACHE, route, SECURITY_HEADERS, terminalHello } from "./gateway";
 
 export { PluginBridge };
 
@@ -66,6 +66,16 @@ const fetch = async (request: Request, env: unknown, ctx: GatewayContext): Promi
         headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
       });
     case "site": {
+      const hello = terminalHello(
+        new URL(r.url).pathname,
+        request.headers.get("User-Agent") ?? "",
+        request.headers.get("Accept") ?? "",
+      );
+      if (hello) {
+        return new Response(hello, {
+          headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+        });
+      }
       const response = await ctx.exports.Site.fetch(new Request(r.url, request));
       if (response.status === 101) return response;
       const out = new Response(response.body, response);

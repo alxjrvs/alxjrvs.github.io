@@ -175,6 +175,10 @@ const ld = {
         ) : <span />}
       </nav>
     ) : null}
+    {/* somewhere else to start: a random piece that isn't this one (pages/writing/random.ts) */}
+    {posts.length > 1 && (
+      <p class="roll-piece"><a class="label" href={`/writing/random?from=${encodeURIComponent(post.id)}`} rel="nofollow">Roll for another piece <span aria-hidden="true">→</span></a></p>
+    )}
   </div>
 </article>
 {!comic && <InlineScript slot="scripts" src={progressSrc} name="progress.ts" />}

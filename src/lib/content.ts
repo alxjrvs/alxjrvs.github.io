@@ -177,6 +177,40 @@ export async function getRolls(astro: AstroLike) {
   };
 }
 
+/** One row of the 404 page's encounter table. */
+export interface Encounter {
+  label: string;
+  href: string;
+}
+
+// Used when the "encounters" Randomizer is missing or empty.
+const ENCOUNTERS: Encounter[] = [
+  { label: "A door, slightly ajar", href: "/writing/ajar/" },
+  { label: "A wandering archive", href: "/writing/" },
+  { label: "A pile of projects", href: "/#projects" },
+  { label: "A thread worth pulling", href: "/writing/threads/" },
+  { label: "A piece of writing, picked at random", href: "/writing/random" },
+  { label: "Someone who'd like to meet you", href: "/#about" },
+  { label: "A feed, still warm", href: "/feed.xml" },
+  { label: "The way home", href: "/" },
+];
+
+/**
+ * The 404 page's encounter table: the "encounters" Randomizer, one row per
+ * line as `label | /path` (its lead is the table's name), or the defaults.
+ * Rows that don't point somewhere on this site are dropped.
+ */
+export async function getEncounters(
+  astro: AstroLike,
+): Promise<{ lead: string; rows: Encounter[] }> {
+  const r = (await getRandomizers(astro)).get("encounters");
+  const rows = (r?.items ?? []).flatMap((line) => {
+    const [label, href] = line.split("|").map((x) => x.trim());
+    return label && href?.startsWith("/") && !href.startsWith("//") ? [{ label, href }] : [];
+  });
+  return { lead: r?.lead ?? "Roll for an encounter", rows: rows.length ? rows : ENCOUNTERS };
+}
+
 // --- Posts ------------------------------------------------------------------
 
 export interface Post {
@@ -361,6 +395,16 @@ export function getThreads(astro: AstroLike): Promise<Thread[]> {
       }))
       .sort((a, b) => latest(b) - latest(a));
   });
+}
+
+/**
+ * The pieces a new reader can start with: everything that isn't in a thread,
+ * and the first part of each thread. Newest first, like getPosts.
+ */
+export async function getEntryPoints(astro: AstroLike): Promise<Post[]> {
+  const [posts, threads] = await Promise.all([getPosts(astro), getThreads(astro)]);
+  const firsts = new Set(threads.map((t) => t.parts[0]?.id));
+  return posts.filter((p) => !p.thread || firsts.has(p.id));
 }
 
 /** A piece's place in its thread, or undefined if it isn't in one. */

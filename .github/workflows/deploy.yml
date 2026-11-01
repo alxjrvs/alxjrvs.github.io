@@ -100,7 +100,7 @@ jobs:
           base=https://alxjrvs.com
           sleep 10
           for path in / /writing/ /feed.xml /sitemap.xml; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "$base$path")
+            code=$(curl -s -H 'Accept: text/html' -o /dev/null -w '%{http_code}' "$base$path")
             echo "$path → $code"
             [ "$code" = "200" ] || { echo "::error::$path answered $code"; exit 1; }
           done
@@ -112,4 +112,4 @@ jobs:
           code=$(curl -s -o /dev/null -w '%{http_code}' "http://alxjrvs.com/")
           [ "$code" = "301" ] || echo "::warning::http://alxjrvs.com/ answered $code, not 301"
           curl -s "$base/sitemap.xml" | grep -oE '<loc>[^<]+</loc>' | sed -E 's#</?loc>##g' \
-            | while read -r url; do curl -s -o /dev/null -w "warm %{http_code} $url\n" "$url"; done
+            | while read -r url; do curl -s -H 'Accept: text/html' -o /dev/null -w "warm %{http_code} $url\n" "$url"; done

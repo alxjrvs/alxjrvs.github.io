@@ -141,3 +141,27 @@ export const SECURITY_HEADERS: Record<string, string> = {
 /** One day to start; raise it once the zone's DNS has been reviewed. No preload. */
 export const HSTS = "max-age=86400";
 export const MEDIA_CACHE = "public, max-age=31536000, immutable";
+
+// A terminal asking for the home page (curl, Wget, HTTPie, xh) gets a short
+// plain-text hello instead of a wall of HTML. Browsers, and anyone asking
+// for HTML by name, get the site.
+const TERMINALS = /^(curl|wget|httpie|xh)\//i;
+
+export function terminalHello(path: string, userAgent: string, accept: string): string | undefined {
+  if (path !== "/" || !TERMINALS.test(userAgent) || /text\/html/i.test(accept)) return undefined;
+  return [
+    "",
+    "  alxjrvs  :  Alex Jarvis makes stuff.",
+    "",
+    "  I CAN SEE YOU (and your terminal). Hi.",
+    "",
+    `  projects   ${CANONICAL_ORIGIN}/#projects`,
+    `  writing    ${CANONICAL_ORIGIN}/writing/`,
+    `  feed       ${CANONICAL_ORIGIN}/feed.xml`,
+    `  for bots   ${CANONICAL_ORIGIN}/llms.txt`,
+    "  code       https://github.com/alxjrvs",
+    "",
+    "  Want dice in here too? https://randsum.dev",
+    "",
+  ].join("\n");
+}

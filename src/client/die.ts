@@ -276,6 +276,17 @@
       spin([el], LIKES[i] ?? [], finalL[i] as string, 12 + i * 2, 35, 1.7 + i * 0.2, settled);
     });
   }
+  // For whoever opens the console: a hello, and the die as a function.
+  window.roll = () => {
+    roll();
+    return "🎲 rolling…";
+  };
+  console.log(
+    "%calxjrvs%c  I CAN SEE YOU poking around. Hi! Type roll() to roll the die.\nThe source: https://github.com/alxjrvs/alxjrvs.github.io",
+    "font: 700 16px system-ui; color: #f5d547; background: #14161f; padding: 2px 6px; border-radius: 4px",
+    "font: 13px system-ui",
+  );
+
   for (const d of dice) {
     d.addEventListener("click", roll);
     // a roll is likely coming: let the carousel fetch the screenshots it'll flick through

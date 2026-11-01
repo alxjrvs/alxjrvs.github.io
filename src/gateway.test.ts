@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cleanSearch, normalisePath, route } from "./gateway";
+import { cleanSearch, normalisePath, route, terminalHello } from "./gateway";
 
 const site = (url: string) => {
   const r = route(url);
@@ -98,5 +98,18 @@ describe("helpers", () => {
   });
   test("cleanSearch", () => {
     expect(cleanSearch("?utm_medium=a&mc_cid=b")).toBe("");
+  });
+});
+
+describe("terminalHello", () => {
+  test("curl, Wget and HTTPie get plain text at /", () => {
+    expect(terminalHello("/", "curl/8.7.1", "*/*")).toContain("I CAN SEE YOU");
+    expect(terminalHello("/", "Wget/1.24", "*/*")).toContain("randsum.dev");
+    expect(terminalHello("/", "HTTPie/3.2.2", "application/json, */*")).toBeDefined();
+  });
+  test("browsers, other paths and explicit HTML get the site", () => {
+    expect(terminalHello("/", "Mozilla/5.0", "text/html")).toBeUndefined();
+    expect(terminalHello("/writing/", "curl/8.7.1", "*/*")).toBeUndefined();
+    expect(terminalHello("/", "curl/8.7.1", "text/html")).toBeUndefined();
   });
 });
