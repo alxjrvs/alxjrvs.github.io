@@ -270,7 +270,7 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   taxonomy; the term's name is the thread's title and its description is
   the thread's own description. That description is always italic
   Familjen Grotesk (self-hosted, like the roman) in `fg-muted`, with a 2px
-  `line-strong` rule on its left, so it never reads as a piece's dek. Parts go by the piece's Part number, then by publish date, and only
+  `line-strong` rule on its left, so it never reads as a piece's dek. Its line breaks are kept, so a blank line starts a new paragraph. Parts go by the piece's Part number, then by publish date, and only
   published parts count, so "Part 2 of 3" is always true of what's live.
   Everything thread-ish is mono in `fg-subtle`, like the tags, and the part
   you're on is `fg` with the `nav-active` underline.

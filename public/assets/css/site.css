@@ -637,7 +637,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 /* the thread's own description, wherever the thread shows: italic, so it
    never reads as a piece's dek, with a faint rule on its left like a note
    pinned to the pad */
-.thread-about { margin: 0; max-width: var(--measure); padding-left: 14px; border-left: 2px solid var(--line-strong); font-style: italic; color: var(--fg-muted); font-size: 1.0625rem; line-height: 1.5; }
+.thread-about { margin: 0; max-width: var(--measure); padding-left: 14px; border-left: 2px solid var(--line-strong); font-style: italic; color: var(--fg-muted); font-size: 1.0625rem; line-height: 1.5; white-space: pre-line; }
 .post-head .thread-about { margin: 22px 0 26px; }
 .writing-aside .thread-about { margin: 0 0 12px; font-size: 1.1875rem; }
 .lines .x.thread-about { margin-top: 2px; }
