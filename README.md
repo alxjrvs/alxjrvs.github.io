@@ -10,7 +10,7 @@ inside the same Worker: posts, project cards, the About bio and section headings
 word lists and the site title all live in its D1 database, and its admin is
 [admin.alxjrvs.com](https://admin.alxjrvs.com). Changing text is an edit and a
 Publish there, with no PR. Pages render in the Worker and sit in the Workers cache; EmDash purges
-them when something they show is published. Fonts, CSS, screenshots and the favicon are static
+them when something they show is published, and any copy is at most a few minutes old anyway. Fonts, CSS, screenshots and the favicon are static
 assets in `public/`. Visits are counted by
 [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) (cookieless).
 
