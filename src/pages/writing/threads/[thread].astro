@@ -1,0 +1,35 @@
+---
+import { decodeSlug } from "emdash";
+import ThreadParts from "../../../components/ThreadParts.astro";
+import Base from "../../../layouts/Base.astro";
+import { getThreads } from "../../../lib/content";
+
+// One thread: its name and dek, then every published part in order, ruled
+// like the Writing index. A thread with no published part gets the 404.
+const slug = decodeSlug(Astro.params.thread);
+const thread = (await getThreads(Astro)).find((t) => t.slug === slug);
+if (!thread) return Astro.rewrite("/404");
+const total = thread.parts.length;
+const [first] = thread.parts;
+---
+<Base title={`${thread.label} · Writing`} description={thread.description ?? `A thread of ${total} pieces.`}>
+<div class="wrap">
+<header class="pagehead writing-head">
+  <div>
+    <a class="label crumb" href="/writing/"><span aria-hidden="true">←</span> Writing</a>
+    <h1>{thread.label}</h1>
+  </div>
+  <div class="writing-aside">
+    {thread.description && <p class="dek">{thread.description}</p>}
+    <p class="label">A thread · {total} {total === 1 ? "part" : "parts"}</p>
+  </div>
+</header>
+<section class="ruled" aria-labelledby="parts">
+  <h2 class="margin label" id="parts">Parts</h2>
+  <div class="thread-list">
+    <ThreadParts parts={thread.parts} full />
+    {first && <a class="more thread-start" href={`/writing/${first.id}/`}>Start reading <span aria-hidden="true">→</span></a>}
+  </div>
+</section>
+</div>
+</Base>

@@ -1,0 +1,46 @@
+---
+// Threads as ruled lines under a "Threads" margin label: the thread's name
+// and dek (linking to its page), how many parts and when, and links to start
+// at part one or jump to the newest part. The Writing index, above the years.
+import { type Thread, shortDate, year } from "../lib/content";
+
+interface Props {
+  threads: Thread[];
+}
+const { threads } = Astro.props;
+const span = (t: Thread) => {
+  const times = t.parts.map((p) => p.date);
+  const first = new Date(Math.min(...times.map(Number)));
+  const last = new Date(Math.max(...times.map(Number)));
+  if (t.parts.length === 1) return `${shortDate(first)}, ${year(first)}`;
+  return year(first) === year(last) ? `${shortDate(first)}–${shortDate(last)}, ${year(last)}` : `${year(first)}–${year(last)}`;
+};
+---
+{threads.length > 0 && (
+  <section class="ruled" aria-labelledby="threads">
+    <h2 class="margin label" id="threads">Threads</h2>
+    <ul class="lines threads">
+      {threads.map((t) => {
+        const [first] = t.parts;
+        const newest = t.parts.reduce((a, b) => (b.date > a.date ? b : a));
+        const n = t.parts.indexOf(newest) + 1;
+        return (
+          <li>
+            <a class="line" href={`/writing/threads/${t.slug}/`}>
+              <span class="t">{t.label}</span>
+              {t.description && <span class="x">{t.description}</span>}
+            </a>
+            <span class="label when">
+              <span>{t.parts.length} {t.parts.length === 1 ? "part" : "parts"}</span>
+              <span>{span(t)}</span>
+            </span>
+            <div class="line-meta">
+              {first && <a class="label thread-go" href={`/writing/${first.id}/`}>Start at part 1 <span aria-hidden="true">→</span></a>}
+              {t.parts.length > 1 && <a class="label thread-go" href={`/writing/${newest.id}/`}>Newest: part {n}</a>}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+)}
