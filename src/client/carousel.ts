@@ -3,7 +3,7 @@
 // loops: past the last card comes the first again. The loop is two copies of
 // the cards at each end (hidden from screen readers and the keyboard); once a
 // scroll settles on a copy, it jumps to the real card it copies, which looks
-// identical. It also moves on by itself every 4 seconds, but only while it's
+// identical. It also moves on by itself every 8 seconds, but only while it's
 // on screen and nobody is using it: hovering, touching or focusing it pauses
 // the cycle, any swipe restarts the count, and reduced motion turns it off.
 // The die's roll spins it round to a random project (see below).
@@ -94,8 +94,8 @@
   }
   box.querySelector(".next")?.addEventListener("click", () => nudge(1));
 
-  // The auto-advance: every 4s of stillness, move on one card.
-  const EVERY = 4000;
+  // The auto-advance: every 8s of stillness, move on one card.
+  const EVERY = 8000;
   let auto: ReturnType<typeof setTimeout> | undefined;
   let seen = false;
   let hovered = false;
