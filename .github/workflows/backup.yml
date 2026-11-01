@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Export and encrypt
@@ -46,7 +46,7 @@ jobs:
           rm dump.sql.gz
           echo "made=true" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: steps.export.outputs.made == 'true'
         with:
           name: alxjrvs-emdash-${{ github.run_number }}
