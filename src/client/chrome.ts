@@ -1,5 +1,5 @@
-// The page chrome every page shares: the back-to-top button, header links
-// that follow the scroll, and the theme toggle.
+// The page chrome every page shares: the back-to-top button and header links
+// that follow the scroll.
 
 // Back-to-top button: fades in while you're scrolling (once you're past the
 // first screen) and fades out again shortly after you stop.
@@ -65,44 +65,4 @@
   );
   addEventListener("resize", update);
   update();
-})();
-
-// Theme: follows the visitor's system light/dark setting, live. The toggle
-// overrides it; picking the same mode as the system clears the override, so
-// the site goes back to following the system.
-(() => {
-  const btn = document.getElementById("theme-toggle");
-  if (!btn) return;
-  const root = document.documentElement;
-  const os = matchMedia("(prefers-color-scheme: light)");
-  type Theme = "light" | "dark";
-  const system = (): Theme => (os.matches ? "light" : "dark");
-  function saved(): Theme | null {
-    try {
-      const t = localStorage.getItem("theme");
-      return t === "light" || t === "dark" ? t : null;
-    } catch {
-      return null;
-    }
-  }
-  const current = (): Theme => (root.getAttribute("data-theme") === "light" ? "light" : "dark");
-  function apply(t: Theme) {
-    root.setAttribute("data-theme", t);
-    btn?.setAttribute(
-      "aria-label",
-      t === "dark" ? "Switch to light theme" : "Switch to dark theme",
-    );
-  }
-  apply(current());
-  btn.addEventListener("click", () => {
-    const t = current() === "dark" ? "light" : "dark";
-    try {
-      if (t === system()) localStorage.removeItem("theme");
-      else localStorage.setItem("theme", t);
-    } catch {}
-    apply(t);
-  });
-  os.addEventListener("change", () => {
-    if (!saved()) apply(system());
-  });
 })();
