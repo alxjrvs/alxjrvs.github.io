@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # to dispatch CI on the bot branch
 
 concurrency:
   group: screenshots-${{ github.ref }}
@@ -68,6 +69,8 @@ jobs:
 
       - if: steps.gate.outputs.skip != '1'
         name: Commit changed screenshots
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add -A assets/work
           if git diff --cached --quiet; then
@@ -77,4 +80,26 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh project screenshots"
-          git push
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git push
+            exit 0
+          fi
+
+          # main only accepts commits that already have a green "build" check,
+          # so push to a throwaway branch, run CI there, then fast-forward main
+          # to that exact commit.
+          branch="bot/screenshots-${{ github.run_id }}"
+          git push origin "HEAD:refs/heads/$branch"
+          trap 'git push origin --delete "$branch" || true' EXIT
+          gh workflow run ci.yml --ref "$branch"
+          sha=$(git rev-parse HEAD)
+          for i in $(seq 1 30); do
+            run_id=$(gh run list --workflow ci.yml --branch "$branch" --event workflow_dispatch \
+              --json databaseId,headSha -q ".[] | select(.headSha == \"$sha\") | .databaseId" | head -n1)
+            [ -n "$run_id" ] && break
+            sleep 5
+          done
+          [ -n "$run_id" ] || { echo "CI run never appeared"; exit 1; }
+          gh run watch "$run_id" --exit-status
+          git push origin "HEAD:${{ github.ref_name }}"
