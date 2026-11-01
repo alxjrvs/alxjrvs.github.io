@@ -245,8 +245,13 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
 - **A comic (`/writing/<slug>/` with pages):** a piece with comic pages is a
   comic. It's the same page as a piece, but the pages take the words' place,
   in the full width beside the margin, each in a 1px `line-strong` frame with
-  8px corners and fitted to the screen's height (full width on phones). One
-  page shows at a time. Clicking or tapping the left third of it goes back,
+  8px corners. One page shows at a time, and the first screen is the comic
+  and nothing else: a compact title (h1 at most 2.5rem, dek and thread
+  description cut to two lines), the page, and the stepper fill exactly the
+  height under the header, with no scrolling. The page is as big as that
+  leaves room for, by height on wide screens and by width on phones. On
+  phones the margin's details move below the comic. The note, pager and
+  thread sit below the fold. Only comics do this; every other page scrolls. Clicking or tapping the left third of it goes back,
   the rest goes on (the cursor shows which), as do ← and → and a sideways
   swipe. Under it, the stepper (below) reads "← Back · Page 3 of 12 ·
   Next →". In a thread, Back on the first page and Next on the last go to the
