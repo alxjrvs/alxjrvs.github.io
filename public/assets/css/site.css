@@ -47,6 +47,7 @@
   --brand: #ffe45c;
   --brand-2: #a986d6;
   --surface-bar: rgba(22, 24, 34, .74);
+  --surface-menu: rgba(22, 24, 34, .94);
   --shadow: 0 30px 60px -30px rgba(0, 0, 0, .9);
 
   /* roles */
@@ -162,7 +163,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
    arrival), the header reads "alxjrvs · tagline … ← Title → · die". The nav
    links fade out on the way up to make room and come back on the way down. */
 .stepper.bar-read { display: none; }
-.js .titled .stepper.bar-read { display: flex; flex: 0 1 auto; min-width: 0; margin-left: auto; gap: 14px; margin-right: 8px; animation: bar-read-in .25s ease-out; }
+.js .titled .stepper.bar-read { display: flex; flex: 0 1 auto; min-width: 0; margin-left: auto; gap: 14px; margin-right: 8px; }
+/* only Back and Next fade in: the title is already there, having just flown in */
+.js .titled .stepper.bar-read .step { animation: bar-read-in .25s ease-out; }
 .js .reading .nav > a { opacity: calc(1 - var(--t, 0) * 2.5); }
 .js .titled .nav > a { display: none; }
 .js .titled .bar-id { flex-shrink: 0; }
@@ -170,6 +173,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .bar-title {
   min-width: 0; max-width: 34ch; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   font-weight: 700; font-size: 17px; line-height: 1.2; letter-spacing: -.035em; color: var(--fg);
+  cursor: pointer; /* a tap takes you back to the top (client/title.ts) */
 }
 .post-head h1 .w { display: inline-block; transform-origin: 0 0; }
 /* on the way up, the words pass over the header's glass */
@@ -178,7 +182,75 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
    readers and find-in-page while the header's copy shows */
 .js .titled .post-head h1 { opacity: 0; pointer-events: none; }
 @keyframes bar-read-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .js .titled .stepper.bar-read { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .js .titled .stepper.bar-read .step { animation: none; } }
+/* On phones the docked title takes the whole header, on up to two lines: the
+   wordmark, the nav and the die bow out on the way up, and the controls wait
+   in the floating menu (.fab) instead. */
+@media (max-width: 760px) {
+  .js .reading .bar-id, .js .reading .nav { opacity: calc(1 - var(--t, 0) * 2.5); }
+  .js .titled .bar { padding: 0 16px; }
+  .js .titled .bar-id, .js .titled .nav, .js .titled .stepper.bar-read .step { display: none; }
+  .js .titled .stepper.bar-read { flex: 1 1 auto; margin: 0; }
+  .bar-title {
+    max-width: none; padding: 0; white-space: normal; font-size: 16px; line-height: 1.15;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  }
+}
+
+/* the floating menu, on a piece on phones once its title has docked
+   (client/fab.ts): a round button at the bottom right, where back to top
+   sits elsewhere, opening onto the header's controls */
+.fab { display: none; }
+@media (max-width: 760px) {
+  .js .titled .fab { display: block; }
+  .js .titled:has(.fab) .to-top { display: none; }
+}
+.fab {
+  position: fixed; right: var(--gutter); bottom: max(20px, env(safe-area-inset-bottom)); z-index: 45;
+  transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s;
+}
+.fab.tucked { transform: translateY(calc(100% + 28px)); opacity: 0; }
+.fab-btn {
+  display: grid; place-items: center; margin-left: auto;
+  width: 52px; height: 52px; padding: 0;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--surface-bar); color: var(--fg-muted); cursor: pointer;
+  -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-tap-highlight-color: transparent;
+}
+.fab-btn svg { width: 18px; height: 18px; fill: currentColor; transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+.fab.open .fab-btn { color: var(--fg); border-color: var(--fg-subtle); }
+/* open, its four pips turn an eighth, into a diamond */
+.fab.open .fab-btn svg { transform: rotate(45deg) scale(.9); }
+.fab-btn:active svg { transform: scale(.88); }
+.fab-panel {
+  position: absolute; right: 0; bottom: calc(100% + 10px);
+  width: min(256px, calc(100vw - var(--gutter) * 2));
+  padding: 18px 14px 14px 18px;
+  background: var(--surface-menu); border: 1px solid var(--line); border-radius: 16px;
+  -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+  transform-origin: bottom right;
+  transition: opacity .18s, transform .22s cubic-bezier(.2,.8,.2,1);
+}
+@starting-style { .fab-panel { opacity: 0; transform: translateY(8px) scale(.96); } }
+.fab-panel[hidden] { display: none; }
+.fab-panel .brand { display: inline-block; font-size: 24px; }
+.fab-nav { display: flex; flex-direction: column; margin: 10px 0 12px; }
+.fab-nav a { padding: 10px 0; font-size: 1.0625rem; color: var(--fg-muted); text-decoration: none; }
+.fab-nav a:active { color: var(--fg); }
+.fab-row { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.fab-key {
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  font-size: 1.0625rem; font-weight: 600; line-height: 1; color: var(--fg-muted); text-decoration: none;
+  border: 1px solid var(--line); border-radius: 10px;
+}
+.fab-key[aria-disabled] { opacity: .4; }
+.fab-key.die-fab { margin-left: auto; border: 1px solid var(--line); }
+.fab-key.die-fab .die { width: 20px; height: 20px; }
+.fab-top svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) {
+  .fab, .fab-panel, .fab-btn svg { transition: none; }
+}
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* back to top: only visible while scrolling */

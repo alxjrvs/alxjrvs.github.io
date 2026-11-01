@@ -3,6 +3,7 @@
 // away from the home page, the footer.
 import chromeSrc from "../client/chrome.ts?inline-script";
 import dieSrc from "../client/die.ts?inline-script";
+import fabSrc from "../client/fab.ts?inline-script";
 import jsFlagSrc from "../client/js-flag.ts?inline-script";
 import Die from "../components/Die.astro";
 import Footer from "../components/Footer.astro";
@@ -23,12 +24,20 @@ interface Props {
   /** more schema.org for the page (see Seo.astro) */
   ld?: Record<string, unknown> | undefined;
   noindex?: boolean | undefined;
+  /** on phones, once a piece's title fills the header, its controls wait in a
+      floating menu (client/fab.ts): the nav, the die, Back and Next */
+  menu?: { prev?: Step | undefined; next?: Step | undefined } | undefined;
+}
+interface Step {
+  href: string;
+  /** where it goes ("Part 1: Title") */
+  title: string;
 }
 
 const isHome = Astro.url.pathname === "/";
 // Away from the home page, the nav link for the page's own section is current.
 const section = Astro.url.pathname.startsWith("/writing") ? "/#writing" : undefined;
-const { progress, ...seo } = Astro.props;
+const { progress, menu, ...seo } = Astro.props;
 const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
 const { subjects, objects, likes } = rolls;
 const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds: rolls.rareOdds, likes }).replace(
@@ -85,6 +94,30 @@ const v = __BUILD_ID__;
 
   {!isHome && <Footer class="foot wrap" />}
 
+  {menu && (
+    <div class="fab" id="fab">
+      <div class="fab-panel" id="fab-panel" hidden>
+        <a class="brand" href="/"><Wordmark /></a>
+        <nav class="fab-nav" aria-label="Primary, in the menu">
+          {nav.map((item) => <a href={item.url === section ? "/writing/" : item.url}>{item.name}</a>)}
+        </nav>
+        <div class="fab-row">
+          {[
+            { to: menu.prev, text: "Back", rel: "prev", arrow: "←" },
+            { to: menu.next, text: "Next", rel: "next", arrow: "→" },
+          ].map(({ to, text, rel, arrow }) => to ? (
+            <a class="fab-key" href={to.href} rel={rel} title={to.title}><span aria-hidden="true">{arrow}</span><span class="sr">{text}: {to.title}</span></a>
+          ) : (
+            <span class="fab-key" aria-disabled="true"><span aria-hidden="true">{arrow}</span><span class="sr">{text}</span></span>
+          ))}
+          <Die class="fab-key die-fab" label="Roll the die" />
+          <a class="fab-key fab-top" href="#main"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg><span class="sr">Back to top</span></a>
+        </div>
+      </div>
+      <button class="fab-btn" type="button" aria-expanded="false" aria-controls="fab-panel" aria-label="Menu"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="4.5" cy="4.5" r="1.6"/><circle cx="11.5" cy="4.5" r="1.6"/><circle cx="4.5" cy="11.5" r="1.6"/><circle cx="11.5" cy="11.5" r="1.6"/></svg></button>
+    </div>
+  )}
+
   <a class="to-top" id="to-top" href="#main" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></a>
 
   <InlineScript src={chromeSrc} name="chrome.ts" />
@@ -94,6 +127,7 @@ const v = __BUILD_ID__;
   {/* says what the die landed on, for screen readers */}
   <p class="sr" role="status" id="die-status"></p>
   <InlineScript src={dieSrc} name="die.ts" />
+  {menu && <InlineScript src={fabSrc} name="fab.ts" />}
   <slot name="scripts" />
   {site.analyticsToken && (
     <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: site.analyticsToken })} />

@@ -45,6 +45,32 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   let rolling = false;
 
+  // On a phone, the die taps back: one short pulse on every face it flicks
+  // through, slowing down with it. Android vibrates; an iPhone has no
+  // vibrate, so it gets the tick Safari plays when a switch is flipped,
+  // from a hidden one. Nothing on a desktop.
+  const coarse = matchMedia("(pointer: coarse)");
+  let tapper: HTMLLabelElement | undefined;
+  function buzz() {
+    if (!coarse.matches) return;
+    if (typeof navigator.vibrate === "function") {
+      navigator.vibrate(10);
+      return;
+    }
+    if (!tapper) {
+      tapper = document.createElement("label");
+      tapper.setAttribute("aria-hidden", "true");
+      tapper.style.display = "none";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.setAttribute("switch", "");
+      input.tabIndex = -1;
+      tapper.append(input);
+      document.body.append(tapper);
+    }
+    tapper.click();
+  }
+
   // A reel's label, plus any punctuation that rides along with it (the
   // tagline's full stops are part of their word). A word that already ends
   // in its punctuation, like the rare roll, keeps it.
@@ -217,9 +243,11 @@
         } while (f === last);
         last = f;
         showPips(FACES[f] as number[]);
+        buzz();
         setTimeout(step, 35 + i * i * 2.2);
       } else {
         showPips(J);
+        buzz();
         done();
       }
     })();
@@ -243,6 +271,7 @@
     document.dispatchEvent(new CustomEvent("diceroll"));
 
     if (reduce.matches) {
+      buzz(); // no ticks to feel, so one
       for (const el of subjs) setText(el, finalS);
       for (const el of objs) setText(el, finalO);
       likes.forEach((el, i) => {
