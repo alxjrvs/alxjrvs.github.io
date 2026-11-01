@@ -39,10 +39,9 @@
     if (!turned) return;
     // (not on load: a hash set before the load event makes the browser jump to it)
     history.replaceState(history.state, "", `#page-${at + 1}`);
-    // A tall page starts at its top, under the header.
-    if (comic && comic.getBoundingClientRect().top < 0) {
-      comic.scrollIntoView({ block: "start", behavior: "instant" });
-    }
+    // The comic fills the first screen; turning a page from further down
+    // brings it back up.
+    if (comic && comic.getBoundingClientRect().top < 0) scrollTo({ top: 0, behavior: "instant" });
   }
   const step = (d: -1 | 1) => {
     if (pages[at + d]) show(at + d, true);

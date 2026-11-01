@@ -20,7 +20,7 @@ const { pages, title, beyond } = Astro.props;
 const n = pages.length;
 const steps = n > 1 || Boolean(beyond?.prev || beyond?.next);
 ---
-<section class="comic" id="comic" aria-label={`${title}, a comic in ${n} ${n === 1 ? "page" : "pages"}`}>
+<section class:list={["comic", { single: !steps }]} id="comic" aria-label={`${title}, a comic in ${n} ${n === 1 ? "page" : "pages"}`}>
   <ol class="comic-pages" data-swipe>
     {pages.map((page, i) => (
       <li class="comic-page" id={`page-${i + 1}`} aria-label={`Page ${i + 1} of ${n}`}>
