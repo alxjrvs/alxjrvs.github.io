@@ -696,6 +696,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .comic-pages { gap: 16px; }
   .stepper { gap: 12px; }
   .stepper .step { padding: 8px 10px; }
+  /* the thread's name is in the margin row just above, so the count stays one line */
+  .stepper .step-name { display: none; }
+  .stepper .step-count { white-space: nowrap; }
   .post-head .dek { font-size: 1.125rem; }
   .pager { grid-template-columns: 1fr; }
   .pager .prev { text-align: left; align-items: flex-start; border-top: 1px solid var(--line); }
