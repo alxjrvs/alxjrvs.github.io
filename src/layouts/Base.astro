@@ -67,7 +67,7 @@ const v = __BUILD_ID__;
     <slot name="bar" />
     <nav class="nav" aria-label="Primary">
       {nav.map((item) => <a href={isHome || item.url !== section ? item.url : "/writing/"} aria-current={item.url === section ? "page" : undefined}>{item.name}</a>)}
-      <Die class="die-bar" />
+      <Die class="die-bar" label={isHome ? undefined : "Roll the die: new tagline"} />
     </nav>
     {progress && <span class="read-progress" id="read-progress" aria-hidden="true"></span>}
   </header>
@@ -84,6 +84,8 @@ const v = __BUILD_ID__;
   {/* The die rolls the header tagline on every page (and, at home, the
       splash, the project cards and About too). */}
   <script is:inline type="application/json" id="roll-data" set:html={rollData} />
+  {/* says what the die landed on, for screen readers */}
+  <p class="sr" role="status" id="die-status"></p>
   <InlineScript src={dieSrc} name="die.ts" />
   <slot name="scripts" />
   {site.analyticsToken && (

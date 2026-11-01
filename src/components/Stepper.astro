@@ -66,9 +66,9 @@ const side = [
         {middle !== undefined ? (
           <Fragment set:html={middle} />
         ) : (
-          <span class="label step-count" aria-live={buttons ? "polite" : undefined}>
+          <span class="label step-count" aria-live={buttons ? "polite" : undefined} aria-atomic={buttons ? "true" : undefined}>
             {name && <span class="step-name"><a href={name.href}>{name.title}</a><span class="sep"> · </span></span>}
-            {noun} <span data-now>{n}</span> of {total}
+            {noun} <span data-now>{n}</span> of {total}{buttons && <span class="sr" data-desc></span>}
           </span>
         )}
       </>

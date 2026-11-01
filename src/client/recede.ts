@@ -4,8 +4,11 @@
 // header's copies. The tagline's two lines move separately: the subject and
 // "I make …" split apart and land side by side, exactly on the header's
 // one-line copy, so the hand-over can't be seen. Where the header has no
-// room for the tagline (narrow screens) it fades out instead.
+// room for the tagline (narrow screens) it fades out instead. With reduced
+// motion nothing travels: the header simply takes over once the splash has
+// scrolled away.
 (() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const bar = document.getElementById("bar");
   const intro = document.querySelector<HTMLElement>(".intro");
   if (!bar || !intro) return;
@@ -94,8 +97,14 @@
   function update() {
     if (!bar || !intro) return;
     const p = Math.min(Math.max(scrollY / span, 0), 1);
-    const e = p * p * (3 - 2 * p); // smoothstep
+    const still = reduce.matches;
+    const e = still ? (p >= 1 ? 1 : 0) : p * p * (3 - 2 * p); // smoothstep
     for (const q of pairs) {
+      if (still) {
+        q.el.style.transform = "";
+        q.el.style.opacity = "";
+        continue;
+      }
       if (!q.dest || !q.from) {
         q.el.style.opacity = String(1 - Math.min(e * 1.6, 1));
         continue;
@@ -118,7 +127,14 @@
     if (mark) mark.classList.toggle("receding", e > 0.02); // no hover reveal once it's moving
     bar.classList.toggle("off", e < 0.02);
     intro.classList.toggle("scrolled", scrollY > 4); // the scroll cue bows out
+    const wasDocked = document.body.classList.contains("docked");
     document.body.classList.toggle("docked", p >= 1);
+    // the corner die vanishes when docked: don't leave keyboard focus on it
+    const corner = intro.querySelector(".die-corner");
+    if (!wasDocked && p >= 1 && corner?.contains(document.activeElement))
+      bar.querySelector<HTMLElement>("button.die-bar")?.focus({
+        preventScroll: true,
+      });
   }
 
   // Update straight from the scroll event, in the same frame the page moved.
@@ -127,6 +143,7 @@
   addEventListener("scroll", update, { passive: true });
   window.__recede = update; // the snapping spring calls this as it scrolls
   addEventListener("resize", measure);
+  reduce.addEventListener("change", measure);
   measure();
   if (document.fonts?.ready) document.fonts.ready.then(measure);
 })();

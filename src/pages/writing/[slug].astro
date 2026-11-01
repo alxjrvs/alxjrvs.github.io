@@ -86,7 +86,7 @@ const barNext = place
       {place && (
         <Stepper
           class="part-bar"
-          label="This thread"
+          label={`${place.thread.label}: parts`}
           noun="Part"
           n={place.n}
           total={total}
@@ -120,7 +120,7 @@ const barNext = place
 
     {place ? (
       <>
-        <nav class="pager" aria-label="This thread">
+        <nav class="pager" aria-label={`${place.thread.label}: next and previous parts`}>
           {place.prev ? (
             <a class="next" href={back(place.prev)} rel="prev"><span class="label"><span aria-hidden="true">←</span> Part {place.n - 1}</span><span class="t">{place.prev.title}</span></a>
           ) : <span />}

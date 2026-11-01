@@ -73,6 +73,9 @@ html.glide { scroll-snap-type: none; }
 /* no hover effects flickering under the cursor while the page springs */
 html.moving main { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* inner pages: a #link lands below the floating header, not under it (not
+   at home, where it would knock the screens off their snap points) */
+html:has(body.inner) { scroll-padding-top: calc(var(--bar-h) + 16px); }
 body {
   margin: 0;
   background: var(--surface);
@@ -171,7 +174,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .post-head h1 .w { display: inline-block; transform-origin: 0 0; }
 /* on the way up, the words pass over the header's glass */
 .js .reading .post-head h1 { position: relative; z-index: 51; }
-.js .titled .post-head h1 { visibility: hidden; }
+/* hidden by opacity, not visibility, so the page keeps its h1 for screen
+   readers and find-in-page while the header's copy shows */
+.js .titled .post-head h1 { opacity: 0; pointer-events: none; }
 @keyframes bar-read-in { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .js .titled .stepper.bar-read { animation: none; } }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -306,8 +311,11 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   transform-origin: 0 0;
   will-change: transform;
 }
-/* once docked, the header's own copies take over from the splash */
-.docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
+/* once docked, the header's own copies take over from the splash. The h1
+   and tagline only go transparent, so they stay in the page's outline; the
+   corner die is a duplicate control, so it leaves altogether. */
+.docked .mark, .docked .tagline { opacity: 0; pointer-events: none; }
+.docked .die-corner { visibility: hidden; }
 
 /* the scroll cue: a quiet "Scroll down" label over a chevron at the foot of
    the splash that says "there's more below". The chevron bobs gently, and
@@ -446,6 +454,30 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .nudge svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .nudge:hover, .nudge:active { color: var(--fg); border-color: var(--fg-subtle); opacity: 1; }
 .nudge:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; opacity: 1; }
+/* Hold, under the arrow: stops the auto-advance (pressed = held). */
+.hold {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: calc(var(--nudge-y, 40%) + 30px);
+  right: calc(var(--gutter) * -1 + max(6px, (var(--gutter) - 40px) / 2) + 8px);
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-bar);
+  color: var(--fg-subtle);
+  opacity: .7;
+  cursor: pointer;
+  transition: opacity .2s, color .2s, border-color .2s;
+}
+.hold[hidden] { display: none; }
+.hold svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+.hold:hover { color: var(--fg); opacity: 1; }
+.hold[aria-pressed="true"] { color: var(--fg); border-color: var(--fg-subtle); opacity: 1; }
+.hold:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; opacity: 1; }
 
 /* writing */
 .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 28px; }
@@ -511,6 +543,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .foot a { text-decoration: none; }
 .foot a:hover { color: var(--fg); }
 .inner .foot { margin-left: var(--gutter); margin-right: var(--gutter); padding: 0; }
+/* keep the footer's right end clear of the back-to-top button */
+.foot { padding-right: 56px; }
+.inner .foot { padding-right: 56px; }
 
 /* ── inner pages: writing archive, posts, 404 ───────── */
 .inner main { padding-top: calc(var(--bar-h) + 72px); min-height: calc(100svh - 88px); }
@@ -656,6 +691,8 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .comic-screen .comic.paged .comic-page, .comic-screen .comic.single .comic-page { min-height: 0; }
 .comic-screen .comic.paged .comic-page img, .comic-screen .comic.single .comic-page img { width: auto; height: auto; max-height: 100%; }
 .comic .stepper { margin-top: 12px; }
+.comic .full-size { display: block; width: fit-content; margin: 8px auto 0; color: var(--fg-subtle); text-decoration: none; }
+.comic .full-size:hover { color: var(--fg); }
 .post .comic-note { margin-top: 40px; }
 
 /* the stepper: Back · Page 3 of 12 · Next, the same for a comic's pages
@@ -776,6 +813,13 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .brand { font-size: 24px; }
   .nav { font-size: .9375rem; }
 }
+/* the smallest phones (320px): tighten the header so the wordmark and the
+   nav don't collide */
+@media (max-width: 360px) {
+  .bar { padding: 0 6px 0 12px; gap: 10px; }
+  .bar-id { flex-shrink: 0; }
+  .nav { gap: 10px; font-size: .875rem; }
+}
 
 /* ── phones ─────────────────────────────────────────── */
 /* The projects carousel stacks each card and lets the next one peek in, and
@@ -792,6 +836,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .card h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); }
   .nudge { width: 34px; height: 34px; margin-top: -17px; border-color: var(--line-strong); opacity: .85; }
   .nudge.next { right: calc(var(--gutter) * -1 + 6px); }
+  .hold { top: calc(var(--nudge-y, 40%) + 26px); right: calc(var(--gutter) * -1 + 11px); }
   .shot img { aspect-ratio: 4 / 3; }
   .card .summary { font-size: .9375rem; }
   .about h2 { margin-bottom: 16px; }

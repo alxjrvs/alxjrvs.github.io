@@ -5,6 +5,12 @@
 // past a tenth of a screen (counting where your momentum was heading),
 // otherwise back where you were. Any new input cancels the spring at once.
 // Only for mouse and trackpad; touch gets CSS snapping.
+//
+// Only a scroll you made with the wheel (or trackpad) or a paging key
+// (Page Up/Down, Space, Home, End) springs. Scrolls the browser makes for
+// you (tabbing to a link, find in page, a screen reader moving its cursor,
+// the arrow keys) are left exactly where they landed, and the spring never
+// carries the focused element out of view.
 (() => {
   const fine = matchMedia(
     "(hover: hover) and (pointer: fine) and (min-width: 761px) and (min-height: 600px)",
@@ -26,6 +32,9 @@
   let spring: { to: number; dir: number; raf: number } | null = null;
   let lastDelta = 0;
   let began = 0;
+  let intentAt = -Infinity; // when the wheel or a paging key last moved the page
+  const INTENT_MS = 1200;
+  const PAGING = new Set(["PageDown", "PageUp", " ", "Home", "End"]);
 
   const on = () => fine.matches && !reduce.matches;
   const sync = () => root.classList.toggle("glide", on());
@@ -75,6 +84,23 @@
     return next;
   }
 
+  // Would moving the page by `by` pixels push the focused element (or the
+  // current text selection) off screen?
+  function keepsFocus(by: number): boolean {
+    const vh = innerHeight;
+    const rects: DOMRect[] = [];
+    const el = document.activeElement;
+    if (el && el !== document.body && el !== root) rects.push(el.getBoundingClientRect());
+    const sel = getSelection();
+    if (sel?.rangeCount && !sel.isCollapsed) rects.push(sel.getRangeAt(0).getBoundingClientRect());
+    return rects.every((r) => {
+      const visibleNow = r.bottom > 0 && r.top < vh;
+      if (!visibleNow) return true;
+      const top = r.top - by;
+      return top >= 0 && top + Math.min(r.height, vh) <= vh;
+    });
+  }
+
   function stop() {
     if (!spring) return;
     cancelAnimationFrame(spring.raf);
@@ -86,11 +112,17 @@
   function settle() {
     clearTimeout(idle);
     if (!on() || spring) return;
+    if (performance.now() - intentAt > INTENT_MS) {
+      // not a scroll the reader made by hand: leave it where it landed
+      origin = null;
+      return;
+    }
     if (performance.now() - lastT > 100) vel = 0; // the scroll has already stopped
     const y = scrollY;
     const to = pick(Math.max(0, Math.min(maxY(), y + vel * COAST)));
     origin = null;
     if (to === null || Math.abs(to - y) < 1) return;
+    if (!keepsFocus(to - y)) return;
     let x = y;
     let v = vel * 1000;
     const k = STIFF;
@@ -157,6 +189,7 @@
     "wheel",
     (e: WheelEvent) => {
       const d = e.deltaY;
+      intentAt = performance.now();
       if (!spring) {
         lastDelta = Math.abs(d);
         return;
@@ -175,6 +208,20 @@
     },
     { passive: false },
   );
+
+  addEventListener("keydown", (e: KeyboardEvent) => {
+    const t = e.target as HTMLElement | null;
+    const typing = t?.closest("input, textarea, select, [contenteditable]");
+    if (PAGING.has(e.key) && !typing && !e.altKey && !e.ctrlKey && !e.metaKey) {
+      intentAt = performance.now();
+    } else {
+      intentAt = -Infinity;
+    }
+  });
+  // Tabbing or a screen reader moving focus is never a hand scroll.
+  addEventListener("focusin", () => {
+    intentAt = -Infinity;
+  });
 
   for (const type of ["mousedown", "touchstart", "keydown"]) {
     addEventListener(

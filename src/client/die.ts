@@ -225,6 +225,13 @@
     })();
   }
 
+  // once everything has landed, say what it landed on
+  const status = document.getElementById("die-status");
+  function announce() {
+    const tag = document.querySelector(".bar-tag")?.textContent?.replace(/\s+/g, " ").trim();
+    if (status && tag) status.textContent = `Rolled: ${tag}`;
+  }
+
   function roll() {
     if (rolling) return;
     // now and then the subject lands on the rare roll instead
@@ -245,6 +252,7 @@
         show(i, p);
       });
       rollCards(() => {});
+      announce();
       return;
     }
 
@@ -255,6 +263,7 @@
       if (--pending) return;
       for (const d of dice) d.classList.remove("rolling");
       rolling = false;
+      announce();
     }
     // Every reel slows to a stop at its own pace, so they land one by one.
     spin(subjs, SUBJECTS, finalS, 14, 30, 1.8, settled);
