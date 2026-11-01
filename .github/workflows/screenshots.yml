@@ -1,13 +1,16 @@
 name: Screenshots
 
 # Re-captures each project's live site into assets/work/ and commits the result
-# when anything changed. Runs on demand and weekly. On PRs that touch the
+# when anything changed. Runs on demand and every day at 3am US Eastern. On PRs that touch the
 # project list or this tooling it only captures projects with no screenshot
 # yet, committing those back to the PR branch.
 on:
   workflow_dispatch:
+  # GitHub cron is UTC-only, so both 07:00 and 08:00 UTC fire and the job
+  # below only proceeds on the one that is 3am in New York (EDT vs EST).
   schedule:
-    - cron: "0 9 * * 1"
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
   pull_request:
     paths:
       - "_projects/**"
@@ -27,26 +30,44 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Only run at 3am New York time
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # Match on the cron that fired, not the clock: scheduled runs can start late.
+            offset=$(TZ=America/New_York date +%z)   # -0400 (EDT) or -0500 (EST)
+            want="0 7 * * *"; [ "$offset" = "-0500" ] && want="0 8 * * *"
+            if [ "${{ github.event.schedule }}" != "$want" ]; then
+              echo "Not 3am in New York for this cron; skipping."
+              echo "skip=1" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - if: steps.gate.outputs.skip != '1'
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - uses: actions/setup-node@v4
+      - if: steps.gate.outputs.skip != '1'
+        uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Install Playwright + Chromium
+      - if: steps.gate.outputs.skip != '1'
+        name: Install Playwright + Chromium
         run: |
           npm install --no-save playwright@1.48.2 sharp@0.33
           npx playwright install --with-deps chromium
 
-      - name: Capture
+      - if: steps.gate.outputs.skip != '1'
+        name: Capture
         run: node scripts/screenshots.mjs
         env:
           # On PRs, only capture projects that have no screenshot yet (see the script).
           ONLY_MISSING: ${{ github.event_name == 'pull_request' && '1' || '' }}
 
-      - name: Commit changed screenshots
+      - if: steps.gate.outputs.skip != '1'
+        name: Commit changed screenshots
         run: |
           git add -A assets/work
           if git diff --cached --quiet; then
