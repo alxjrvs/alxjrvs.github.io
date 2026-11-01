@@ -204,6 +204,8 @@ layout: default
       var finalS = RARE && Math.random() * RARE_ODDS < 1 ? RARE : pick(SUBJECTS);
       var finalO = pick(OBJECTS);
       var finalL = likes.map(function (el, i) { return nextLike(i); });
+      // the dice grid behind the splash rerolls too, in a pulse from the tagline
+      document.dispatchEvent(new CustomEvent('diceroll'));
 
       if (reduce.matches) {
         subjs.forEach(function (el) { setText(el, finalS); });
@@ -231,6 +233,97 @@ layout: default
       });
     }
     dice.forEach(function (d) { d.addEventListener('click', roll); });
+  })();
+
+  // The dice grid behind the splash. The CSS draws a static copy of it (the
+  // fallback without JS); this swaps in real dice, one per cell and lined up
+  // the same way, so a roll can reach them. Each roll sends a pulse out from
+  // the tagline: as it passes a die, the die rerolls to a new face and swells
+  // a little, then settles. Under reduced motion every face changes at once.
+  (function () {
+    var intro  = document.querySelector('.intro');
+    var corner = intro && intro.querySelector('.die-corner');
+    var tag    = document.getElementById('tagline');
+    if (!intro || !corner || !tag) return;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    var NS = 'http://www.w3.org/2000/svg';
+    var FACES = [[4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8]];
+    var AT = [4.5, 8, 11.5], R = 1.35;
+    // each face is one path: the rounded square with its pips punched out
+    function facePath(f) {
+      return 'M3 0h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V3a3 3 0 0 1 3-3z' + f.map(function (p) {
+        var x = AT[p % 3] - R, y = AT[Math.floor(p / 3)];
+        return 'M' + x + ' ' + y + 'a' + R + ' ' + R + ' 0 1 0 ' + 2 * R + ' 0a' + R + ' ' + R + ' 0 1 0 ' + -2 * R + ' 0z';
+      }).join('');
+    }
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'dice-grid');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = '<defs>' + FACES.map(function (f, n) {
+      return '<symbol id="grid-face-' + n + '" viewBox="0 0 16 16"><path fill-rule="evenodd" d="' + facePath(f) + '"/></symbol>';
+    }).join('') + '</defs>';
+    intro.insertBefore(svg, intro.firstChild);
+
+    var faces = {};   // "col,row" -> face, so a resize keeps every die as it was
+    var cells = [];   // { el, key, x, y } (x, y: the die's centre)
+    function rand(not) { var f; do { f = Math.floor(Math.random() * FACES.length); } while (f === not); return f; }
+    function setFace(c, f) { faces[c.key] = f; c.el.setAttribute('href', '#grid-face-' + f); }
+
+    // Same layout as the CSS: die-sized cells with half a die between them,
+    // counted out from the splash die (which covers its own cell) across the
+    // whole width, and down from its top to where the grid has faded out.
+    function build() {
+      var W = intro.clientWidth, H = intro.clientHeight;
+      var s = corner.offsetWidth, cell = s * 1.5;
+      var cs = getComputedStyle(corner);
+      var x0 = W - parseFloat(cs.right) - s, y0 = parseFloat(cs.top);
+      cells.forEach(function (c) { c.el.remove(); });
+      cells = [];
+      for (var row = 0; y0 + row * cell < H * 0.92; row++) {
+        for (var col = -Math.floor((W - x0) / cell); x0 - col * cell + s > 0; col++) {
+          if (!row && !col) continue;
+          var key = col + ',' + row, x = x0 - col * cell, y = y0 + row * cell;
+          var el = document.createElementNS(NS, 'use');
+          el.setAttribute('x', x); el.setAttribute('y', y);
+          el.setAttribute('width', s); el.setAttribute('height', s);
+          var c = { el: el, key: key, x: x + s / 2, y: y + s / 2 };
+          setFace(c, key in faces ? faces[key] : rand(-1));
+          svg.appendChild(el);
+          cells.push(c);
+        }
+      }
+      intro.classList.add('has-grid');
+    }
+    build();
+    var resizing;
+    new ResizeObserver(function () { clearTimeout(resizing); resizing = setTimeout(build, 120); }).observe(intro);
+
+    var running = null;
+    document.addEventListener('diceroll', function () {
+      if (running) cancelAnimationFrame(running);
+      var box = intro.getBoundingClientRect(), t = tag.getBoundingClientRect();
+      // off screen there's nothing to see: just reroll
+      if (reduce.matches || box.bottom <= 0) { cells.forEach(function (c) { setFace(c, rand(faces[c.key])); }); return; }
+      var ox = t.left + t.width / 2 - box.left, oy = t.top + t.height / 2 - box.top;
+      var queue = cells.map(function (c) { return { c: c, d: Math.hypot(c.x - ox, c.y - oy) }; })
+        .sort(function (a, b) { return a.d - b.d; });
+      // the pulse takes about 0.8s to reach the farthest die, whatever the screen
+      var speed = Math.max(queue.length ? queue[queue.length - 1].d / 800 : 1, 0.6);
+      var start = performance.now(), i = 0;
+      (function frame(now) {
+        var reach = (now - start) * speed;
+        for (; i < queue.length && queue[i].d <= reach; i++) {
+          var c = queue[i].c;
+          setFace(c, rand(faces[c.key]));
+          c.el.animate([
+            { transform: 'scale(1)' },
+            { transform: 'scale(1.3)', offset: 0.3 },
+            { transform: 'scale(1)' }
+          ], { duration: 600, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        }
+        running = i < queue.length ? requestAnimationFrame(frame) : null;
+      })(start);
+    });
   })();
 
   // Phones: the projects are a sideways carousel. Each swipe or arrow tap
