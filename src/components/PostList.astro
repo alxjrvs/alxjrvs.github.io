@@ -1,5 +1,5 @@
 ---
-// The home page's latest writing: date, title and dek, then the piece's
+// The home page's writing (latest first, until the die reshuffles it): date, title and dek, then the piece's
 // project, its place in a thread and its tags.
 import { longDate, type Place, type Post, type Project } from "../lib/content";
 import Tags from "./Tags.astro";
@@ -16,7 +16,7 @@ const { posts, projects, places } = Astro.props;
     const proj = projects.find((p) => p.id === post.project);
     const place = places.get(post.id);
     return (
-      <li style={proj && `--accent:${proj.accent_dark}`}>
+      <li style={proj && `--accent:${proj.accent_dark}`} data-post={post.id}>
         <time class="d" datetime={post.date.toISOString()}>{longDate(post.date)}</time>
         <div class="entry">
           <a class="t" href={`/writing/${post.id}/`}>{post.title}{post.description && <span class="x">{post.description}</span>}</a>

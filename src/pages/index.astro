@@ -59,6 +59,8 @@ const { subjects, objects, lead, likes, likesLead } = rolls;
       <h2 id="writing-head">{writingHead?.title}</h2>
     </div>
     <PostList posts={posts.slice(0, 5)} projects={projects} places={places} />
+    {/* Every piece, for the die to draw from when it rolls this list. */}
+    {posts.length > 1 && <template id="writing-pool"><PostList posts={posts} projects={projects} places={places} /></template>}
     {writingHead?.dek && <a class="all-writing" href="/writing/">{writingHead.dek} <span aria-hidden="true">→</span></a>}
   </section>
 )}

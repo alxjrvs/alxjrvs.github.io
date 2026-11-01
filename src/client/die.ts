@@ -1,7 +1,8 @@
 // The die. Either copy of it (the splash corner or the header) re-rolls the
 // page: the tagline spins slot-machine style, the projects carousel spins
-// round to a random one, and About picks three new things I like. Every one
-// of them rolls through options, slowing down until it settles.
+// round to a random one, Writing deals a new hand of pieces from the archive,
+// and About picks three new things I like. Every one of them rolls through
+// options, slowing down until it settles.
 //
 // The word lists come from EmDash's Randomizers, rendered into #roll-data by the page.
 (() => {
@@ -24,6 +25,12 @@
   const objs = Array.from(document.querySelectorAll<HTMLElement>(".roll-object"));
   const cards = document.querySelector<HTMLElement>(".cards");
   const likes = Array.from(document.querySelectorAll<HTMLElement>("#likes .like"));
+  const slots = Array.from(document.querySelectorAll<HTMLElement>("#writing .archive > li"));
+  const pool = Array.from(
+    (
+      document.getElementById("writing-pool") as HTMLTemplateElement | null
+    )?.content.querySelectorAll<HTMLElement>(".archive > li") ?? [],
+  );
   if (!dice.length) return;
 
   const pick = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)] as T;
@@ -108,6 +115,72 @@
     if (cards.dispatchEvent(new CustomEvent("roll", { detail: done, cancelable: true }))) done();
   }
 
+  // Writing's reels. Each line of the list is a slot that flicks through
+  // pieces from the archive (the #writing-pool template holds every one) and
+  // slows down onto its pick. No piece ever shows in two lines at once: a
+  // line only flicks to pieces no other line is showing or will land on.
+  // The lines past what fits on screen are hidden by CSS, so the hand is
+  // dealt top down, fresh pieces first.
+  const showing = slots.map((el) => pool.findIndex((p) => p.dataset.post === el.dataset.post));
+  function show(i: number, p: number) {
+    const el = slots[i];
+    const src = pool[p];
+    if (!el || !src) return;
+    showing[i] = p;
+    el.innerHTML = src.innerHTML;
+    el.dataset.post = src.dataset.post;
+    const style = src.getAttribute("style");
+    if (style) el.setAttribute("style", style);
+    else el.removeAttribute("style");
+  }
+  function dealWriting(): number[] {
+    const all = shuffle(pool.map((_, p) => p));
+    const fresh = all.filter((p) => showing.indexOf(p) < 0);
+    return fresh.concat(all.filter((p) => showing.indexOf(p) > -1)).slice(0, slots.length);
+  }
+  function spinWriting(finals: number[], done: () => void) {
+    const landed = slots.map(() => false);
+    let left = slots.length;
+    slots.forEach((el, i) => {
+      const final = finals[i] as number;
+      // like the other reels, each line stops at its own pace, top first
+      const ticks = 11 + i;
+      const base = 35;
+      const curve = 1.7 + i * 0.1;
+      let t = 0;
+      (function step() {
+        t++;
+        if (t < ticks) {
+          const taken = new Set<number>();
+          slots.forEach((_, j) => {
+            if (j === i) return;
+            taken.add(showing[j] as number);
+            if (!landed[j]) taken.add(finals[j] as number);
+          });
+          const free = pool.map((_, p) => p).filter((p) => p !== showing[i] && !taken.has(p));
+          if (free.length) {
+            show(i, pick(free));
+            el.animate(
+              [
+                { transform: "translateY(-0.5em)", opacity: 0.25 },
+                { transform: "none", opacity: 1 },
+              ],
+              { duration: 95, easing: "ease-out" },
+            );
+          }
+          setTimeout(step, base + t * t * curve);
+          return;
+        }
+        // landing: a line still flicking that shows this pick takes what we had
+        const j = showing.indexOf(final);
+        if (j > -1 && j !== i) show(j, showing[i] as number);
+        if (showing[i] !== final) show(i, final);
+        landed[i] = true;
+        if (!--left) done();
+      })();
+    });
+  }
+
   // One pick per slot, never the one already showing.
   const picked = LIKES.map(() => 0);
   function nextLike(i: number): string {
@@ -158,6 +231,7 @@
     const finalS = RARE && Math.random() * RARE_ODDS < 1 ? RARE : pick(SUBJECTS);
     const finalO = pick(OBJECTS);
     const finalL = likes.map((_, i) => nextLike(i));
+    const finalW = pool.length > 1 ? dealWriting() : [];
     // the dice grid behind the splash rerolls too, in a pulse from the tagline
     document.dispatchEvent(new CustomEvent("diceroll"));
 
@@ -167,13 +241,16 @@
       likes.forEach((el, i) => {
         setText(el, finalL[i] as string);
       });
+      finalW.forEach((p, i) => {
+        show(i, p);
+      });
       rollCards(() => {});
       return;
     }
 
     rolling = true;
     for (const d of dice) d.classList.add("rolling");
-    let pending = 4 + likes.length;
+    let pending = 5 + likes.length;
     function settled() {
       if (--pending) return;
       for (const d of dice) d.classList.remove("rolling");
@@ -184,6 +261,8 @@
     spin(objs, OBJECTS, finalO, 15, 30, 1.9, settled);
     rollCards(settled);
     rollPips(settled);
+    if (finalW.length) spinWriting(finalW, settled);
+    else settled();
     likes.forEach((el, i) => {
       spin([el], LIKES[i] ?? [], finalL[i] as string, 12 + i * 2, 35, 1.7 + i * 0.2, settled);
     });
