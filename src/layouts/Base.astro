@@ -2,6 +2,7 @@
 // Every page: the floating header, theme toggle, back-to-top button and,
 // away from the home page, the footer.
 import chromeSrc from "../client/chrome.ts?inline-script";
+import dieSrc from "../client/die.ts?inline-script";
 import themeInitSrc from "../client/theme-init.ts?inline-script";
 import Die from "../components/Die.astro";
 import Footer from "../components/Footer.astro";
@@ -25,6 +26,11 @@ const section = Astro.url.pathname.startsWith("/writing") ? "/#writing" : undefi
 const { progress, ...seo } = Astro.props;
 const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
 const tagline = `${rolls.subjects[0]}. ${rolls.lead} ${rolls.objects[0]}.`;
+const { subjects, objects, likes } = rolls;
+const rollData = JSON.stringify({ subjects, objects, rare: rolls.rare, rareOdds: rolls.rareOdds, likes }).replace(
+  /</g,
+  "\\u003c",
+);
 // changes on every build, so a deploy's CSS is never served from a stale cache
 const v = Math.floor(Date.now() / 1000);
 ---
@@ -52,7 +58,7 @@ const v = Math.floor(Date.now() / 1000);
   <header class="bar" id="bar">
     <div class="bar-id">
       <a class="brand" href="/"><Wordmark /></a>
-      {isHome && <p class="bar-tag" aria-hidden="true"><span class="tag-a"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span></span> <span class="tag-b">{rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></span></p>}
+      <p class="bar-tag" aria-hidden="true"><span class="tag-a"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span></span> <span class="tag-b">{rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></span></p>
     </div>
     <nav class="nav" aria-label="Primary">
       {nav.map((item) => <a href={isHome || item.url !== section ? item.url : "/writing/"} aria-current={item.url === section ? "page" : undefined}>{item.name}</a>)}
@@ -60,7 +66,7 @@ const v = Math.floor(Date.now() / 1000);
         <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>
         <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1z"/></svg>
       </button>
-      {isHome && <Die class="die-bar" />}
+      <Die class="die-bar" />
     </nav>
     {progress && <span class="read-progress" id="read-progress" aria-hidden="true"></span>}
   </header>
@@ -74,6 +80,10 @@ const v = Math.floor(Date.now() / 1000);
   <a class="to-top" id="to-top" href="#main" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></a>
 
   <InlineScript src={chromeSrc} name="chrome.ts" />
+  {/* The die rolls the header tagline on every page (and, at home, the
+      splash, the project cards and About too). */}
+  <script is:inline type="application/json" id="roll-data" set:html={rollData} />
+  <InlineScript src={dieSrc} name="die.ts" />
   <slot name="scripts" />
   {site.analyticsToken && (
     <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: site.analyticsToken })} />
