@@ -113,7 +113,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 
 - The tagline is always "*Subject*. I make *object*." with real full stops.
   Each full stop belongs to the word before it: same colour, and it rolls with it.
-  On phones (≤760px) the splash tagline breaks after the subject, so
+  It breaks after the subject (in the splash and the header), so
   "I make *object*." sits on its own line beneath it.
   About 1 roll in 50 lands the subject on the rare "Undiagnosed, but, come on."
   (`_data/tagline.yml`), which brings its own full stop.

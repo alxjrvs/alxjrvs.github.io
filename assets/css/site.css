@@ -287,6 +287,9 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .tagline .roll-subject, .bar-tag .roll-subject { color: var(--tag-subject); }
 .tagline em, .bar-tag em { font-style: normal; color: var(--tag-object); }
 .roll { display: inline-block; }
+/* the tagline breaks after its subject: "I make …" starts a new line, in
+   the splash and in the header copy it recedes into */
+.tagline .roll-subject, .bar-tag .roll-subject { display: block; width: fit-content; }
 /* once docked, the header's own copies take over from the splash */
 .docked .mark, .docked .tagline, .docked .die-corner { visibility: hidden; }
 
@@ -509,8 +512,6 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .bio { font-size: 1rem; line-height: 1.45; }
   .bio p { margin-bottom: 10px; }
   .foot { margin-top: 12px; height: 56px; }
-  /* the tagline breaks after its subject: "I make …" starts a new line */
-  .tagline .roll-subject { display: block; width: fit-content; }
 }
 @media (max-width: 760px) and (max-height: 700px) {
   .shot img { aspect-ratio: 16 / 10; }
