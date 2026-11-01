@@ -198,6 +198,32 @@ export interface Post {
   thread?: Tag | undefined;
   /** its place in its thread, as set in the admin (gaps are fine) */
   part?: number | undefined;
+  /** who made it, role by role, from its Bylines; empty for most pieces */
+  credits: Credit[];
+}
+
+export interface Credit {
+  /** "Author", "Artist and Letterer" */
+  role: string;
+  name: string;
+  /** their site, if given */
+  link?: string | undefined;
+}
+
+// The piece's Bylines (EmDash's own: picked in the editor's Bylines panel,
+// each with a role label; people live under Bylines in the admin). Only ones
+// set on purpose count; EmDash also infers one from the author, which would put
+// "Alex Jarvis" on everything.
+function creditsOf(data: Data): Credit[] {
+  if (!Array.isArray(data.bylines)) return [];
+  return data.bylines.flatMap((c: Data) => {
+    const byline = c?.byline as Data | undefined;
+    const name = str(byline?.displayName);
+    if (c?.source === "inferred" || !name) return [];
+    return [
+      { role: str(c.roleLabel)?.trim() ?? "By", name: name.trim(), link: str(byline?.websiteUrl) },
+    ];
+  });
 }
 
 export interface ComicPage {
@@ -249,6 +275,7 @@ export async function getPosts(astro: AstroLike): Promise<Post[]> {
       pages: pagesOf(data),
       thread: termsOf(data, "thread")[0],
       part: typeof data.part === "number" ? data.part : undefined,
+      credits: creditsOf(data),
     };
   });
 }

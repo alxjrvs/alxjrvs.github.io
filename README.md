@@ -87,7 +87,10 @@ press **Publish**; publishing shows up on the site within seconds.
   gets a page at `/writing/tags/<slug>/`, and only tags on published pieces show), optional project slug (links the post and its project card both ways),
   and the body in the rich-text editor. Add images under **Comic pages** (in reading order, each
   with a line on what's on it) and the piece becomes a comic: readers click, tap, swipe or
-  arrow-key through the pages one at a time, and the body shows as a note under them. Only **published** pieces appear on the site; drafts and
+  arrow-key through the pages one at a time, and the body shows as a note under them.
+  **Bylines** (the editor's Bylines panel; people are kept under **Bylines** in the admin) credits
+  whoever made it, each with a role label ("Artist and Letterer") and their site if the byline
+  has one; they show in the piece's margin. Leave it empty for a piece that's all Alex's. Only **published** pieces appear on the site; drafts and
   unpublished ones never do. A piece lands at `/writing/<slug>/`, dated when it was
   first published; scheduling works too. Until the first piece is published, the Writing nav link
   and the home-page writing section stay hidden and `/writing/` shows the empty state.
