@@ -349,6 +349,15 @@
         }
       },
       {
+        "id": "section-threads-archive",
+        "slug": "threads-archive",
+        "status": "published",
+        "data": {
+          "title": "Threads",
+          "dek": "Pieces of writing that read together, in order."
+        }
+      },
+      {
         "id": "section-about",
         "slug": "about",
         "status": "published",

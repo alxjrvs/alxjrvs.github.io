@@ -1,22 +1,25 @@
 ---
 import ThreadLines from "../../../components/ThreadLines.astro";
 import Base from "../../../layouts/Base.astro";
-import { getThreads } from "../../../lib/content";
+import { getSection, getThreads } from "../../../lib/content";
 
 // The Threads index: every thread with a published part, newest activity
-// first, ruled like the Writing index. With none yet it's the 404.
-const threads = await getThreads(Astro);
+// first, ruled like the Writing index. With none yet it's the 404. Its
+// heading and blurb are EmDash's `threads-archive` section.
+const [threads, page] = await Promise.all([getThreads(Astro), getSection(Astro, "threads-archive")]);
+const title = page?.title || "Threads";
 if (threads.length === 0) return Astro.rewrite("/404");
 const parts = threads.reduce((n, t) => n + t.parts.length, 0);
 ---
-<Base title="Threads · Writing" description="Pieces of writing that read together, in order.">
+<Base title={`${title} · Writing`} description={page?.dek}>
 <div class="wrap">
 <header class="pagehead writing-head">
   <div>
     <a class="label crumb" href="/writing/"><span aria-hidden="true">←</span> Writing</a>
-    <h1>Threads</h1>
+    <h1>{title}</h1>
   </div>
   <div class="writing-aside">
+    {page?.dek && <p class="dek">{page.dek}</p>}
     <p class="label">{threads.length} {threads.length === 1 ? "thread" : "threads"} · {parts} {parts === 1 ? "part" : "parts"}</p>
   </div>
 </header>

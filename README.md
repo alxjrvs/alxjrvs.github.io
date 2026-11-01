@@ -95,7 +95,7 @@ press **Publish**; publishing shows up on the site within seconds.
   are files: the Screenshots workflow captures `public/assets/work/<slug>.webp` for every
   published project each night, and the card shows it once **Screenshot name** is set.
 - **Sections**: `about` (the bio), `projects` and `writing` (home-page headings; a nav label
-  puts them in the header), `writing-archive` (the `/writing/` page and its empty state) and
+  puts them in the header), `writing-archive` (the `/writing/` page and its empty state), `threads-archive` (the `/writing/threads/` heading and blurb) and
   `not-found` (the 404 page).
 - **Randomizers**: the die's lists, one item per line, the first line being what shows before
   any roll: `tagline-subjects` (plus the rare roll and its odds), `tagline-objects` (its lead-in

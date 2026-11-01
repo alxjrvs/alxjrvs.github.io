@@ -124,7 +124,7 @@ async function sections(astro: AstroLike): Promise<Map<string, Section>> {
   );
 }
 
-/** One section by slug (about, projects, writing, writing-archive, not-found). */
+/** One section by slug (about, projects, writing, writing-archive, threads-archive, not-found). */
 export async function getSection(astro: AstroLike, slug: string): Promise<Section | undefined> {
   return (await sections(astro)).get(slug);
 }

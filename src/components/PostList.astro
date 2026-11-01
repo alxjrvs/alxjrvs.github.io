@@ -1,18 +1,38 @@
 ---
-import { dottedDate, type Post } from "../lib/content";
+// The home page's latest writing: date, title and dek, then the piece's
+// project, its place in a thread and its tags.
+import { longDate, type Place, type Post, type Project } from "../lib/content";
+import Tags from "./Tags.astro";
 
 interface Props {
   posts: Post[];
+  projects: Project[];
+  places: Map<string, Place>;
 }
-const { posts } = Astro.props;
+const { posts, projects, places } = Astro.props;
 ---
 <ul class="archive">
-  {posts.map((post) => (
-    <li>
-      <a href={`/writing/${post.id}/`}>
-        <span class="d">{dottedDate(post.date)}</span>
-        <span class="t">{post.title}{post.description && <span class="x">{post.description}</span>}</span>
-      </a>
-    </li>
-  ))}
+  {posts.map((post) => {
+    const proj = projects.find((p) => p.id === post.project);
+    const place = places.get(post.id);
+    return (
+      <li style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+        <time class="d" datetime={post.date.toISOString()}>{longDate(post.date)}</time>
+        <div class="entry">
+          <a class="t" href={`/writing/${post.id}/`}>{post.title}{post.description && <span class="x">{post.description}</span>}</a>
+          {(proj || place || post.tags.length > 0) && (
+            <div class="line-meta">
+              {proj && <span class="label tag">{proj.title}</span>}
+              {place && (
+                <a class="label thread-mark" href={`/writing/threads/${place.thread.slug}/`}>
+                  {place.thread.label} · Part {place.n} of {place.thread.parts.length}
+                </a>
+              )}
+              <Tags tags={post.tags} />
+            </div>
+          )}
+        </div>
+      </li>
+    );
+  })}
 </ul>
