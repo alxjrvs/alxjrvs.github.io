@@ -32,7 +32,7 @@
     // The Application Audience (AUD) tag of the Cloudflare Access app that
     // guards admin.alxjrvs.com. Not a secret: it only names which app signed
     // a token.
-    "CF_ACCESS_AUDIENCE": ""
+    "CF_ACCESS_AUDIENCE": "b6b316406fef4d06b6426b1b47d30ab1359c683f3bc3c997efbae6c3463d58c9"
   },
   // EmDash's scheduled publishing and housekeeping.
   "triggers": { "crons": ["* * * * *"] },
