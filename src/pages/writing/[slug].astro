@@ -82,7 +82,7 @@ const ld = {
   ...(place && threadUrl && { isPartOf: [{ "@id": `${site.url}/#website` }, { "@type": "CreativeWorkSeries", name: place.thread.label, url: absoluteUrl(threadUrl) }], position: place.n }),
 };
 ---
-<Base title={seoTitle} description={seoDescription} published={post.date} image={image} ld={ld} progress>
+<Base title={seoTitle} description={seoDescription} published={post.date} image={image} ld={ld} progress menu={{ prev: barPrev || undefined, next: barNext || undefined }}>
 <Stepper slot="bar" class="bar-read" label={place ? "Parts, in the header" : "More writing, in the header"} compact prev={barPrev} next={barNext}>
   <span class="bar-title" aria-hidden="true">{words.map((w, i) => <>{i > 0 && " "}<span class="w">{w}</span></>)}</span>
 </Stepper>

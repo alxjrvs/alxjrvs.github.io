@@ -37,6 +37,7 @@ There is one theme, dark.
 | -------------- | --------- | -------------------------------------------- |
 | `surface`      | `#14161f` | page background (navy ink)      |
 | `surface-bar`  | `#161822` at 74% | the floating header's glass |
+| `surface-menu` | `#161822` at 94% | the phone menu's panel (the words under it would show through the header's glass) |
 | `line`         | `#262a38` | dividers, borders, code backgrounds          |
 | `line-strong`  | `#353948` | screenshot frames                            |
 | `pattern`      | `#1c1f2c` | the dice grid behind the splash              |
@@ -69,7 +70,7 @@ Projects bring their own `accent_dark` from their entry in the CMS
 | `tag-subject`  | `brand`     | the tagline's subject ("Enthusiast")          |
 | `tag-verb`     | `fg-subtle` | "I make"                                     |
 | `tag-object`   | `fg`        | the tagline's object ("stuff")                |
-| `die`          | `brand-2`   | both dice (splash corner, header)             |
+| `die`          | `brand-2`   | every die (splash corner, header, phone menu) |
 | `focus`        | `brand`     | keyboard focus rings                          |
 | `nav-active`   | `brand`     | underline under the current section's header link |
 | `nav-active`   | `brand`     | (also current on inner pages: Writing on /writing/) |
@@ -170,12 +171,14 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | Motion            | Behaviour                                                     |
 | ----------------- | ------------------------------------------------------------- |
 | Splash recede     | The wordmark, tagline and die shrink and travel into the header over the first 60% of the splash, with smoothstep easing. The tagline's two lines split and travel separately, landing side by side exactly on the header's one-line copy, so the hand-over is invisible (no cross-fade). Where the header has no tagline (narrow screens) the lines fade out instead. The die stays pinned on screen while it travels. |
-| Title dock        | On a piece, the title docks into the header as you scroll past it, the reading pages' version of the splash recede. Each word shrinks and travels to its twin in the header's one-line copy, so the wrapped title splits apart and lands as one line; its lines set off one after another and move sideways a little ahead of rising, so they slot in side by side instead of crossing. Words the header has no room for slide on under the ellipsis and fade. The nav links fade out on the way up. Back and Next fade in (0.25s) once it lands. Scrolling up reverses it. Reduced motion: the title just appears in the header once the big one is under it. Off on phones (760px and under). |
+| Title dock        | On a piece, the title docks into the header as you scroll past it, the reading pages' version of the splash recede. Each word shrinks and travels to its twin in the header's copy, so the wrapped title splits apart and lands as one line (two on phones). Each word sets off a fixed distance before the scroll alone would carry it up to its spot, and lands exactly when it would have got there, so it only ever rises: it never overshoots and drops back, and it arrives with no speed left, so the hand-over to the header's copy can't be seen. A line's words set off together and shrink and slide sideways together, a little ahead of rising; later lines set off later, so they slot in instead of crossing. Words the header has no room for slide on under the ellipsis and fade. The nav links (on phones, the wordmark, nav and die) fade out on the way up. Back and Next fade in (0.25s) once it lands; the title itself doesn't fade, it's already there. Scrolling up reverses it. Reduced motion: the title just appears in the header once the big one is under it. |
 | Section snap      | Desktop: scrolling is free. Once it has slowed right down, a soft, critically damped spring (stiffness 42, damping 1, so no bounce) picks up from the scroll's own speed and eases to the next section if you moved past 10% of a screen, otherwise back. Touch: the browser's proximity snapping, so a swipe can pass sections and only eases on when it ends near one. Every section's heading is a snap point, the splash and About included. About is exactly as tall as the screen is at that moment (`100dvh`), so its top is also the page's bottom and the phone browser bar can't bounce the page between two nearby resting places. The splash recede updates in the same frame as the scroll, so it never lags a frame behind. |
 | Die roll          | Every die effect is a reel that slows to a stop. The tagline's subject and object, each "I like" slot, and the projects carousel all land one after another. A reel never shows the same word twice in one roll: it runs through a shuffle of the other options (fewer, longer ticks for short lists) before landing. The die doesn't spin: its pips flick through random die faces (the die itself stays still), slow down, and land last, back on the favicon's "j". |
 | Grid pulse        | A roll sends a pulse out from the tagline across the splash's dice grid (about 0.8s to the farthest die, whatever the screen). As it passes each die, the die rerolls to a different face; nothing moves or changes size. The dice stay in `pattern`. Only the splash grid; off screen the faces just change. |
 | Carousel spin     | The projects carousel whips round two or three times (three with fewer than four projects) and slows down to land on a different project. It keeps the other reels' rhythm: one card per tick, the gaps growing like the tagline object reel's (15 ticks' worth, base 30ms, curve 1.9, so about 2.3s whatever the number of cards), each tick an eased slide and the last one easing into place. Snapping is off until it lands. The auto-advance waits for it; touching, scrolling or a key on the carousel lands it at once. Off screen it just lands. |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |
+| Phone menu        | On a piece on phones, once the title has docked. Tucks down out of sight while you scroll on down the page, and slides back as soon as you scroll up, near the end, or open it. Its panel rises and grows in from the button (0.22s); the button's four pips turn an eighth, into a diamond, while it's open. Reduced motion: no slides. |
+| Die haptics       | On a touch screen, the die taps back: one short pulse (10ms) on every face its pips flick through, so the taps slow down with it, and one as it lands. Android vibrates; an iPhone has no vibration API, so it gets the tick Safari plays when a switch is flipped. Reduced motion: no flicker, so a single pulse. Nothing on a desktop. |
 
 `prefers-reduced-motion` turns off smooth scrolling, the spring, the roll
 animations, the pip flicker, the carousel spin and the grid pulse (the grid's faces all change at once). The content still changes, but instantly.
@@ -195,7 +198,7 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
 - **Die:** a rounded square in the `die` colour, with a 3×3 grid of pips cut
   out of `surface`. At rest, the lit pips spell the favicon's "j". There's one
   in the splash corner and one as the header's rightmost button, on every
-  page. Either one re-rolls the page (away from home, just the header
+  page (and in the phone menu on a piece). Either one re-rolls the page (away from home, just the header
   tagline), and its pips roll too. On hover it grows slightly
   (12%, 0.2s).
 - **Dice grid:** the splash background is rows of faint die faces in
@@ -267,8 +270,17 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   stepper's arrow-only Back and Next (36px header buttons). They walk the
   thread's parts on a piece in a thread, otherwise the neighbouring pieces by
   date (newer on the left, like the pager). The nav links step aside while
-  it's docked; the tagline, the die and the `progress` line stay. Not on phones
-  (760px and under): there the title stays put and the header is unchanged.
+  it's docked; the tagline, the die and the `progress` line stay. Tapping the
+  docked title goes back to the top, like a phone's status bar.
+  On phones (760px and under) the docked title takes the whole header: 16px,
+  up to two lines with an ellipsis, 16px in from both ends, and the wordmark,
+  nav, die and Back/Next step aside. They wait in the **phone menu**: a round
+  52px glass button at the bottom right, where back to top sits elsewhere
+  (which it replaces there), showing four `fg-muted` pips. It opens a panel
+  above it in `surface-menu`: the wordmark (home), the nav links as 44px rows,
+  then a row of 44px header buttons: Back, Next, the die and back to top.
+  Escape, a tap outside it, tabbing past it, or scrolling back up to the
+  title closes it.
 - **Inner pages** (the writing pages and the 404) start `bar-h + 72px` down,
   or `bar-h + 40px` on phones, like the home sections' tighter phone padding.
   Every date in a ruled line is the long human date ("August 21, 2026"),
