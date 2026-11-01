@@ -247,6 +247,22 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   -webkit-mask-composite: source-in;
           mask-composite: intersect;
 }
+/* once the script has drawn the grid as real dice (so a roll can pulse
+   through them), the static copy steps aside. Same faint colour, same fade. */
+.intro.has-grid::before { visibility: hidden; }
+.dice-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  fill: var(--pattern);
+  -webkit-mask-image: linear-gradient(transparent 10px, #000 24px, #000 55%, transparent 92%);
+          mask-image: linear-gradient(transparent 10px, #000 24px, #000 55%, transparent 92%);
+}
+.dice-grid use { transform-box: fill-box; transform-origin: center; }
 .mark {
   position: relative;
   z-index: 60;
