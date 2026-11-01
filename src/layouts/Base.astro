@@ -47,7 +47,7 @@ const v = Math.floor(Date.now() / 1000);
   <header class="bar" id="bar">
     <div class="bar-id">
       <a class="brand" href="/"><Wordmark /></a>
-      {isHome && <p class="bar-tag" aria-hidden="true"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span> {rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></p>}
+      {isHome && <p class="bar-tag" aria-hidden="true"><span class="tag-a"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span></span> <span class="tag-b">{rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></span></p>}
     </div>
     <nav class="nav" aria-label="Primary">
       {nav.map((item) => <a href={item.url}>{item.name}</a>)}
