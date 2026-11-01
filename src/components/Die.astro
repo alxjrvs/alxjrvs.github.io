@@ -1,0 +1,9 @@
+---
+// The die: a 3x3 pip grid resting on the favicon's "j". Either copy re-rolls
+// the page (src/client/die.ts).
+interface Props {
+  class: string;
+}
+const { class: className } = Astro.props;
+---
+<button class:list={["die-btn", className]} type="button" aria-label="Roll the die: new tagline, project order and likes"><svg class="die" viewBox="0 0 16 16" aria-hidden="true"><rect class="die-face" width="16" height="16" rx="3"/><g class="die-pips"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="8" cy="4.5" r="1.35"/><circle class="on" cx="11.5" cy="4.5" r="1.35"/><circle class="on" cx="4.5" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle class="on" cx="11.5" cy="8" r="1.35"/><circle cx="4.5" cy="11.5" r="1.35"/><circle class="on" cx="8" cy="11.5" r="1.35"/><circle cx="11.5" cy="11.5" r="1.35"/></g></svg></button>

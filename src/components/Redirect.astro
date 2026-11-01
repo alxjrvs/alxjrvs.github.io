@@ -1,0 +1,22 @@
+---
+// A page that sends you somewhere else at once: what jekyll-redirect-from
+// wrote. Used for old URLs that now live at a section of the home page
+// (a fragment can't go in Cloudflare's _redirects, where # starts a comment).
+import { absoluteUrl } from "../site";
+
+interface Props {
+  to: string;
+}
+const to = absoluteUrl(Astro.props.to);
+---
+<!doctype html>
+<html lang="en-US">
+  <meta charset="utf-8">
+  <title>Redirecting&hellip;</title>
+  <link rel="canonical" href={to}>
+  <script is:inline set:html={`location=${JSON.stringify(to)}`} />
+  <meta http-equiv="refresh" content={`0; url=${to}`}>
+  <meta name="robots" content="noindex">
+  <h1>Redirecting&hellip;</h1>
+  <a href={to}>Click here if you are not redirected.</a>
+</html>

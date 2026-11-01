@@ -1,0 +1,87 @@
+// Biome is the formatter and the linter, for TypeScript, JSON and the
+// frontmatter and templates of .astro files.
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "root": true,
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      // Hand-written design assets: the stylesheet is the implementation of
+      // DESIGN.md and is kept in its own dense, one-rule-a-line style; the
+      // favicon is artwork.
+      "!public/assets",
+      // A fixture rendered to public/assets/social.png by
+      // scripts/social-card.mjs, not part of the site.
+      "!scripts/social-card.html",
+      // Markdown is prose plus YAML front matter, and Biome's Markdown
+      // formatter re-indents the front matter's folded strings.
+      "!**/*.md"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "all",
+      "arrowParentheses": "always"
+    }
+  },
+  "html": {
+    // Lets Biome see an .astro template, so an import used only in the
+    // markup isn't reported as unused and the a11y rules reach the markup.
+    "experimentalFullSupportEnabled": true,
+    // The templates keep their hand-set markup (one line per inline SVG).
+    "formatter": { "enabled": false }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "suspicious": {
+        "noExplicitAny": "error"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            // Icon-only links here are named with aria-label (the scroll cue,
+            // back to top), which this rule doesn't count yet.
+            "useAnchorContent": "off",
+            // The screenshot on each project card is a second, mouse-only
+            // link to the same place (tabindex -1, hidden from screen
+            // readers); the card's "Visit" link is the accessible one.
+            "noAriaHiddenOnFocusable": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

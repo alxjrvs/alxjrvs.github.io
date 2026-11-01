@@ -1,6 +1,6 @@
 name: Screenshots
 
-# Re-captures each project's live site into assets/work/ and commits the result
+# Re-captures each project's live site into public/assets/work/ and commits the result
 # when anything changed. Runs on demand and every day at 3am US Eastern. On PRs that touch the
 # project list or this tooling it only captures projects with no screenshot
 # yet, committing those back to the PR branch.
@@ -13,7 +13,7 @@ on:
     - cron: "0 8 * * *"
   pull_request:
     paths:
-      - "_projects/**"
+      - "src/content/projects/**"
       - "scripts/screenshots.mjs"
       - ".github/workflows/screenshots.yml"
 
@@ -54,19 +54,17 @@ jobs:
           token: ${{ github.event_name != 'pull_request' && secrets.SCREENSHOTS_TOKEN || github.token }}
 
       - if: steps.gate.outputs.skip != '1'
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+        uses: ./.github/actions/setup
 
       - if: steps.gate.outputs.skip != '1'
         name: Install Playwright + Chromium
         run: |
-          npm install --no-save playwright@1.48.2 sharp@0.33
-          npx playwright install --with-deps chromium
+          bun add --no-save playwright@1.48.2 sharp@0.33
+          bunx playwright install --with-deps chromium
 
       - if: steps.gate.outputs.skip != '1'
         name: Capture
-        run: node scripts/screenshots.mjs
+        run: bun run screenshots
         env:
           # On PRs, only capture projects that have no screenshot yet (see the script).
           ONLY_MISSING: ${{ github.event_name == 'pull_request' && '1' || '' }}
@@ -77,7 +75,7 @@ jobs:
           GH_TOKEN: ${{ secrets.SCREENSHOTS_TOKEN || github.token }}
           HAS_TOKEN: ${{ secrets.SCREENSHOTS_TOKEN != '' }}
         run: |
-          git add -A assets/work
+          git add -A public/assets/work
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

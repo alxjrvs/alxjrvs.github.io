@@ -1,0 +1,36 @@
+{
+  "name": "alxjrvs.com",
+  "private": true,
+  "type": "module",
+  "description": "Alex Jarvis makes stuff. The personal site at alxjrvs.com.",
+  "homepage": "https://alxjrvs.com",
+  "author": "alxjrvs",
+  "engines": {
+    "bun": ">=1.4.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "bun run build && wrangler dev",
+    "typecheck": "astro check",
+    "lint": "biome lint --error-on-warnings .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check:links": "bun scripts/check-links.ts",
+    "check": "bun run format:check && bun run lint && bun run typecheck",
+    "check:full": "bun run check && bun run build && bun run check:links",
+    "screenshots": "node scripts/screenshots.mjs",
+    "social-card": "node scripts/social-card.mjs"
+  },
+  "dependencies": {
+    "astro": "7.4.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@biomejs/biome": "2.6.4",
+    "@types/bun": "1.4.4",
+    "typescript": "6.0.3",
+    "vite": "8.3.5",
+    "wrangler": "4.156.0"
+  }
+}

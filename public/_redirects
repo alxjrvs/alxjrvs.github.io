@@ -1,0 +1,18 @@
+# Path redirects (Cloudflare Workers `_redirects`). Old site URLs that point at
+# a section of the home page are redirect pages in src/pages/[...redirect].astro
+# instead, because a URL fragment can't be written here.
+
+# GitHub Pages project sites. While alxjrvs.com was served by GitHub Pages,
+# every repo's Pages site also appeared under it (alxjrvs.com/boom/…). They
+# live on at alxjrvs.github.io/<repo>/ once the custom domain is removed from
+# this repo's Pages settings.
+/boom            https://alxjrvs.github.io/boom/ 301
+/butter          https://alxjrvs.github.io/butter/ 301
+/ajarcomic       https://alxjrvs.github.io/ajarcomic/ 301
+/FulcrumWorks    https://alxjrvs.github.io/FulcrumWorks/ 301
+/vellum          https://alxjrvs.github.io/vellum/ 301
+/boom/*          https://alxjrvs.github.io/boom/:splat          301
+/butter/*        https://alxjrvs.github.io/butter/:splat        301
+/ajarcomic/*     https://alxjrvs.github.io/ajarcomic/:splat     301
+/FulcrumWorks/*  https://alxjrvs.github.io/FulcrumWorks/:splat  301
+/vellum/*        https://alxjrvs.github.io/vellum/:splat        301

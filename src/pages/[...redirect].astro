@@ -1,0 +1,20 @@
+---
+// Old URLs, sent to the matching section of the home page.
+import Redirect from "../components/Redirect.astro";
+
+export function getStaticPaths() {
+  const to = (path: string, target: string) => ({ params: { redirect: path }, props: { target } });
+  return [
+    to("about", "/#about"),
+    to("projects", "/#projects"),
+    to("work", "/#projects"),
+    to("work/boom", "/#projects"),
+    to("work/dotfiles", "/#projects"),
+  ];
+}
+
+interface Props {
+  target: string;
+}
+---
+<Redirect to={Astro.props.target} />

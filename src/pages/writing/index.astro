@@ -1,0 +1,30 @@
+---
+import PostList from "../../components/PostList.astro";
+import Base from "../../layouts/Base.astro";
+import { getPosts, type Post, year } from "../../lib/content";
+
+const posts = await getPosts();
+const years = new Map<string, Post[]>();
+for (const post of posts) {
+  const y = year(post.date);
+  years.set(y, [...(years.get(y) ?? []), post]);
+}
+---
+<Base title="Writing" description="Notes from the margins.">
+<div class="wrap">
+<header class="pagehead">
+  <span class="label">Archive</span>
+  <h1>Writing</h1>
+</header>
+{posts.length > 0 ? (
+  [...years].map(([name, items]) => (
+    <section>
+      <h2 class="year label">{name}</h2>
+      <PostList posts={items} />
+    </section>
+  ))
+) : (
+  <p class="empty">Nothing here yet. When there is, it'll show up here. In the meantime, the <a href="/#projects">projects</a> are where the action is.</p>
+)}
+</div>
+</Base>

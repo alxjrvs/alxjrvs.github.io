@@ -1,0 +1,30 @@
+// Cloudflare deployment for alxjrvs.com: a Worker with no script, serving the
+// static build in ./dist (`bun run build`) as assets. Nothing runs at request
+// time, and static asset requests are free and don't count against the
+// Workers quota. Deployed by .github/workflows/deploy.yml.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "alxjrvs",
+  // Only matters if a Worker script is ever added. Raise it deliberately,
+  // alongside a wrangler upgrade.
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // An unmatched URL gets the site's own 404 page (dist/404.html), with a
+    // 404 status. `_headers` and `_redirects` in ./dist are read by Cloudflare
+    // and never served.
+    "not_found_handling": "404-page",
+    // /writing → /writing/, and /writing/index.html → /writing/.
+    "html_handling": "auto-trailing-slash"
+  },
+  // alxjrvs.com is a proxied zone on this account. A zone route (rather than a
+  // custom domain) leaves the DNS records alone, so cutting over or back is a
+  // deploy, never a DNS change. www.alxjrvs.com is 301'd to the apex by a
+  // zone Redirect Rule, which runs before Workers.
+  "routes": [{ "pattern": "alxjrvs.com/*", "zone_name": "alxjrvs.com" }],
+  // The workers.dev copy stays on so a deploy can be checked before (and
+  // without) the custom domain. It's noindexed in public/_headers.
+  "workers_dev": true,
+  // Every PR gets its own preview URL (deploy.yml uploads a version).
+  "preview_urls": true
+}

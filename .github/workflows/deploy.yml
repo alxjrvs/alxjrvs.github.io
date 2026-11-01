@@ -1,0 +1,87 @@
+name: Deploy
+
+# Publishes alxjrvs.com: the static build in ./dist as the assets of the
+# `alxjrvs` Worker (wrangler.jsonc).
+#
+#   push to main       → `wrangler deploy`: the live site.
+#   pull request       → `wrangler versions upload`: a preview URL for that PR,
+#                        noted in the run summary. (Not for forks: they get
+#                        no secrets.) If the Worker doesn't exist yet, the
+#                        first run creates it on workers.dev instead.
+#   workflow_dispatch  → `wrangler deploy` from the chosen branch.
+#
+# Needs two repository secrets: CLOUDFLARE_API_TOKEN (an API token from the
+# "Edit Cloudflare Workers" template) and CLOUDFLARE_ACCOUNT_ID. Until both
+# exist the build still runs and the deploy step is skipped, so nothing goes
+# red.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: bun run build
+
+      - name: Deploy
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          IS_PR: ${{ github.event_name == 'pull_request' }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "::notice::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set; built but did not deploy."
+            exit 0
+          fi
+          set +e
+          if [ "$IS_PR" = "true" ]; then
+            bunx wrangler versions upload --preview-alias "pr-${PR_NUMBER}" 2>&1 | tee wrangler.log
+          else
+            bunx wrangler deploy 2>&1 | tee wrangler.log
+          fi
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            if [ "$IS_PR" = "true" ] && grep -q "does not yet exist" wrangler.log; then
+              # Previews are versions of an existing Worker, so the very first
+              # run creates it. Safe from a PR only while wrangler.jsonc has no
+              # `routes`: the deploy then lands on workers.dev alone.
+              if grep -q '"routes"' wrangler.jsonc; then
+                echo "::error::The Worker doesn't exist yet and wrangler.jsonc has routes; deploy from main first."
+                exit 1
+              fi
+              echo "::notice::First run: creating the Worker on workers.dev."
+              bunx wrangler deploy 2>&1 | tee wrangler.log
+            else
+              exit "$status"
+            fi
+          fi
+          url="$(grep -oE 'https://[^ ]+\.workers\.dev' wrangler.log | tail -1 || true)"
+          if [ -n "$url" ]; then
+            echo "url=${url}" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deployed: ${url}"
+            echo "Deployed: ${url}" >> "$GITHUB_STEP_SUMMARY"
+          fi
