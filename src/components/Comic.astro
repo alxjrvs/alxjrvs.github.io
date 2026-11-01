@@ -1,33 +1,33 @@
 ---
-// A comic: its pages, one at a time, webcomic style. Without JavaScript the
-// pages simply stack, in order; client/comic.ts turns that into a reader you
-// click, tap, swipe or arrow-key through (#page-3 links to a page).
+// A comic: its pages, one at a time, webcomic style, stepped through with the
+// same stepper as a thread's parts. Without JavaScript the pages simply stack,
+// in order; client/comic.ts shows one at a time (#page-3 links to a page), and
+// client/stepper.ts adds ← → and swipes. In a thread, Back on the first page
+// and Next on the last go to the neighbouring parts.
 import { Image } from "emdash/ui";
 import comicSrc from "../client/comic.ts?inline-script";
 import type { ComicPage } from "../lib/content";
 import InlineScript from "./InlineScript.astro";
+import Stepper from "./Stepper.astro";
 
 interface Props {
   pages: ComicPage[];
   title: string;
+  /** the thread's neighbouring parts, where stepping past either end goes */
+  beyond?: { prev?: string | undefined; next?: string | undefined } | undefined;
 }
-const { pages, title } = Astro.props;
+const { pages, title, beyond } = Astro.props;
 const n = pages.length;
+const steps = n > 1 || Boolean(beyond?.prev || beyond?.next);
 ---
 <section class="comic" id="comic" aria-label={`${title}, a comic in ${n} ${n === 1 ? "page" : "pages"}`}>
-  <ol class="comic-pages">
+  <ol class="comic-pages" data-swipe>
     {pages.map((page, i) => (
       <li class="comic-page" id={`page-${i + 1}`} aria-label={`Page ${i + 1} of ${n}`}>
         <Image image={page.image} alt={page.alt} priority={i === 0} placeholder={false} />
       </li>
     ))}
   </ol>
-  {n > 1 && (
-    <nav class="comic-nav" aria-label="Pages" hidden>
-      <button class="comic-btn" type="button" data-step="-1"><span aria-hidden="true">←</span> Back</button>
-      <span class="label comic-count" aria-live="polite">Page <span data-now>1</span> of {n}</span>
-      <button class="comic-btn" type="button" data-step="1">Next <span aria-hidden="true">→</span></button>
-    </nav>
-  )}
+  {steps && <Stepper label="Pages" noun="Page" n={1} total={n} buttons keys beyond={beyond} />}
 </section>
-{n > 1 && <InlineScript src={comicSrc} name="comic.ts" />}
+{steps && <InlineScript src={comicSrc} name="comic.ts" />}
