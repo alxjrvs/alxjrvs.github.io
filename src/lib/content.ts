@@ -213,16 +213,21 @@ export interface Credit {
 // The piece's Bylines (EmDash's own: picked in the editor's Bylines panel,
 // each with a role label; people live under Bylines in the admin). Only ones
 // set on purpose count; EmDash also infers one from the author, which would put
-// "Alex Jarvis" on everything.
+// "Alex Jarvis" on everything. EmDash allows one byline per person per piece,
+// so someone with several roles gets them in one label ("Artist, Letterer" or
+// "Artist and Letterer"); each role becomes its own credit line.
 function creditsOf(data: Data): Credit[] {
   if (!Array.isArray(data.bylines)) return [];
   return data.bylines.flatMap((c: Data) => {
     const byline = c?.byline as Data | undefined;
-    const name = str(byline?.displayName);
+    const name = str(byline?.displayName)?.trim();
     if (c?.source === "inferred" || !name) return [];
-    return [
-      { role: str(c.roleLabel)?.trim() ?? "By", name: name.trim(), link: str(byline?.websiteUrl) },
-    ];
+    const link = str(byline?.websiteUrl);
+    const roles = (str(c.roleLabel) ?? "By")
+      .split(/\s*(?:,|;|\/|&|\band\b)\s*/i)
+      .map((r) => r.trim())
+      .filter(Boolean);
+    return (roles.length ? roles : ["By"]).map((role) => ({ role, name, link }));
   });
 }
 

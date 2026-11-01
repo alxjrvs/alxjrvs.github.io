@@ -89,7 +89,8 @@ press **Publish**; publishing shows up on the site within seconds.
   with a line on what's on it) and the piece becomes a comic: readers click, tap, swipe or
   arrow-key through the pages one at a time, and the body shows as a note under them.
   **Bylines** (the editor's Bylines panel; people are kept under **Bylines** in the admin) credits
-  whoever made it, each with a role label ("Artist and Letterer") and their site if the byline
+  whoever made it, each with a role label (several roles for one person go in one label, "Artist, Letterer", and each
+  shows as its own line) and their site if the byline
   has one; they show in the piece's margin. Leave it empty for a piece that's all Alex's. Only **published** pieces appear on the site; drafts and
   unpublished ones never do. A piece lands at `/writing/<slug>/`, dated when it was
   first published; scheduling works too. Until the first piece is published, the Writing nav link

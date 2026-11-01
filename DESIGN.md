@@ -245,7 +245,9 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   sticky and holds "← Writing", any credits, Published, Reading, Project (a
   dot in the project's accent, linking out) and Tags, each only when it has
   something. Credits are optional, one fact per byline set on the piece in
-  EmDash: the role as the label ("Artist and Letterer"), the name in `fg`
+  EmDash, and one per role when a byline's label holds several ("Artist,
+  Letterer" or "Artist and Letterer" is two lines, each with the name): the role
+  as the label ("Artist"), the name in `fg`
   under it (a "↗" link when the row has one). A piece with no credits is
   simply by Alex. The title, dek and 40rem prose sit beside
   it. The words end on a small `fg-subtle` die showing one, then Newer/Older,
