@@ -12,7 +12,6 @@ layout: default
 <section class="screen wrap" id="projects" aria-labelledby="projects-head">
   <h2 id="projects-head">Projects</h2>
   <div class="carousel">
-  <button class="nudge prev" type="button" aria-label="Previous project" aria-controls="cards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button>
   <div class="cards" id="cards">
     {%- for p in projects -%}
     <article class="card" style="--accent-light:{{ p.accent }};--accent-dark:{{ p.accent_dark }}">
@@ -235,7 +234,7 @@ layout: default
   })();
 
   // Phones: the projects are a sideways carousel. Each swipe or arrow tap
-  // moves one card and snaps to it, and it loops: past the last card comes
+  // moves one card and snaps to it (the one arrow points onward), and it loops: past the last card comes
   // the first again. The loop is two copies of the cards at each end
   // (hidden from screen readers and the keyboard); once a scroll settles on
   // a copy, it jumps to the real card it copies, which looks identical.
@@ -308,7 +307,6 @@ layout: default
       var at = Math.round(cards.scrollLeft / s) * s;
       cards.scrollTo({ left: at + dir * s, behavior: reduce.matches ? 'instant' : 'smooth' });
     }
-    box.querySelector('.prev').addEventListener('click', function () { nudge(-1); });
     box.querySelector('.next').addEventListener('click', function () { nudge(1); });
 
     // the die shuffles the real cards; the copies wait it out
