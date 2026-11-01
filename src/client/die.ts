@@ -1,7 +1,7 @@
 // The die. Either copy of it (the splash corner or the header) re-rolls the
-// page: the tagline spins slot-machine style, the project cards shuffle, and
-// About picks three new things I like. Every one of them rolls through
-// options, slowing down until it settles.
+// page: the tagline spins slot-machine style, the projects carousel spins
+// round to a random one, and About picks three new things I like. Every one
+// of them rolls through options, slowing down until it settles.
 //
 // The word lists come from EmDash's Randomizers, rendered into #roll-data by the page.
 (() => {
@@ -93,55 +93,19 @@
     })();
   }
 
-  // Reorder the project cards, sliding each from where it is now to its new
-  // spot.
-  function place(container: HTMLElement, order: Element[], duration?: number) {
-    const items = Array.from(container.children);
-    const before = items.map((el) => el.getBoundingClientRect());
-    for (const el of items) for (const an of el.getAnimations()) an.cancel();
-    for (const el of order) container.appendChild(el);
-    if (reduce.matches) return;
-    items.forEach((el, i) => {
-      const now = el.getBoundingClientRect();
-      const was = before[i] as DOMRect;
-      const dx = was.left - now.left;
-      const dy = was.top - now.top;
-      if (!dx && !dy) return;
-      el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: "none" }], {
-        duration: duration ?? 0,
-        easing: "cubic-bezier(.2,.8,.2,1)",
-      });
-    });
-  }
-  // The cards' reel: a few quick shuffles, each slower than the last, then a
-  // final one that eases into place.
-  // (on phones the carousel steps aside while they shuffle; see carousel.ts)
+  // The projects' reel lives with the carousel (carousel.ts): it spins round
+  // fast and lands on a random project, then calls back.
   function rollCards(finish: () => void) {
     if (!cards) return finish();
-    const container = cards;
-    container.dispatchEvent(new Event("shufflestart"));
+    let called = false;
     const done = () => {
-      container.dispatchEvent(new Event("shuffleend"));
-      finish();
-    };
-    const final = shuffle(Array.from(container.children));
-    if (reduce.matches) {
-      place(container, final);
-      return done();
-    }
-    const ticks = 7;
-    let i = 0;
-    (function step() {
-      i++;
-      if (i < ticks) {
-        const wait = 140 + i * i * 9;
-        place(container, shuffle(Array.from(container.children)), wait + 60);
-        setTimeout(step, wait);
-      } else {
-        place(container, final, 700);
-        setTimeout(done, 700);
+      if (!called) {
+        called = true;
+        finish();
       }
-    })();
+    };
+    // the carousel claims the roll; with nothing to roll (one project) it doesn't
+    if (cards.dispatchEvent(new CustomEvent("roll", { detail: done, cancelable: true }))) done();
   }
 
   // One pick per slot, never the one already showing.
@@ -224,5 +188,11 @@
       spin([el], LIKES[i] ?? [], finalL[i] as string, 12 + i * 2, 35, 1.7 + i * 0.2, settled);
     });
   }
-  for (const d of dice) d.addEventListener("click", roll);
+  for (const d of dice) {
+    d.addEventListener("click", roll);
+    // a roll is likely coming: let the carousel fetch the screenshots it'll flick through
+    const warm = () => cards?.dispatchEvent(new Event("rollsoon"));
+    d.addEventListener("pointerenter", warm);
+    d.addEventListener("focus", warm);
+  }
 })();
