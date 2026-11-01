@@ -1,0 +1,48 @@
+---
+// Pieces of writing as ruled lines grouped by year, the year in the
+// left-hand margin: the Writing index (after the newest piece) and tag pages.
+import { type Post, type Project, readingMinutes, shortDate, year } from "../lib/content";
+import Tags from "./Tags.astro";
+
+interface Props {
+  posts: Post[];
+  projects: Project[];
+  /** on a tag page, that tag (marked current in each line's tags) */
+  current?: string | undefined;
+}
+const { posts, projects, current } = Astro.props;
+const years = new Map<string, Post[]>();
+for (const post of posts) {
+  const y = year(post.date);
+  years.set(y, [...(years.get(y) ?? []), post]);
+}
+const project = (post: Post) => projects.find((p) => p.id === post.project);
+---
+{[...years].map(([name, items]) => (
+  <section class="ruled" aria-label={name}>
+    <h2 class="margin year-mark">{name}</h2>
+    <ul class="lines">
+      {items.map((post) => {
+        const proj = project(post);
+        return (
+          <li style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
+            <a class="line" href={`/writing/${post.id}/`}>
+              <span class="t">{post.title}</span>
+              {post.description && <span class="x">{post.description}</span>}
+            </a>
+            <span class="label when">
+              <time datetime={post.date.toISOString()}>{shortDate(post.date)}</time>
+              <span>{readingMinutes(post.content)} min</span>
+            </span>
+            {(proj || post.tags.length > 0) && (
+              <div class="line-meta">
+                {proj && <span class="label tag">{proj.title}</span>}
+                <Tags tags={post.tags} current={current} />
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+))}

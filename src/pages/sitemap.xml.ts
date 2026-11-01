@@ -1,15 +1,16 @@
-// /sitemap.xml: the home page, the writing archive and every post. Redirect
+// /sitemap.xml: the home page, the writing archive, every post and tag page. Redirect
 // pages and the 404 stay out, as they did under jekyll-sitemap.
 import type { APIRoute } from "astro";
-import { getPosts } from "../lib/content";
+import { getPosts, getTags } from "../lib/content";
 import { absoluteUrl } from "../site";
 
 export const GET: APIRoute = async (context) => {
-  const posts = await getPosts(context);
+  const [posts, tags] = await Promise.all([getPosts(context), getTags(context)]);
   const urls = [
     { loc: absoluteUrl("/") },
     { loc: absoluteUrl("/writing/") },
     ...posts.map((p) => ({ loc: absoluteUrl(`/writing/${p.id}/`), lastmod: p.date.toISOString() })),
+    ...tags.map((t) => ({ loc: absoluteUrl(`/writing/tags/${t.slug}/`) })),
   ];
   const body = urls
     .map(

@@ -76,6 +76,7 @@ export default defineConfig({
     "/": cached,
     "/writing": cached,
     "/writing/[slug]": cached,
+    "/writing/tags/[tag]": cached,
     "/feed.xml": cached,
     "/sitemap.xml": cached,
     "/projects.json": cached,

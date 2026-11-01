@@ -65,7 +65,7 @@ for fresh databases and the admin's Content Types screen for the live one.
 | `src/lib/content.ts`         | Every read from EmDash: posts, projects, sections, randomizers, site settings |
 | `src/site.ts`                | Settings that aren't copy: URL, time zone, social card, the Web Analytics token |
 | `src/pages/index.astro`      | The whole home page |
-| `src/pages/writing/`         | The archive at `/writing/`, grouped by year, and one page per post |
+| `src/pages/writing/`         | The archive at `/writing/`, grouped by year, one page per post, and one per tag (`tags/`) |
 | `src/pages/[...redirect].astro` | `/about/`, `/projects/` and old `/work/...` URLs, 301'd to the matching section |
 | `src/pages/feed.xml.ts`, `sitemap.xml.ts` | The Atom feed and the sitemap |
 | `src/pages/projects.json.ts` | The project list, for the Screenshots workflow |
@@ -83,7 +83,8 @@ for fresh databases and the admin's Content Types screen for the live one.
 Everything below happens in the admin at [admin.alxjrvs.com](https://admin.alxjrvs.com). Edits are drafts until you
 press **Publish**; publishing shows up on the site within seconds.
 
-- **Writing** (the `posts` collection): title, dek, optional project slug (links the post and its project card both ways),
+- **Writing** (the `posts` collection): title, dek, optional tags (the editor's Tags box; each
+  gets a page at `/writing/tags/<slug>/`, and only tags on published pieces show), optional project slug (links the post and its project card both ways),
   and the body in the rich-text editor. Only **published** pieces appear on the site; drafts and
   unpublished ones never do. A piece lands at `/writing/<slug>/`, dated when it was
   first published; scheduling works too. Until the first piece is published, the Writing nav link

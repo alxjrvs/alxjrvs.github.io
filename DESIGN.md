@@ -225,10 +225,18 @@ animations, the pip flicker and the grid pulse (the grid's faces all change at o
   lines grouped by year, the year in mono in the margin and sticky under the
   header; each line is title, dek and project dot on the left, short date and
   minutes in mono on the right. Under 860px the margin stacks on top and the
-  rule goes; under 600px the date moves above the title.
+  rule goes; under 600px the date moves above the title. Under the lines, a
+  "Tags" margin row lists every tag with its count.
+- **Tags:** IBM Plex Mono at .8125rem, as written (not uppercased), with a
+  faint "#", in `fg-subtle` and `fg` on hover. They sit under a line's dek
+  (after the project dot), under the newest piece's "Read it", and in a
+  piece's margin. Each links to `/writing/tags/<tag>/`: a page head of
+  "← Writing" and "#tag" (the "#" in `fg-subtle`), then the same ruled lines.
+  The current tag is underlined in `nav-active`. Tags are optional; Project is
+  too.
 - **A piece (`/writing/<slug>/`):** the same margin and rule. The margin is
-  sticky and holds "← Writing", Published, Reading and Project (a dot in the
-  project's accent, linking out). The title, dek and 40rem prose sit beside
+  sticky and holds "← Writing", Published, Reading, Project (a dot in the
+  project's accent, linking out) and Tags, each only when it has something. The title, dek and 40rem prose sit beside
   it. The words end on a small `fg-subtle` die showing one, then Newer/Older,
   each with its date. A 2px `progress` line along the bottom of the header
   fills as you read; it tracks the scroll, so reduced motion changes nothing.

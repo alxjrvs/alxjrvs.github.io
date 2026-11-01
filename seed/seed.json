@@ -10,6 +10,15 @@
     "title": "alxjrvs",
     "tagline": "Alex Jarvis makes stuff."
   },
+  "taxonomies": [
+    {
+      "name": "tag",
+      "label": "Tags",
+      "labelSingular": "Tag",
+      "hierarchical": false,
+      "collections": ["posts"]
+    }
+  ],
   "collections": [
     {
       "slug": "posts",
