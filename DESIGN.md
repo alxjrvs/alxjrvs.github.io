@@ -47,7 +47,7 @@ is re-skinned.
 | `brand-2`      | `#a986d6` | `#6b3fa0` | the pop (bruise purple)                      |
 
 Projects bring their own `accent` (light) and `accent_dark` from
-`src/content/projects/*.md`. They're used only inside that project's card or post.
+their entry in the CMS (EmDash → Projects). They're used only inside that project's card or post.
 
 ### 2.2 Text hierarchy
 
@@ -116,7 +116,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   In the splash it breaks after the subject, so "I make *object*." sits on
   its own line beneath it; the header's copy stays on one line.
   About 1 roll in 50 lands the subject on the rare "Undiagnosed, but, come on."
-  (`src/data/tagline.ts`), which brings its own full stop.
+  (EmDash → Randomizers → `tagline-subjects`), which brings its own full stop.
 - Wordmark: lowercase `alxjrvs`, split as alx/jrvs, and never restyled. The
   splash wordmark spells out "alex jarvis" on hover, with the extra letters in grey.
 - Vellum is a "TTRPG" tool. Never name a specific game system for it.

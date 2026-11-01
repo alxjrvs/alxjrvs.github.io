@@ -1,15 +1,14 @@
 ---
 // Every page: the floating header, theme toggle, back-to-top button and,
 // away from the home page, the footer.
-import chromeSrc from "../client/chrome.ts?raw";
-import themeInitSrc from "../client/theme-init.ts?raw";
+import chromeSrc from "../client/chrome.ts?inline-script";
+import themeInitSrc from "../client/theme-init.ts?inline-script";
 import Die from "../components/Die.astro";
 import Footer from "../components/Footer.astro";
 import InlineScript from "../components/InlineScript.astro";
 import Seo from "../components/Seo.astro";
 import Wordmark from "../components/Wordmark.astro";
-import { objects, subjects } from "../data/tagline";
-import { getPosts } from "../lib/content";
+import { getNav, getRolls, getSiteText } from "../lib/content";
 import { site } from "../site";
 
 interface Props {
@@ -19,8 +18,8 @@ interface Props {
 }
 
 const isHome = Astro.url.pathname === "/";
-const hasPosts = (await getPosts()).length > 0;
-const nav = site.nav.filter((item) => !("needsPosts" in item && item.needsPosts) || hasPosts);
+const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
+const tagline = `${rolls.subjects[0]}. ${rolls.lead} ${rolls.objects[0]}.`;
 // changes on every build, so a deploy's CSS is never served from a stale cache
 const v = Math.floor(Date.now() / 1000);
 ---
@@ -34,8 +33,8 @@ const v = Math.floor(Date.now() / 1000);
   <link rel="icon" href={`/assets/favicon.svg?v=${v}`} type="image/svg+xml">
   <link rel="preload" href="/assets/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={`/assets/css/site.css?v=${v}`}>
-  <link type="application/atom+xml" rel="alternate" href={`${site.url}/feed.xml`} title={site.title}>
-  <Seo {...Astro.props} />
+  <link type="application/atom+xml" rel="alternate" href={`${site.url}/feed.xml`} title={text.title}>
+  <Seo {...Astro.props} site={text} tagline={tagline} />
 </head>
 <body class={isHome ? "home" : "inner"}>
   <a class="skip" href="#main">Skip to content</a>
@@ -48,7 +47,7 @@ const v = Math.floor(Date.now() / 1000);
   <header class="bar" id="bar">
     <div class="bar-id">
       <a class="brand" href="/"><Wordmark /></a>
-      {isHome && <p class="bar-tag" aria-hidden="true"><span class="roll-subject" data-suffix=".">{subjects[0]}.</span> I make <em class="roll-object" data-suffix=".">{objects[0]}.</em></p>}
+      {isHome && <p class="bar-tag" aria-hidden="true"><span class="roll-subject" data-suffix=".">{rolls.subjects[0]}.</span> {rolls.lead} <em class="roll-object" data-suffix=".">{rolls.objects[0]}.</em></p>}
     </div>
     <nav class="nav" aria-label="Primary">
       {nav.map((item) => <a href={item.url}>{item.name}</a>)}

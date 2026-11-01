@@ -11,7 +11,7 @@ const { posts } = Astro.props;
     <li>
       <a href={`/writing/${post.id}/`}>
         <span class="d">{dottedDate(post.date)}</span>
-        <span class="t">{post.data.title}{post.data.description && <span class="x">{post.data.description}</span>}</span>
+        <span class="t">{post.title}{post.description && <span class="x">{post.description}</span>}</span>
       </a>
     </li>
   ))}

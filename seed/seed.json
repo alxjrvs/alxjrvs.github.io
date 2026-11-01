@@ -1,0 +1,447 @@
+{
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "meta": {
+    "name": "alxjrvs.com",
+    "description": "All the words on alxjrvs.com: posts, projects, sections and randomizers",
+    "author": "alxjrvs"
+  },
+  "settings": {
+    "title": "alxjrvs",
+    "tagline": "Alex Jarvis makes stuff."
+  },
+  "collections": [
+    {
+      "slug": "posts",
+      "label": "Posts",
+      "labelSingular": "Post",
+      "urlPattern": "/writing/{slug}/",
+      "supports": ["drafts", "revisions", "preview", "scheduling"],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "description",
+          "label": "Dek",
+          "type": "text"
+        },
+        {
+          "slug": "project",
+          "label": "Project (its slug, e.g. randsum): links the post and the project card",
+          "type": "string"
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText"
+        }
+      ],
+      "sortOrder": 1
+    },
+    {
+      "slug": "projects",
+      "label": "Projects",
+      "labelSingular": "Project",
+      "sortOrder": 2,
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "order",
+          "label": "Order (1 is first)",
+          "type": "integer",
+          "required": true,
+          "indexed": true
+        },
+        {
+          "slug": "kicker",
+          "label": "Kicker (the small line above the summary)",
+          "type": "string"
+        },
+        {
+          "slug": "summary",
+          "label": "Summary",
+          "type": "text",
+          "required": true
+        },
+        {
+          "slug": "link",
+          "label": "Link",
+          "type": "url",
+          "required": true
+        },
+        {
+          "slug": "link_label",
+          "label": "Link label (defaults to the title)",
+          "type": "string"
+        },
+        {
+          "slug": "shot",
+          "label": "Screenshot name (public/assets/work/<name>.webp, taken by the Screenshots workflow)",
+          "type": "string"
+        },
+        {
+          "slug": "accent",
+          "label": "Accent colour, light theme (hex)",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "accent_dark",
+          "label": "Accent colour, dark theme (hex)",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "slug": "sections",
+      "label": "Sections",
+      "labelSingular": "Section",
+      "sortOrder": 3,
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Heading",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "nav_label",
+          "label": "Nav label (sections with one appear in the header)",
+          "type": "string"
+        },
+        {
+          "slug": "kicker",
+          "label": "Kicker",
+          "type": "string"
+        },
+        {
+          "slug": "dek",
+          "label": "Dek / link text",
+          "type": "text"
+        },
+        {
+          "slug": "body",
+          "label": "Body",
+          "type": "portableText"
+        }
+      ]
+    },
+    {
+      "slug": "randomizers",
+      "label": "Randomizers",
+      "labelSingular": "Randomizer",
+      "sortOrder": 4,
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "lead",
+          "label": "Lead-in words (e.g. \"I make\")",
+          "type": "string"
+        },
+        {
+          "slug": "items",
+          "label": "Items, one per line (the first shows before any roll)",
+          "type": "text",
+          "required": true
+        },
+        {
+          "slug": "rare",
+          "label": "Rare roll (tagline subjects only)",
+          "type": "string"
+        },
+        {
+          "slug": "rare_odds",
+          "label": "Rare roll odds, 1 in \u2026",
+          "type": "integer"
+        }
+      ]
+    }
+  ],
+  "content": {
+    "projects": [
+      {
+        "id": "project-vellum",
+        "slug": "vellum",
+        "status": "published",
+        "data": {
+          "order": 4,
+          "title": "Vellum",
+          "summary": "A camera overlay for online tabletop games. Vellum draws a live character HUD over your webcam, and OBS carries it into your Discord call.",
+          "link": "https://vellumhud.com",
+          "link_label": "vellumhud.com",
+          "shot": "vellum",
+          "kicker": "TTRPG \u00b7 camera HUD",
+          "accent": "#7a5a00",
+          "accent_dark": "#ffc93c"
+        }
+      },
+      {
+        "id": "project-salvageunion",
+        "slug": "salvageunion",
+        "status": "published",
+        "data": {
+          "order": 1,
+          "title": "SalvageUnion.io",
+          "summary": "A searchable reference for the Salvage Union tabletop RPG, with a pilot and mech builder, and the API, apps and bot that grew up around it.",
+          "link": "https://salvageunion.io",
+          "link_label": "salvageunion.io",
+          "shot": "salvageunion",
+          "kicker": "Salvage Union \u00b7 TTRPG reference",
+          "accent": "#b4531f",
+          "accent_dark": "#f0955a"
+        }
+      },
+      {
+        "id": "project-randsum",
+        "slug": "randsum",
+        "status": "published",
+        "data": {
+          "order": 2,
+          "title": "RANDSUM",
+          "summary": "A zero-dependency, TypeScript-first dice notation and rolling engine, with a formal spec for the notation and game packages for the systems people actually play.",
+          "link": "https://randsum.dev",
+          "link_label": "randsum.dev",
+          "shot": "randsum",
+          "kicker": "TypeScript \u00b7 dice engine",
+          "accent": "#c43d3d",
+          "accent_dark": "#ff7a7a"
+        }
+      },
+      {
+        "id": "project-optfall",
+        "slug": "optfall",
+        "status": "published",
+        "data": {
+          "order": 3,
+          "title": "Optfall",
+          "summary": "A reference tool for the Flesh and Blood trading card game. Correct legality, correct rules text, correct rulings, each with a permanent URL.",
+          "link": "https://optfall.com",
+          "link_label": "optfall.com",
+          "shot": "optfall",
+          "kicker": "Flesh and Blood \u00b7 card search and rules",
+          "accent": "#a3122a",
+          "accent_dark": "#ff5468"
+        }
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-projects",
+        "slug": "projects",
+        "status": "published",
+        "data": {
+          "title": "Projects",
+          "nav_label": "Projects"
+        }
+      },
+      {
+        "id": "section-writing",
+        "slug": "writing",
+        "status": "published",
+        "data": {
+          "title": "Latest writing",
+          "nav_label": "Writing",
+          "dek": "All writing"
+        }
+      },
+      {
+        "id": "section-writing-archive",
+        "slug": "writing-archive",
+        "status": "published",
+        "data": {
+          "title": "Writing",
+          "kicker": "Archive",
+          "dek": "Notes from the margins.",
+          "body": [
+            {
+              "_type": "block",
+              "_key": "k4",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "k1",
+                  "href": "/#projects"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "k0",
+                  "text": "Nothing here yet. When there is, it'll show up here. In the meantime, the ",
+                  "marks": []
+                },
+                {
+                  "_type": "span",
+                  "_key": "k2",
+                  "text": "projects",
+                  "marks": ["k1"]
+                },
+                {
+                  "_type": "span",
+                  "_key": "k3",
+                  "text": " are where the action is.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "section-about",
+        "slug": "about",
+        "status": "published",
+        "data": {
+          "title": "About",
+          "nav_label": "About",
+          "body": [
+            {
+              "_type": "block",
+              "_key": "k6",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "k5",
+                  "text": "I was raised in Central Connecticut as a third-generation Norman Rockwell painting. As a precocious boy who didn't like to sleep, my parents made one of several key mistakes when they decided to allow me to purchase a copy of \"The Mask\" starring Jim Carrey. I've considered myself a hacker ever since the age of 9, when I correctly guessed that my father's AOL password was \"MenInBlack\". Despite this clear aptitude for computer science, I spent most of my young life trying to be an actor, followed up by a temporary stint as an academic. After \"Graduating\" \"College\", I set out to make a life for myself in a field that went nowhere before packing all my things, moving to Boston, and sleeping on a friend's couch. That friend taught me to code, and things have worked out since.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "section-not-found",
+        "slug": "not-found",
+        "status": "published",
+        "data": {
+          "title": "Not found",
+          "kicker": "404",
+          "body": [
+            {
+              "_type": "block",
+              "_key": "ke",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "k8",
+                  "href": "/"
+                },
+                {
+                  "_type": "link",
+                  "_key": "kb",
+                  "href": "/#projects"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "k7",
+                  "text": "Nothing lives here. Try the ",
+                  "marks": []
+                },
+                {
+                  "_type": "span",
+                  "_key": "k9",
+                  "text": "home page",
+                  "marks": ["k8"]
+                },
+                {
+                  "_type": "span",
+                  "_key": "ka",
+                  "text": " or the ",
+                  "marks": []
+                },
+                {
+                  "_type": "span",
+                  "_key": "kc",
+                  "text": "projects",
+                  "marks": ["kb"]
+                },
+                {
+                  "_type": "span",
+                  "_key": "kd",
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "randomizers": [
+      {
+        "id": "randomizer-tagline-subjects",
+        "status": "published",
+        "slug": "tagline-subjects",
+        "data": {
+          "title": "Tagline: who I am",
+          "items": "Enthusiast\nEngineer\nTinkerer\nGeneralist\nOptimist\nDabbler\nHobbyist\nCraftsperson\nNerd\nRomantic\nCompletionist\nMaximalist\nGame Master\nOverthinker\nCollector\nArchivist\nGoblin\nSuperfan\nNight owl\nHomebrewer\nDaydreamer\nWeirdo\nContrarian\nFiddler\nGrungler",
+          "rare": "Undiagnosed, but, come on.",
+          "rare_odds": 50
+        }
+      },
+      {
+        "id": "randomizer-tagline-objects",
+        "status": "published",
+        "slug": "tagline-objects",
+        "data": {
+          "title": "Tagline: what I make",
+          "lead": "I make",
+          "items": "stuff\nthings\ntools\ngames\ndice\nsystems\nworlds\ntoys\ntrouble\ntoo much\nside projects\nrabbit holes\nlittle machines\ncontraptions\ncompanion apps\nrules engines\nspreadsheets\nshortcuts\nexcuses\ninside jokes\nbad ideas\nweird websites\nside quests\ncard tools\nmy own fun"
+        }
+      },
+      {
+        "id": "randomizer-likes-1",
+        "status": "published",
+        "slug": "likes-1",
+        "data": {
+          "title": "I like: first slot",
+          "lead": "I like",
+          "items": "board games\nFlesh and Blood\nTwilight Imperium\nArcs: Beyond the Reach\nFromSoftware\nTypeScript"
+        }
+      },
+      {
+        "id": "randomizer-likes-2",
+        "status": "published",
+        "slug": "likes-2",
+        "data": {
+          "title": "I like: second slot",
+          "items": "\"Weird\" Al Yankovic\nthe \"Bionicle\" LEGO toy line\nJack Kirby art\nDiet Coke\nthe Canadian indie band \"Mother Mother\"\nbeing the DM of far too many games\nstaying in touch\njoking about long walks on the beach"
+        }
+      },
+      {
+        "id": "randomizer-likes-3",
+        "status": "published",
+        "slug": "likes-3",
+        "data": {
+          "title": "I like: third slot",
+          "items": "the 2010 DreamWorks animated picture film \"Megamind\"\nthe 2012 motion picture film \"Dredd\"\nthe 2007 motion picture film \"Hot Fuzz\"\nthe 1988 hybrid animated motion picture film \"Who Framed Roger Rabbit\"\nthe 2022 motion picture film \"Everything Everywhere All at Once\"\nmy sweet nightmare cat, Rumi\nyou, probably, if I got to know you\ninexplicably, malls"
+        }
+      }
+    ]
+  }
+}

@@ -1,27 +1,51 @@
-// Cloudflare deployment for alxjrvs.com: a Worker with no script, serving the
-// static build in ./dist (`bun run build`) as assets. Nothing runs at request
-// time, and static asset requests are free and don't count against the
-// Workers quota. Deployed by .github/workflows/deploy.yml.
+// Cloudflare deployment for alxjrvs.com: the `alxjrvs` Worker. Astro builds
+// it (`bun run build`, @astrojs/cloudflare). Files from public/ are served as
+// static assets without running the Worker, which is free and doesn't count
+// against the Workers quota. Pages that show posts render in the Worker,
+// reading EmDash's D1 database, and are then held in the Workers cache.
+// Deployed by .github/workflows/deploy.yml.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "alxjrvs",
-  // Only matters if a Worker script is ever added. Raise it deliberately,
-  // alongside a wrangler upgrade.
+  "main": "./src/worker.ts",
+  // Raise it deliberately, alongside a wrangler upgrade.
   "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
-    "directory": "./dist",
-    // An unmatched URL gets the site's own 404 page (dist/404.html), with a
-    // 404 status. `_headers` and `_redirects` in ./dist are read by Cloudflare
-    // and never served.
-    "not_found_handling": "404-page",
+    "binding": "ASSETS",
+    "directory": "./dist/client",
     // /writing → /writing/, and /writing/index.html → /writing/.
     "html_handling": "auto-trailing-slash"
   },
+  // EmDash: posts, users and settings in D1; uploaded images in R2; Astro
+  // sessions (who's signed in to the admin) in KV. PR previews share them.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "alxjrvs-emdash",
+      "database_id": "2203300b-b622-4d2b-ada2-cacf744bbf36"
+    }
+  ],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "alxjrvs-emdash-media" }],
+  "kv_namespaces": [{ "binding": "SESSION", "id": "130188ee86594ed4b153002bae9c8315" }],
+  "vars": {
+    // The Application Audience (AUD) tag of the Cloudflare Access app that
+    // guards admin.alxjrvs.com. Not a secret: it only names which app signed
+    // a token.
+    "CF_ACCESS_AUDIENCE": ""
+  },
+  // EmDash's scheduled publishing and housekeeping.
+  "triggers": { "crons": ["* * * * *"] },
   // alxjrvs.com is a proxied zone on this account. A zone route (rather than a
   // custom domain) leaves the DNS records alone, so cutting over or back is a
   // deploy, never a DNS change. www.alxjrvs.com is 301'd to the apex by a
   // zone Redirect Rule, which runs before Workers.
-  "routes": [{ "pattern": "alxjrvs.com/*", "zone_name": "alxjrvs.com" }],
+  // admin.alxjrvs.com is EmDash's admin (a custom domain: the deploy creates
+  // its DNS record), behind Cloudflare Access; see src/worker.ts.
+  "routes": [
+    { "pattern": "alxjrvs.com/*", "zone_name": "alxjrvs.com" },
+    { "pattern": "admin.alxjrvs.com", "custom_domain": true }
+  ],
   // The workers.dev copy stays on so a deploy can be checked before (and
   // without) the custom domain. It's noindexed in public/_headers.
   "workers_dev": true,

@@ -1,56 +1,93 @@
-// Every internal link, image, stylesheet and script in the build resolves to
-// a file in ./dist, and every #fragment to an id on its page. Replaces the
-// html-proofer run from the Jekyll days. Run after `bun run build`.
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+// Every internal link, image, stylesheet and script resolves, and every
+// #fragment points at an id on its page. Pages render in the Worker now, so
+// this crawls a running copy of the site, starting from the home page and
+// the writing archive: by default it builds nothing and starts
+// `astro preview` itself (run `bun run build` first). Point it at another
+// copy with BASE=http://…
+import { spawn, spawnSync } from "node:child_process";
 
-const DIST = "dist";
 const SITE = "https://alxjrvs.com";
+const PORT = 4391;
+const external = process.env.BASE;
+const BASE = (external ?? `http://localhost:${PORT}`).replace(/\/$/, "");
 
-function htmlFiles(dir: string): string[] {
-  return readdirSync(dir).flatMap((name) => {
-    const path = join(dir, name);
-    if (statSync(path).isDirectory()) return htmlFiles(path);
-    return path.endsWith(".html") ? [path] : [];
-  });
-}
+const preview = external
+  ? undefined
+  : spawn("bunx", ["astro", "preview", "--port", String(PORT)], { stdio: "ignore" });
 
-// The file a URL path is served from, if any (as Cloudflare's
-// auto-trailing-slash handling resolves it).
-function resolve(path: string): string | null {
-  const clean = decodeURIComponent(path);
-  const candidates = clean.endsWith("/")
-    ? [join(DIST, clean, "index.html")]
-    : [join(DIST, clean), join(DIST, `${clean}.html`), join(DIST, clean, "index.html")];
-  return candidates.find((c) => existsSync(c) && statSync(c).isFile()) ?? null;
+async function waitForServer(): Promise<void> {
+  for (let i = 0; i < 120; i++) {
+    try {
+      await fetch(BASE);
+      return;
+    } catch {
+      await new Promise((r) => setTimeout(r, 500));
+    }
+  }
+  throw new Error(`Nothing answered at ${BASE}`);
 }
 
 const ids = (html: string) => new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
-const pages = htmlFiles(DIST);
-const problems: string[] = [];
 
-for (const page of pages) {
-  const html = readFileSync(page, "utf8");
-  const pagePath = `/${relative(DIST, page).replace(/index\.html$/, "")}`;
+// path → its HTML (or "" for a non-HTML file), or null if it didn't resolve
+const seen = new Map<string, Promise<string | null>>();
+function get(path: string): Promise<string | null> {
+  let page = seen.get(path);
+  if (!page) {
+    page = fetch(BASE + path).then(async (res) => {
+      if (!res.ok) return null;
+      return res.headers.get("content-type")?.includes("text/html") ? res.text() : "";
+    });
+    seen.set(path, page);
+  }
+  return page;
+}
+
+const problems: string[] = [];
+const crawled = new Set<string>();
+
+async function crawl(pagePath: string): Promise<void> {
+  if (crawled.has(pagePath)) return;
+  crawled.add(pagePath);
+  const html = await get(pagePath);
+  if (!html) {
+    if (html === null) problems.push(`${pagePath} doesn't load`);
+    return;
+  }
   const refs = [...html.matchAll(/\s(?:href|src)="([^"]+)"/g)].map((m) => m[1] ?? "");
   for (const srcset of html.matchAll(/\ssrcset="([^"]+)"/g)) {
     for (const part of (srcset[1] ?? "").split(",")) refs.push(part.trim().split(/\s+/)[0] ?? "");
   }
+  const next: string[] = [];
   for (const raw of refs) {
-    let ref = raw.startsWith(SITE) ? raw.slice(SITE.length) || "/" : raw;
+    let ref = raw.replaceAll("&amp;", "&");
+    ref = ref.startsWith(SITE) ? ref.slice(SITE.length) || "/" : ref;
     if (/^(?:[a-z]+:|\/\/)/i.test(ref)) continue; // external
     if (ref.startsWith("#")) ref = pagePath + ref;
     if (!ref.startsWith("/")) ref = new URL(ref, `${SITE}${pagePath}`).pathname;
-    const [pathAndQuery = "", hash] = ref.split("#");
-    const path = pathAndQuery.split("?")[0] ?? "";
-    const target = resolve(path);
-    if (!target) {
-      problems.push(`${page}: ${raw} → no file for ${path}`);
+    const [path = "", hash] = ref.split("#");
+    const target = await get(path);
+    if (target === null) {
+      problems.push(`${pagePath}: ${raw} → ${path} doesn't load`);
       continue;
     }
-    if (hash && target.endsWith(".html") && !ids(readFileSync(target, "utf8")).has(hash)) {
-      problems.push(`${page}: ${raw} → no #${hash} on ${path}`);
+    if (hash && target && !ids(target).has(hash)) {
+      problems.push(`${pagePath}: ${raw} → no #${hash} on ${path}`);
     }
+    if (target) next.push(path.split("?")[0] ?? path);
+  }
+  for (const path of next) await crawl(path);
+}
+
+try {
+  await waitForServer();
+  await crawl("/");
+  await crawl("/writing/");
+} finally {
+  // `astro preview` hands the server off to a background process.
+  if (preview) {
+    preview.kill();
+    spawnSync("bunx", ["astro", "preview", "stop"], { stdio: "ignore" });
   }
 }
 
@@ -59,4 +96,4 @@ if (problems.length) {
   console.error(`\n✗ ${problems.length} broken link(s)`);
   process.exit(1);
 }
-console.log(`✓ links: ${pages.length} pages, every internal reference resolves`);
+console.log(`✓ links: ${crawled.size} pages, every internal reference resolves`);

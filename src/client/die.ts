@@ -3,7 +3,7 @@
 // About picks three new things I like. Every one of them rolls through
 // options, slowing down until it settles.
 //
-// The word lists come from src/data/, rendered into #roll-data by the page.
+// The word lists come from EmDash's Randomizers, rendered into #roll-data by the page.
 (() => {
   const dataEl = document.getElementById("roll-data");
   if (!dataEl?.textContent) return;
