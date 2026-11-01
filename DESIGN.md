@@ -242,8 +242,12 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   The current tag is underlined in `nav-active`. Tags are optional; Project is
   too.
 - **A piece (`/writing/<slug>/`):** the same margin and rule. The margin is
-  sticky and holds "← Writing", Published, Reading, Project (a dot in the
-  project's accent, linking out) and Tags, each only when it has something. The title, dek and 40rem prose sit beside
+  sticky and holds "← Writing", any credits, Published, Reading, Project (a
+  dot in the project's accent, linking out) and Tags, each only when it has
+  something. Credits are optional, one fact per byline set on the piece in
+  EmDash: the role as the label ("Artist and Letterer"), the name in `fg`
+  under it (a "↗" link when the row has one). A piece with no credits is
+  simply by Alex. The title, dek and 40rem prose sit beside
   it. The words end on a small `fg-subtle` die showing one, then Newer/Older,
   each with its date. A 2px `progress` line along the bottom of the header
   fills as you read; it tracks the scroll, so reduced motion changes nothing.
