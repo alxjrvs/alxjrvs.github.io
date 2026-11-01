@@ -1,36 +1,29 @@
 ---
+import PieceLines from "../../components/PieceLines.astro";
 import Prose from "../../components/Prose.astro";
+import Tags from "../../components/Tags.astro";
 import Base from "../../layouts/Base.astro";
 import {
   getPosts,
   getProjects,
   getSection,
+  getTags,
   longDate,
-  type Post,
   readingMinutes,
-  shortDate,
   year,
 } from "../../lib/content";
 
 // The Writing index: every published piece in EmDash (Writing), newest first.
 // The newest gets the big slot; the rest are ruled lines grouped by year, with
 // the year in the left-hand margin, like a legal pad.
-const [posts, page, projects] = await Promise.all([
+const [posts, page, projects, tags] = await Promise.all([
   getPosts(Astro),
   getSection(Astro, "writing-archive"),
   getProjects(Astro),
+  getTags(Astro),
 ]);
-const project = (post: Post) => projects.find((p) => p.id === post.project);
-const accent = (post: Post) => {
-  const p = project(post);
-  return p ? `--accent-light:${p.accent};--accent-dark:${p.accent_dark}` : undefined;
-};
 const [lead, ...rest] = posts;
-const years = new Map<string, Post[]>();
-for (const post of rest) {
-  const y = year(post.date);
-  years.set(y, [...(years.get(y) ?? []), post]);
-}
+const proj = lead && projects.find((p) => p.id === lead.project);
 const oldest = posts.at(-1);
 const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
 ---
@@ -52,39 +45,27 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
   <>
     <section class="ruled" aria-labelledby="latest">
       <h2 class="margin label" id="latest">Latest</h2>
-      <a class="lead" href={`/writing/${lead.id}/`} style={accent(lead)}>
+      <div class="lead" style={proj && `--accent-light:${proj.accent};--accent-dark:${proj.accent_dark}`}>
         <p class="label meta">
           <time datetime={lead.date.toISOString()}>{longDate(lead.date)}</time>
           <span>{readingMinutes(lead.content)} min read</span>
-          {project(lead) && <span class="tag">{project(lead)?.title}</span>}
+          {proj && <span class="tag">{proj.title}</span>}
         </p>
-        <span class="t">{lead.title}</span>
-        {lead.description && <span class="x">{lead.description}</span>}
-        <span class="more">Read it <span aria-hidden="true">→</span></span>
-      </a>
+        <a class="lead-link" href={`/writing/${lead.id}/`}>
+          <span class="t">{lead.title}</span>
+          {lead.description && <span class="x">{lead.description}</span>}
+          <span class="more">Read it <span aria-hidden="true">→</span></span>
+        </a>
+        <Tags tags={lead.tags} />
+      </div>
     </section>
-    {[...years].map(([name, items]) => (
-      <section class="ruled" aria-label={name}>
-        <h2 class="margin year-mark">{name}</h2>
-        <ul class="lines">
-          {items.map((post) => (
-            <li style={accent(post)}>
-              <a href={`/writing/${post.id}/`}>
-                <span class="body">
-                  <span class="t">{post.title}</span>
-                  {post.description && <span class="x">{post.description}</span>}
-                  {project(post) && <span class="label tag">{project(post)?.title}</span>}
-                </span>
-                <span class="label when">
-                  <time datetime={post.date.toISOString()}>{shortDate(post.date)}</time>
-                  <span>{readingMinutes(post.content)} min</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
+    <PieceLines posts={rest} projects={projects} />
+    {tags.length > 0 && (
+      <section class="ruled" aria-labelledby="all-tags">
+        <h2 class="margin label" id="all-tags">Tags</h2>
+        <div class="tag-cloud"><Tags tags={tags} /></div>
       </section>
-    ))}
+    )}
   </>
 ) : (
   <div class="empty">{page && <Prose value={page.body} />}</div>

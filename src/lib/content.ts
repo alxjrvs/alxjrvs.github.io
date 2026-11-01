@@ -8,6 +8,7 @@ import {
   extractPlainText,
   getEmDashCollection,
   getSiteSettingsWithCacheHint,
+  getTaxonomyTermsWithCacheHint,
 } from "emdash";
 import { site } from "../site";
 
@@ -188,6 +189,25 @@ export interface Post {
   date: Date;
   /** Portable Text, rendered by emdash/ui's <PortableText> */
   content: unknown;
+  /** its tags (EmDash's built-in Tags taxonomy), in the order they were added */
+  tags: Tag[];
+}
+
+export interface Tag {
+  /** the URL is /writing/tags/<slug>/ */
+  slug: string;
+  label: string;
+  /** published pieces with this tag (only from getTags) */
+  count?: number | undefined;
+}
+
+function termsOf(data: Data, taxonomy: string): Tag[] {
+  const terms = (data.terms as Record<string, unknown> | undefined)?.[taxonomy];
+  if (!Array.isArray(terms)) return [];
+  return terms.flatMap((t: Data) => {
+    const slug = str(t.slug);
+    return slug ? [{ slug, label: str(t.label) ?? slug }] : [];
+  });
 }
 
 /** Every published post, newest first. */
@@ -202,7 +222,29 @@ export async function getPosts(astro: AstroLike): Promise<Post[]> {
       project: str(data.project),
       date: date instanceof Date ? date : new Date(String(date)),
       content: data.content,
+      tags: termsOf(data, "tag"),
     };
+  });
+}
+
+/** Every tag on at least one published piece, by label, with its count. */
+export function getTags(astro: AstroLike): Promise<Tag[]> {
+  return once(astro, "tags", async () => {
+    // The hint makes renaming a tag purge the pages that show it.
+    const [{ cacheHint }, posts] = await Promise.all([
+      getTaxonomyTermsWithCacheHint("tag", { includeCounts: false }),
+      getPosts(astro),
+    ]);
+    if (astro.cache?.enabled) astro.cache.set(cacheHint);
+    const tags = new Map<string, Tag & { count: number }>();
+    for (const post of posts) {
+      for (const t of post.tags) {
+        const tag = tags.get(t.slug) ?? { ...t, count: 0 };
+        tag.count++;
+        tags.set(t.slug, tag);
+      }
+    }
+    return [...tags.values()].sort((a, b) => a.label.localeCompare(b.label));
   });
 }
 

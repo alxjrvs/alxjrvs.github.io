@@ -1,6 +1,7 @@
 ---
 import { decodeSlug } from "emdash";
 import Prose from "../../components/Prose.astro";
+import Tags from "../../components/Tags.astro";
 import progressSrc from "../../client/progress.ts?inline-script";
 import InlineScript from "../../components/InlineScript.astro";
 import Base from "../../layouts/Base.astro";
@@ -31,6 +32,7 @@ const when = (d: Date) => `${shortDate(d)}, ${year(d)}`;
       <div><dt class="label">Published</dt><dd><time datetime={post.date.toISOString()}>{longDate(post.date)}</time></dd></div>
       <div><dt class="label">Reading</dt><dd>{minutes} min</dd></div>
       {proj && <div><dt class="label">Project</dt><dd><a class="tag" href={proj.link}>{proj.title} <span aria-hidden="true">↗</span></a></dd></div>}
+      {post.tags.length > 0 && <div><dt class="label">Tags</dt><dd><Tags tags={post.tags} /></dd></div>}
     </dl>
   </aside>
 

@@ -1,0 +1,23 @@
+---
+// A piece's tags (or all of them, with counts), each linking to its page.
+import type { Tag } from "../lib/content";
+
+interface Props {
+  tags: Tag[];
+  /** the tag whose page this is, marked current */
+  current?: string | undefined;
+  class?: string | undefined;
+}
+const { tags, current, class: cls } = Astro.props;
+---
+{tags.length > 0 && (
+  <ul class:list={["tags", cls]}>
+    {tags.map((t) => (
+      <li>
+        <a href={`/writing/tags/${t.slug}/`} aria-current={t.slug === current ? "page" : undefined}>
+          <span class="l"><span aria-hidden="true">#</span>{t.label}</span>{t.count !== undefined && <span class="n">{t.count}</span>}
+        </a>
+      </li>
+    ))}
+  </ul>
+)}

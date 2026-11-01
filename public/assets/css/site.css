@@ -534,24 +534,40 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .tag { display: inline-flex; align-items: center; gap: 8px; color: var(--fg-muted); text-decoration: none; }
 .tag::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent, var(--fg-subtle)); }
 
+/* tags: mono, lowercase as written, each one a link to its page */
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font: .8125rem/1.6 var(--mono); }
+.tags a { color: var(--fg-subtle); text-decoration: none; }
+.tags a span[aria-hidden] { opacity: .6; }
+.tags a:hover, .tags a[aria-current] { color: var(--fg); }
+.tags a[aria-current] .l { text-decoration: underline; text-decoration-color: var(--nav-active); text-decoration-thickness: 2px; text-underline-offset: .3em; }
+.tags .n { margin-left: 6px; color: var(--fg-subtle); opacity: .7; }
+.tag-cloud { padding: 32px 0 40px; }
+.tag-cloud .tags { gap: 8px 24px; font-size: .9375rem; }
+.hash { color: var(--fg-subtle); font-weight: 500; margin-right: .04em; }
+.writing-head .crumb { text-decoration: none; }
+.writing-head .crumb:hover { color: var(--fg); }
+
 /* the newest piece, big */
-.lead { display: block; padding: 32px 0 48px; text-decoration: none; }
+.lead { padding: 32px 0 48px; }
 .lead .meta { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0 0 16px; }
+.lead-link { display: block; text-decoration: none; }
 .lead .t { display: block; max-width: 20ch; font-weight: 700; font-size: clamp(2.25rem, 5vw, 3.5rem); line-height: 1; letter-spacing: -.045em; }
 .lead .x { display: block; max-width: var(--measure); margin-top: 16px; color: var(--fg-muted); font-size: 1.25rem; line-height: 1.45; }
 .lead .more { display: inline-block; margin-top: 24px; font-weight: 600; font-size: 1.0625rem; border-bottom: 2px solid var(--accent, var(--line-strong)); padding-bottom: 2px; }
-.lead:hover .t { text-decoration: underline; text-underline-offset: .12em; text-decoration-thickness: 3px; }
+.lead-link:hover .t { text-decoration: underline; text-underline-offset: .12em; text-decoration-thickness: 3px; }
+.lead .tags { margin-top: 20px; }
 
-/* the rest, one ruled line each */
+/* the rest, one ruled line each: title and dek (the link) with the date
+   beside them, then the project and tags underneath */
 .lines { list-style: none; margin: 0; padding-top: 12px; padding-bottom: 32px; }
-.lines li + li { border-top: 1px solid var(--line); }
-.lines a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; padding: 20px 0; text-decoration: none; }
-.lines .body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.lines > li { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; padding: 20px 0; }
+.lines > li + li { border-top: 1px solid var(--line); }
+.lines .line { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-decoration: none; }
 .lines .t { font-weight: 700; font-size: 1.5rem; line-height: 1.2; letter-spacing: -.02em; }
 .lines .x { max-width: var(--measure); color: var(--fg-muted); font-size: 1.0625rem; line-height: 1.45; }
-.lines .tag { margin-top: 2px; }
 .lines .when { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding-top: 6px; white-space: nowrap; }
-.lines a:hover .t { text-decoration: underline; text-underline-offset: .15em; text-decoration-thickness: 2px; }
+.lines .line-meta { grid-column: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; margin-top: 10px; }
+.lines .line:hover .t { text-decoration: underline; text-underline-offset: .15em; text-decoration-thickness: 2px; }
 
 /* a piece */
 .post-margin { position: sticky; top: calc(var(--bar-h) + 40px); align-self: start; }
@@ -560,6 +576,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .facts { margin: 0; display: grid; gap: 16px; }
 .facts dt { margin-bottom: 2px; }
 .facts dd { margin: 0; color: var(--fg-muted); font-size: 1rem; }
+.facts .tags { flex-direction: column; gap: 2px; }
 .facts .tag { color: var(--fg); }
 .facts .tag:hover { color: var(--accent, var(--fg)); }
 .post .post-body { padding-top: 24px; }
@@ -599,11 +616,13 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .facts div { display: flex; gap: 8px; align-items: baseline; }
   .facts dt { margin: 0; }
   .facts dd { font-size: .9375rem; }
+  .facts .tags { flex-direction: row; gap: 4px 12px; }
   .post .post-body { padding-top: 20px; border-top: 1px solid var(--line); }
 }
 @media (max-width: 600px) {
-  .lines a { grid-template-columns: 1fr; gap: 8px; padding: 18px 0; }
+  .lines > li { grid-template-columns: 1fr; row-gap: 8px; padding: 18px 0; }
   .lines .when { flex-direction: row; gap: 12px; padding: 0; order: -1; }
+  .lines .line-meta { margin-top: 2px; }
   .lines .t { font-size: 1.3125rem; }
   .post .prose { font-size: 1.0625rem; line-height: 1.6; margin-top: 32px; }
   .post-head .dek { font-size: 1.125rem; }
