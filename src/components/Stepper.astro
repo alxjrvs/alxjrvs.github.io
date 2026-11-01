@@ -6,6 +6,8 @@
 // client/comic.ts drives, hidden without JS, when the pages simply stack.
 // client/stepper.ts makes ← → and a sideways swipe on [data-swipe] press the
 // Back and Next of the stepper marked `keys`, so both read the same way.
+// `compact` is the header's copy on a piece ("← Title →"): Back and Next shrink
+// to their arrows, and whatever is passed in takes the count's place.
 interface Step {
   href: string;
   /** where it goes, for screen readers ("Part 1: Title") */
@@ -15,9 +17,9 @@ interface Props {
   /** what's being stepped through, for screen readers ("This thread", "Pages") */
   label: string;
   /** "Part", "Page" */
-  noun: string;
-  n: number;
-  total: number;
+  noun?: string | undefined;
+  n?: number | undefined;
+  total?: number | undefined;
   prev?: Step | undefined;
   next?: Step | undefined;
   /** before the count, linked: the thread's name and page */
@@ -28,16 +30,19 @@ interface Props {
   beyond?: { prev?: string | undefined; next?: string | undefined } | undefined;
   /** this is the stepper ← → and swipes press (one per page) */
   keys?: boolean | undefined;
+  /** arrows only, with the default slot in place of the count */
+  compact?: boolean | undefined;
   class?: string | undefined;
 }
-const { label, noun, n, total, prev, next, name, buttons, beyond, keys, class: cls } = Astro.props;
+const { label, noun, n, total, prev, next, name, buttons, beyond, keys, compact, class: cls } = Astro.props;
+const middle = Astro.slots.has("default") ? await Astro.slots.render("default") : undefined;
 const side = [
   { step: -1, to: prev, text: "Back", rel: "prev" },
   { step: 1, to: next, text: "Next", rel: "next" },
 ] as const;
 ---
 <nav
-  class:list={["stepper", cls]}
+  class:list={["stepper", { compact }, cls]}
   data-stepper
   data-keys={keys ? "" : undefined}
   aria-label={label}
@@ -46,7 +51,8 @@ const side = [
   data-next-href={beyond?.next}
 >
   {side.map(({ step, to, text, rel }, i) => {
-    const inner = step < 0 ? <><span aria-hidden="true">←</span> {text}</> : <>{text} <span aria-hidden="true">→</span></>;
+    const word = compact ? <span class="sr">{text}</span> : text;
+    const inner = step < 0 ? <><span aria-hidden="true">←</span> {word}</> : <>{word} <span aria-hidden="true">→</span></>;
     const control = buttons ? (
       <button type="button" class="step" data-step={step}>{inner}</button>
     ) : to ? (
@@ -57,10 +63,14 @@ const side = [
     return i === 0 ? (
       <>
         {control}
-        <span class="label step-count" aria-live={buttons ? "polite" : undefined}>
-          {name && <span class="step-name"><a href={name.href}>{name.title}</a> · </span>}
-          {noun} <span data-now>{n}</span> of {total}
-        </span>
+        {middle !== undefined ? (
+          <Fragment set:html={middle} />
+        ) : (
+          <span class="label step-count" aria-live={buttons ? "polite" : undefined}>
+            {name && <span class="step-name"><a href={name.href}>{name.title}</a> · </span>}
+            {noun} <span data-now>{n}</span> of {total}
+          </span>
+        )}
       </>
     ) : control;
   })}
