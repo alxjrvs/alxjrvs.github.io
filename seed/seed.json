@@ -440,7 +440,7 @@
         "slug": "tagline-subjects",
         "data": {
           "title": "Tagline: who I am",
-          "items": "Enthusiast\nEngineer\nTinkerer\nGeneralist\nOptimist\nDabbler\nHobbyist\nCraftsperson\nNerd\nRomantic\nCompletionist\nMaximalist\nGame Master\nOverthinker\nCollector\nArchivist\nGoblin\nSuperfan\nNight owl\nHomebrewer\nDaydreamer\nWeirdo\nContrarian\nFiddler\nGrungler\nUndiagnosed, but, come on.\nWorldbuilder\nRules lawyer\nTheorycrafter\nMin-maxer\nKitbasher\nGremlin\nPackrat\nDoodler\nYapper\nBig kid"
+          "items": "Enthusiast\nEngineer\nTinkerer\nGeneralist\nOptimist\nDabbler\nHobbyist\nCraftsperson\nNerd\nRomantic\nCompletionist\nMaximalist\nGame Master\nOverthinker\nCollector\nArchivist\nGoblin\nSuperfan\nNight owl\nHomebrewer\nDaydreamer\nWeirdo\nContrarian\nFiddler\nGrungler\nUndiagnosed, but, come on.\nWorldbuilder\nRules lawyer\nTheorycrafter\nKitbasher\nGremlin\nPackrat\nYapper\nBig kid"
         }
       },
       {
@@ -460,7 +460,7 @@
         "data": {
           "title": "I like: first slot",
           "lead": "I like",
-          "items": "board games\nFlesh and Blood\nTwilight Imperium\nArcs: Beyond the Reach\nFromSoftware\nTypeScript\nSalvage Union\ntabletop RPGs\nMagic: The Gathering\nSlay the Spire\nHades\ndeckbuilders\nweird dice\nmechanical keyboards\nBun\nAstro"
+          "items": "board games\nFlesh and Blood\nTwilight Imperium\nArcs: Beyond the Reach\nFromSoftware\nTypeScript\nSalvage Union\ntabletop RPGs\nSlay the Spire\ndeckbuilders\nweird dice\nmechanical keyboards\nBun\nAstro\nopen source"
         }
       },
       {
@@ -469,7 +469,7 @@
         "slug": "likes-2",
         "data": {
           "title": "I like: second slot",
-          "items": "\"Weird\" Al Yankovic\nthe \"Bionicle\" LEGO toy line\nJack Kirby art\nDiet Coke\nthe Canadian indie band \"Mother Mother\"\nbeing the DM of far too many games\nstaying in touch\njoking about long walks on the beach\nJim Henson's Muppets\nthe Teenage Mutant Ninja Turtles, any era\nthe band \"They Might Be Giants\"\nSaturday morning cartoons\na really good mechanical pencil\nmaking the group chat laugh\nover-explaining a joke\nunnecessarily detailed spreadsheets\nthe smell of a fresh box of dice\nrecommending things nobody asked about"
+          "items": "\"Weird\" Al Yankovic\nthe \"Bionicle\" LEGO toy line\nJack Kirby art\nDiet Coke\nthe Canadian indie band \"Mother Mother\"\nbeing the DM of far too many games\nstaying in touch\njoking about long walks on the beach\nthe band \"They Might Be Giants\"\nSaturday morning cartoons\nthe Pilot G2\nexplaining a joke\na fresh comic"
         }
       },
       {
@@ -478,7 +478,7 @@
         "slug": "likes-3",
         "data": {
           "title": "I like: third slot",
-          "items": "the 2010 DreamWorks animated picture film \"Megamind\"\nthe 2012 motion picture film \"Dredd\"\nthe 2007 motion picture film \"Hot Fuzz\"\nthe 1988 hybrid animated motion picture film \"Who Framed Roger Rabbit\"\nthe 2022 motion picture film \"Everything Everywhere All at Once\"\nmy sweet nightmare cat, Rumi\nyou, probably, if I got to know you\ninexplicably, malls\nthe 1984 motion picture film \"Ghostbusters\"\nthe 1985 motion picture film \"Back to the Future\"\nthe 1987 motion picture film \"The Princess Bride\"\nthe 2008 motion picture film \"Speed Racer\"\nthe 2017 motion picture film \"Paddington 2\"\nthe 1986 animated picture film \"The Transformers: The Movie\"\nthe 1999 animated picture film \"The Iron Giant\"\nthe 2004 Pixar animated picture film \"The Incredibles\"\nthe 2018 animated picture film \"Spider-Man: Into the Spider-Verse\"\na nap that goes exactly as planned"
+          "items": "the 2010 DreamWorks animated picture film \"Megamind\"\nthe 2012 motion picture film \"Dredd\"\nthe 2007 motion picture film \"Hot Fuzz\"\nthe 1988 hybrid animated motion picture film \"Who Framed Roger Rabbit\"\nthe 2022 motion picture film \"Everything Everywhere All at Once\"\nmy sweet nightmare cat, Rumi\nyou, probably, if I got to know you\ninexplicably, malls\na nap"
         }
       }
     ]
