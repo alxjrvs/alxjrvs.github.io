@@ -1,6 +1,7 @@
 ---
 import { decodeSlug } from "emdash";
 import Comic from "../../components/Comic.astro";
+import PostHead from "../../components/PostHead.astro";
 import Prose from "../../components/Prose.astro";
 import Stepper from "../../components/Stepper.astro";
 import Tags from "../../components/Tags.astro";
@@ -53,6 +54,20 @@ const barPrev = place
 const barNext = place
   ? place.next && { href: `/writing/${place.next.id}/`, title: `Part ${place.n + 1}: ${place.next.title}` }
   : older && { href: `/writing/${older.id}/`, title: `Older: ${older.title}` };
+// The head over the words, or (on a comic) floating with its page controls.
+const head = {
+  title: post.title,
+  description: post.description,
+  thread: place && {
+    label: place.thread.label,
+    description: place.thread.description,
+    href: threadUrl ?? "",
+    n: place.n,
+    total,
+    prev: place.prev && { href: back(place.prev), title: `Part ${place.n - 1}: ${place.prev.title}` },
+    next: place.next && { href: `/writing/${place.next.id}/`, title: `Part ${place.n + 1}: ${place.next.title}` },
+  },
+};
 // For search and share cards: the thread in the title, a description even
 // when the piece has none, a comic's own first page as its card, and who made
 // it as schema.org credits.
@@ -112,31 +127,16 @@ const ld = {
 
   <div class="post-body" id="read">
     <div class:list={{ "comic-screen": comic }}>
-    <header class="post-head">
-      {place && (
-        <Stepper
-          class="part-bar"
-          label={`${place.thread.label}: parts`}
-          noun="Part"
-          n={place.n}
-          total={total}
-          name={{ href: threadUrl ?? "", title: place.thread.label }}
-          prev={place.prev && { href: back(place.prev), title: `Part ${place.n - 1}: ${place.prev.title}` }}
-          next={place.next && { href: `/writing/${place.next.id}/`, title: `Part ${place.n + 1}: ${place.next.title}` }}
-          keys={!comic}
-        />
-      )}
-      {place?.thread.description && <p class="thread-about">{place.thread.description}</p>}
-      <h1>{words.map((w, i) => <>{i > 0 && " "}<span class="w">{w}</span></>)}</h1>
-      {post.description && <p class="dek">{post.description}</p>}
-    </header>
-
-    {comic && (
+    {comic ? (
       <Comic
         pages={post.pages}
         title={post.title}
         beyond={place && { prev: place.prev && back(place.prev), next: place.next && `/writing/${place.next.id}/` }}
-      />
+      >
+        <PostHead slot="head" {...head} />
+      </Comic>
+    ) : (
+      <PostHead {...head} keys />
     )}
     </div>
     {(!comic || hasWords) && (

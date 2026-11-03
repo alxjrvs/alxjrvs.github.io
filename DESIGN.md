@@ -177,6 +177,7 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
 | Grid pulse        | A roll sends a pulse out from the tagline across the splash's dice grid (about 0.8s to the farthest die, whatever the screen). As it passes each die, the die rerolls to a different face; nothing moves or changes size. The dice stay in `pattern`. Only the splash grid; off screen the faces just change. |
 | Carousel spin     | The projects carousel whips round two or three times (three with fewer than four projects) and slows down to land on a different project. It keeps the other reels' rhythm: one card per tick, the gaps growing like the tagline object reel's (15 ticks' worth, base 30ms, curve 1.9, so about 2.3s whatever the number of cards), each tick an eased slide and the last one easing into place. Snapping is off until it lands. The auto-advance waits for it; touching, scrolling or a key on the carousel lands it at once. Off screen it just lands. |
 | Back-to-top FAB   | Fades in while scrolling past the first screen. It hides 1.4s after scrolling stops. |
+| Comic FABs        | On a comic on wide screens, the title and page controls at the bottom right. They tuck away (fade and drop 12px, 0.3s) once the mouse has rested 2.4s, and the cursor hides over the page with them. Any mouse move, key, scroll wheel or focus brings them back, and they stay while the pointer is on them. Scrolled so less than 60% of the page shows, they leave altogether. Reduced motion: no fade, they just go. |
 | Phone menu        | On a piece on phones, once the title has docked. Tucks down out of sight while you scroll on down the page, and slides back as soon as you scroll up, near the end, or open it. Its panel rises and grows in from the button (0.22s); the button's four pips turn an eighth, into a diamond, while it's open. Reduced motion: no slides. |
 | Die haptics       | On a touch screen, the die taps back: one short pulse (10ms) on every face its pips flick through, so the taps slow down with it, and one as it lands. Android vibrates; an iPhone has no vibration API, so it gets the tick Safari plays when a switch is flipped. Reduced motion: no flicker, so a single pulse. Nothing on a desktop. |
 
@@ -293,7 +294,12 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   description cut to two lines), the page, and the stepper fill exactly the
   height under the header, with no scrolling. The page is as big as that
   leaves room for, by height on wide screens and by width on phones. On
-  phones the margin's details move below the comic. The note, pager and
+  phones the margin's details move below the comic. On wide screens (over
+  860px) the page alone takes the whole height under the header: the title
+  (with its dek) and the stepper and "Full size" float at the bottom right
+  instead, as FABs in the header's glass, and tuck away while you read (see
+  Comic FABs under Motion). The thread's stepper and description stay out of
+  them there, since the margin has the thread. The note, pager and
   thread sit below the fold. Only comics do this; every other page scrolls. Clicking or tapping the left third of it goes back,
   the rest goes on (the cursor shows which), as do ← and → and a sideways
   swipe. Under it, the stepper (below) reads "← Back · Page 3 of 12 ·
