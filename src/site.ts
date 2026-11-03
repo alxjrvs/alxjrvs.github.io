@@ -10,8 +10,8 @@ export const site = {
   locale: "en_US",
   /** profiles that are also me (schema.org sameAs, rel="me") */
   sameAs: ["https://github.com/alxjrvs"],
-  /** shown on the page as "alxjrvs (at) gmail (dot) com", made a link by script */
-  email: { user: "alxjrvs", domain: "gmail.com" },
+  /** shown on the page as "dm (at) alxjrvs (dot) com", made a link by script */
+  email: { user: "dm", domain: "alxjrvs.com" },
   // Post dates are written and shown in this zone.
   timezone: "America/New_York",
 
