@@ -57,7 +57,9 @@ const barNext = place
 // The head over the words, or (on a comic) floating with its page controls.
 const head = {
   title: post.title,
-  description: post.description,
+  // a comic's page is the thing: no dek with it (it still describes the piece
+  // in search and share cards)
+  description: comic ? undefined : post.description,
   thread: place && {
     label: place.thread.label,
     description: place.thread.description,

@@ -778,8 +778,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .post.is-comic .post-body { padding-top: 0; }
 .post.is-comic .margin { padding-top: 4px; }
 .is-comic .post-head h1 { max-width: none; font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.05; letter-spacing: -.035em; }
-.is-comic .post-head .dek { margin-top: 6px; font-size: 1.0625rem; }
-.is-comic .post-head .dek, .is-comic .post-head .thread-about { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.is-comic .post-head .thread-about { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .is-comic .post-head .thread-about { margin: 10px 0 12px; font-size: 1rem; }
 .is-comic .part-bar { margin-bottom: 12px; }
 .comic-screen:has(.comic.paged, .comic.single) {
@@ -821,7 +820,6 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .comic-dock .post-head { grid-column: 1 / -1; justify-self: end; order: 0; margin: 0; padding: 14px 18px 16px; border-radius: 16px; }
   .comic-dock .part-bar, .comic-dock .thread-about { display: none; }
   .is-comic .comic-dock .post-head h1 { font-size: 1.5rem; line-height: 1.1; letter-spacing: -.03em; }
-  .is-comic .comic-dock .post-head .dek { margin-top: 4px; font-size: .9375rem; line-height: 1.4; }
   .comic-dock .stepper { margin: 0; gap: 10px; padding: 6px; border-radius: 14px; }
   .comic-dock .stepper .step { border-color: transparent; }
   .comic-dock .stepper .step:hover:not(:disabled, [aria-disabled]) { border-color: var(--line); }
