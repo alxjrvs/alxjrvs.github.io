@@ -290,13 +290,13 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   comic. It's the same page as a piece, but the pages take the words' place,
   in the full width beside the margin, each in a 1px `line-strong` frame with
   8px corners. One page shows at a time, and the first screen is the comic
-  and nothing else: a compact title (h1 at most 2.5rem, dek and thread
+  and nothing else: a compact title (h1 at most 2.5rem, no dek, thread
   description cut to two lines), the page, and the stepper fill exactly the
   height under the header, with no scrolling. The page is as big as that
   leaves room for, by height on wide screens and by width on phones. On
   phones the margin's details move below the comic. On wide screens (over
   860px) the page alone takes the whole height under the header: the title
-  (with its dek) and the stepper and "Full size" float at the bottom right
+  and the stepper and "Full size" float at the bottom right
   instead, as FABs in the header's glass, and tuck away while you read (see
   Comic FABs under Motion). The thread's stepper and description stay out of
   them there, since the margin has the thread. The note, pager and
