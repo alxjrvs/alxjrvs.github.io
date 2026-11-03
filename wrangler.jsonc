@@ -53,9 +53,12 @@
   // zone Redirect Rule, which runs before Workers.
   // admin.alxjrvs.com is EmDash's admin (a custom domain: the deploy creates
   // its DNS record), behind Cloudflare Access; see src/worker.ts.
+  // code.alxjrvs.com (also a custom domain) only redirects to GitHub; see
+  // src/gateway.ts.
   "routes": [
     { "pattern": "alxjrvs.com/*", "zone_name": "alxjrvs.com" },
-    { "pattern": "admin.alxjrvs.com", "custom_domain": true }
+    { "pattern": "admin.alxjrvs.com", "custom_domain": true },
+    { "pattern": "code.alxjrvs.com", "custom_domain": true }
   ],
   // The workers.dev copy stays on so a deploy can be checked before (and
   // without) the custom domain. It's noindexed in public/_headers.

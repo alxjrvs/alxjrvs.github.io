@@ -92,6 +92,21 @@ describe("admin host and dev", () => {
   });
 });
 
+describe("code host", () => {
+  test("code.alxjrvs.com goes to GitHub, keeping the path", () => {
+    expect(route("https://code.alxjrvs.com/")).toEqual({
+      kind: "redirect",
+      location: "https://github.com/alxjrvs",
+      status: 302,
+    });
+    expect(route("http://code.alxjrvs.com/vellum?x=1")).toEqual({
+      kind: "redirect",
+      location: "https://github.com/alxjrvs/vellum",
+      status: 302,
+    });
+  });
+});
+
 describe("helpers", () => {
   test("normalisePath survives bad escapes", () => {
     expect(normalisePath("/%E0%A4%A")).toBe("/%E0%A4%A");
