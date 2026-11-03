@@ -217,9 +217,15 @@
     const end = (starts[dist - 1] as number) + (dur[dist - 1] as number);
     const t0 = performance.now();
     let j = 0;
+    let felt = -1;
     (function tick(now: number) {
       const el = now - t0;
       while (j < dist - 1 && el >= (starts[j + 1] as number)) j++;
+      // each card setting off is a tick of the die's (die.ts taps it on a phone)
+      if (j !== felt) {
+        felt = j;
+        cards.dispatchEvent(new Event("reeltick", { bubbles: true }));
+      }
       const p = Math.min(1, Math.max(0, (el - (starts[j] as number)) / (dur[j] as number)));
       const eased = j === dist - 1 ? 1 - (1 - p) ** 3 : 1 - (1 - p) ** 2;
       cards.scrollLeft = at(from + j + eased);
