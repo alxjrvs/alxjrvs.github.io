@@ -17,6 +17,9 @@
 export const CANONICAL_HOST = "alxjrvs.com";
 export const CANONICAL_ORIGIN = `https://${CANONICAL_HOST}`;
 export const ADMIN_HOST = "admin.alxjrvs.com";
+/** code.alxjrvs.com is a short, printable link to GitHub (it's on the business cards). */
+export const CODE_HOST = "code.alxjrvs.com";
+export const CODE_TARGET = "https://github.com/alxjrvs";
 export const MEDIA_PREFIX = "/_emdash/api/media/file/";
 /** The widths `/_image` will make on the public site (the comic's srcset). */
 export const IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
@@ -82,6 +85,16 @@ export function route(rawUrl: string): Route {
     // EmDash and Astro's own endpoints all start with "/_"; anything else is
     // a public page, which on this host means the admin.
     return url.pathname.startsWith("/_") ? { kind: "admin" } : { kind: "admin-home" };
+  }
+  if (host === CODE_HOST) {
+    // 302, not 301: browsers keep a 301 forever, and the target may move.
+    // A path carries over, so code.alxjrvs.com/vellum is that repo.
+    const path = normalisePath(url.pathname);
+    return {
+      kind: "redirect",
+      location: path === "/" ? CODE_TARGET : `${CODE_TARGET}${path}`,
+      status: 302,
+    };
   }
   if (host === "localhost" || host === "127.0.0.1") return { kind: "dev" };
 

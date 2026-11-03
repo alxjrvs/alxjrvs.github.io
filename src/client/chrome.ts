@@ -67,7 +67,7 @@
   update();
 })();
 
-// The footer's email, written out as "alxjrvs (at) gmail (dot) com" so
+// The footer's email, written out as "dm (at) alxjrvs (dot) com" so
 // scrapers reading the HTML don't get an address; for people it's a link.
 for (const span of document.querySelectorAll<HTMLElement>(".mail[data-user]")) {
   const a = document.createElement("a");
