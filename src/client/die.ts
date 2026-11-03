@@ -41,14 +41,26 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   let rolling = false;
 
-  // On a phone, the die taps back: one short pulse on every face it flicks
-  // through, slowing down with it. Android vibrates; an iPhone has no
-  // vibrate, so it gets the tick Safari plays when a switch is flipped,
-  // from a hidden one. Nothing on a desktop.
+  // On a phone, the die taps back, in time with what you can see roll. Every
+  // reel calls tick() with the element it just flicked, and that's a pulse
+  // only if the element is on screen and in the section you're looking at
+  // (the one filling most of the screen), so each section is felt in its own
+  // rhythm: the tagline and the corner die on the splash, the carousel's
+  // cards in Projects, Writing's lines, About's three likes. A section with
+  // nothing rolling in it (and every page but home) follows the header's
+  // tagline and die instead, if they're showing. Off screen, hidden, or in
+  // another section: no pulse, so it never taps for nothing. Ticks from
+  // reels that move together (under 30ms apart) are one tap. Android
+  // vibrates; an iPhone has no vibrate, so it gets the tick Safari plays
+  // when a switch is flipped, from a hidden one. Nothing on a desktop.
   const coarse = matchMedia("(pointer: coarse)");
   let tapper: HTMLLabelElement | undefined;
+  let lastTap = -Infinity;
   function buzz() {
     if (!coarse.matches) return;
+    const now = performance.now();
+    if (now - lastTap < 30) return;
+    lastTap = now;
     if (typeof navigator.vibrate === "function") {
       navigator.vibrate(10);
       return;
@@ -66,6 +78,61 @@
     }
     tapper.click();
   }
+  const sections = Array.from(document.querySelectorAll<HTMLElement>("section.screen"));
+  // everything a roll can flick, wherever it is (a reel with nothing to
+  // flick through doesn't count)
+  const reels = (): Element[] => [
+    ...(SUBJECTS.length > 1 ? subjs : []),
+    ...(OBJECTS.length > 1 ? objs : []),
+    ...likes.filter((_, i) => (LIKES[i]?.length ?? 0) > 1),
+    ...(pool.length > 1 ? slots : []),
+    ...dice,
+    ...(cards && cards.querySelectorAll(".card:not(.copy)").length > 1 ? [cards] : []),
+  ];
+  function onScreen(el: Element): boolean {
+    if (
+      el.checkVisibility &&
+      !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })
+    )
+      return false;
+    const r = el.getBoundingClientRect();
+    return (
+      r.width > 0 &&
+      r.height > 0 &&
+      r.bottom > 0 &&
+      r.top < innerHeight &&
+      r.right > 0 &&
+      r.left < innerWidth
+    );
+  }
+  // the section filling most of the screen
+  function lead(): HTMLElement | null {
+    let best: HTMLElement | null = null;
+    let most = 0;
+    for (const s of sections) {
+      const r = s.getBoundingClientRect();
+      const seen = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+      if (seen > most) {
+        most = seen;
+        best = s;
+      }
+    }
+    return best;
+  }
+  function tick(els: Element[]) {
+    if (!coarse.matches) return;
+    const at = lead();
+    const inLead = (el: Element) => !!at && at.contains(el);
+    // with nothing rolling in view in the lead section, follow what's outside every section (the header)
+    const follow = reels().some((el) => inLead(el) && onScreen(el))
+      ? inLead
+      : (el: Element) => !sections.some((s) => s.contains(el));
+    if (els.some((el) => follow(el) && onScreen(el))) buzz();
+  }
+  // the carousel's cards tick from carousel.ts
+  document.addEventListener("reeltick", (e) => {
+    if (e.target instanceof Element) tick([e.target]);
+  });
 
   // A reel's label, plus any punctuation that rides along with it (the
   // tagline's full stops are part of their word). A word that already ends
@@ -117,6 +184,7 @@
           );
         }
       }
+      tick(els);
       if (i < n) setTimeout(step, (base + (i * scale) ** 2 * curve) * scale);
       else done();
     })();
@@ -189,14 +257,23 @@
               ],
               { duration: 95, easing: "ease-out" },
             );
+            tick([el]);
           }
           setTimeout(step, base + t * t * curve);
           return;
         }
         // landing: a line still flicking that shows this pick takes what we had
         const j = showing.indexOf(final);
-        if (j > -1 && j !== i) show(j, showing[i] as number);
-        if (showing[i] !== final) show(i, final);
+        const moved: Element[] = [];
+        if (j > -1 && j !== i) {
+          show(j, showing[i] as number);
+          moved.push(slots[j] as Element);
+        }
+        if (showing[i] !== final) {
+          show(i, final);
+          moved.push(el);
+        }
+        if (moved.length) tick(moved);
         landed[i] = true;
         if (!--left) done();
       })();
@@ -239,11 +316,11 @@
         } while (f === last);
         last = f;
         showPips(FACES[f] as number[]);
-        buzz();
+        tick(dice);
         setTimeout(step, 35 + i * i * 2.2);
       } else {
         showPips(J);
-        buzz();
+        tick(dice);
         done();
       }
     })();
@@ -266,7 +343,8 @@
     document.dispatchEvent(new CustomEvent("diceroll"));
 
     if (reduce.matches) {
-      buzz(); // no ticks to feel, so one
+      // no ticks to feel, so one tap, as everything changes at once
+      if (coarse.matches) buzz();
       for (const el of subjs) setText(el, finalS);
       for (const el of objs) setText(el, finalO);
       likes.forEach((el, i) => {
