@@ -763,7 +763,11 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
    exactly one screen under the header (.comic-screen, a flex column): the
    title stays compact, the page takes whatever height is left, as big as it
    fits without scrolling, and the note, pager and thread sit below the fold. */
-.comic { margin-top: 48px; }
+/* the piece's head rides inside the comic (.comic-dock, which only groups it
+   with the page controls), and leads it */
+.comic { margin-top: 0; display: flex; flex-direction: column; }
+.comic-dock { display: contents; }
+.comic .post-head { order: -1; margin-bottom: 48px; }
 .comic-pages { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
 .comic-page img { display: block; max-width: 100%; height: auto; object-fit: contain; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--line); }
 .comic.paged .comic-pages { cursor: pointer; user-select: none; -webkit-user-select: none; }
@@ -783,7 +787,8 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   height: calc(100svh - var(--bar-h) - 28px - 16px);
   min-height: 320px;
 }
-.comic-screen:has(.comic.paged, .comic.single) .comic { flex: 0 1 auto; min-height: 0; margin-top: 16px; display: flex; flex-direction: column; }
+.comic-screen:has(.comic.paged, .comic.single) .comic { flex: 0 1 auto; min-height: 0; }
+.comic-screen .comic:is(.paged, .single) .post-head { margin-bottom: 16px; }
 .comic-screen .comic.paged .comic-pages, .comic-screen .comic.single .comic-pages { flex: 0 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
 .comic-screen .comic.paged .comic-page, .comic-screen .comic.single .comic-page { min-height: 0; }
 .comic-screen .comic.paged .comic-page img, .comic-screen .comic.single .comic-page img { width: auto; height: auto; max-height: 100%; }
@@ -791,6 +796,46 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
 .comic .full-size { display: block; width: fit-content; margin: 8px auto 0; color: var(--fg-subtle); text-decoration: none; }
 .comic .full-size:hover { color: var(--fg); }
 .post .comic-note { margin-top: 40px; }
+/* On a wide screen the page takes the whole height under the header, and the
+   title and the page controls float at the bottom right instead (FABs, in the
+   header's glass): the title over Back · Page 3 of 12 · Next and Full size.
+   client/comic.ts tucks them away once the mouse rests, and brings them back
+   at any move, key or focus, or while the pointer is on them; they leave
+   altogether once the page is scrolled away. The thread's stepper and
+   description stay out of them: the margin already has the thread. */
+@media (min-width: 861px) {
+  .comic-screen:has(.comic.paged, .comic.single) { height: calc(100svh - var(--bar-h) - 28px - 20px); }
+  .comic-screen .comic:is(.paged, .single) .comic-pages { flex: 1 1 auto; }
+  .comic-screen .comic:is(.paged, .single) .comic-page { height: 100%; }
+  .comic-screen .comic:is(.paged, .single) .comic-page img { max-height: 100%; }
+  .comic:is(.paged, .single) .comic-dock {
+    position: fixed; right: var(--gutter); bottom: 24px; z-index: 45;
+    display: grid; grid-template-columns: auto auto; justify-content: end; align-items: center; gap: 10px;
+    max-width: min(380px, calc(100vw - var(--gutter) * 2));
+    transition: opacity .3s, transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .comic-dock > * {
+    background: var(--surface-bar); border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+  }
+  .comic-dock .post-head { grid-column: 1 / -1; justify-self: end; order: 0; margin: 0; padding: 14px 18px 16px; border-radius: 16px; }
+  .comic-dock .part-bar, .comic-dock .thread-about { display: none; }
+  .is-comic .comic-dock .post-head h1 { font-size: 1.5rem; line-height: 1.1; letter-spacing: -.03em; }
+  .is-comic .comic-dock .post-head .dek { margin-top: 4px; font-size: .9375rem; line-height: 1.4; }
+  .comic-dock .stepper { margin: 0; gap: 10px; padding: 6px; border-radius: 14px; }
+  .comic-dock .stepper .step { border-color: transparent; }
+  .comic-dock .stepper .step:hover:not(:disabled, [aria-disabled]) { border-color: var(--line); }
+  .comic-dock .step-count, .comic-dock .full-size { white-space: nowrap; }
+  .comic-dock .stepper:last-child { grid-column: 1 / -1; justify-self: end; }
+  .comic-dock .full-size { display: flex; align-items: center; gap: 6px; align-self: stretch; margin: 0; padding: 0 14px; border-radius: 14px; }
+  .comic-dock.tucked { opacity: 0; transform: translateY(12px); pointer-events: none; }
+  .comic-dock.away { opacity: 0; transform: translateY(12px); pointer-events: none; visibility: hidden; transition: opacity .3s, transform .3s, visibility 0s .3s; }
+  .comic.paged .comic-pages.idle { cursor: none; }
+  body:has(.comic.paged .comic-dock:not(.away)) .to-top { display: none; }
+}
+@media (min-width: 861px) and (prefers-reduced-motion: reduce) {
+  .comic-dock, .comic-dock.away { transition: none; }
+}
 
 /* the stepper: Back · Page 3 of 12 · Next, the same for a comic's pages
    (buttons, under them) and a thread's parts (links, above a piece's title).
@@ -888,7 +933,7 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   .lines .line-meta { margin-top: 2px; }
   .lines .t { font-size: 1.3125rem; }
   .post .prose { font-size: 1.0625rem; line-height: 1.6; margin-top: 32px; }
-  .comic { margin-top: 32px; }
+  .comic .post-head { margin-bottom: 32px; }
   .comic-pages { gap: 16px; }
   .stepper { gap: 12px; }
   .stepper .step { padding: 8px 10px; }

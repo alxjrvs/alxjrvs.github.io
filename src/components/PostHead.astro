@@ -1,0 +1,51 @@
+---
+// A piece's head: the thread's stepper and description (in a thread), the
+// title word by word (client/title.ts docks the words into the header), and
+// the dek. On a comic it rides inside the comic (components/Comic.astro), so
+// on a wide screen it can float with the page controls at the bottom right.
+import Stepper from "./Stepper.astro";
+
+interface Step {
+  href: string;
+  title: string;
+}
+interface Props {
+  title: string;
+  description?: string | undefined;
+  /** the piece's place in its thread, if it's in one */
+  thread?:
+    | {
+        label: string;
+        description?: string | undefined;
+        href: string;
+        n: number;
+        total: number;
+        prev?: Step | undefined;
+        next?: Step | undefined;
+      }
+    | undefined;
+  /** this head's thread stepper is the one ← → and swipes press */
+  keys?: boolean | undefined;
+  slot?: string | undefined;
+}
+const { title, description, thread, keys } = Astro.props;
+const words = title.split(/\s+/).filter(Boolean);
+---
+<header class="post-head">
+  {thread && (
+    <Stepper
+      class="part-bar"
+      label={`${thread.label}: parts`}
+      noun="Part"
+      n={thread.n}
+      total={thread.total}
+      name={{ href: thread.href, title: thread.label }}
+      prev={thread.prev}
+      next={thread.next}
+      keys={keys}
+    />
+  )}
+  {thread?.description && <p class="thread-about">{thread.description}</p>}
+  <h1>{words.map((w, i) => <>{i > 0 && " "}<span class="w">{w}</span></>)}</h1>
+  {description && <p class="dek">{description}</p>}
+</header>

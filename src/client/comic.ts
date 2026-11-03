@@ -6,7 +6,8 @@
 // client/stepper.ts adds ← → and swipes, the same as for a thread. The page
 // is kept in the URL as #page-N without adding history, and the header's
 // progress line shows how far in you are. Turning is instant, so reduced
-// motion changes nothing.
+// motion changes nothing. On a wide screen the title and the controls float
+// at the bottom right and tuck away while the mouse rests.
 (() => {
   const comic = document.getElementById("comic");
   const nav = comic?.querySelector<HTMLElement>("[data-stepper]");
@@ -89,4 +90,35 @@
   list?.addEventListener("mousemove", (e) => {
     list.dataset.side = side(e) < 0 ? "back" : "next";
   });
+
+  // On a wide screen the title and the controls float at the bottom right
+  // (.comic-dock). They tuck away once the mouse has rested a moment, so the
+  // page is all there is, and come back at any move, key or focus, and stay
+  // while the pointer is on them. Once the page is scrolled out of view they
+  // leave altogether. (On a phone the dock isn't fixed, so none of this shows.)
+  const dock = comic.querySelector<HTMLElement>(".comic-dock");
+  if (dock) {
+    let timer = 0;
+    const rest = () => {
+      if (dock.matches(":hover, :focus-within")) return;
+      dock.classList.add("tucked");
+      list?.classList.add("idle");
+    };
+    const wake = () => {
+      dock.classList.remove("tucked");
+      list?.classList.remove("idle");
+      clearTimeout(timer);
+      timer = window.setTimeout(rest, 2400);
+    };
+    for (const type of ["pointermove", "pointerdown", "keydown", "wheel"])
+      addEventListener(type, wake, { passive: true });
+    dock.addEventListener("focusin", wake);
+    dock.addEventListener("pointerleave", wake);
+    if (list && "IntersectionObserver" in window)
+      new IntersectionObserver(
+        ([e]) => dock.classList.toggle("away", (e?.intersectionRatio ?? 0) < 0.6),
+        { threshold: [0, 0.6, 1] },
+      ).observe(list);
+    wake();
+  }
 })();

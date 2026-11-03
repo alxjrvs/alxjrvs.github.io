@@ -49,11 +49,23 @@
     return c * c * (3 - 2 * c); // smoothstep, as at home
   };
 
+  // On a wide screen a comic's title floats with its page controls at the
+  // bottom right (.comic-dock), always in sight, so it stays put.
+  const dock = h1.closest<HTMLElement>(".comic-dock");
+  let off = false;
+
   function measure() {
     if (!bar || !h1 || !copy) return;
     for (const w of words) {
       w.style.transform = "";
       w.style.opacity = "";
+    }
+    off = dock !== null && getComputedStyle(dock).position === "fixed";
+    if (off) {
+      body.classList.remove("reading", "titled");
+      bar.style.removeProperty("--t");
+      list = [];
+      return;
     }
     // .reading lifts the big title over the header's glass for the trip
     body.classList.add("reading");
@@ -107,7 +119,7 @@
   }
 
   function update() {
-    if (!bar) return;
+    if (!bar || off) return;
     const p = Math.min(Math.max((scrollY - first) / Math.max(last - first, 1), 0), 1);
     const docked = scrollY >= last;
     if (still.matches) {

@@ -3,7 +3,8 @@
 // same stepper as a thread's parts. Without JavaScript the pages simply stack,
 // in order; client/comic.ts shows one at a time (#page-3 links to a page), and
 // client/stepper.ts adds ← → and swipes. In a thread, Back on the first page
-// and Next on the last go to the neighbouring parts.
+// and Next on the last go to the neighbouring parts. The piece's head comes in
+// as the `head` slot, so on a wide screen it can float with the controls.
 import { Image } from "emdash/ui";
 import comicSrc from "../client/comic.ts?inline-script";
 import type { ComicPage } from "../lib/content";
@@ -38,10 +39,16 @@ const sizes = "(max-width: 960px) 100vw, 900px";
       );
     })}
   </ol>
-  {steps && <Stepper label="Pages" noun="Page" n={1} total={n} buttons keys beyond={beyond} />}
-  {/* the current page at full size; client/comic.ts keeps it pointing at the page shown */}
-  {pages[0] && responsive(pages[0].image) && (
-    <a class="full-size label" href={responsive(pages[0].image)?.full} target="_blank" rel="noopener" data-full-size>Full size<span class="sr"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
-  )}
+  {/* the title and the page controls: under the page on a phone (the title
+      above it), floating at the bottom right on a wide screen, where
+      client/comic.ts tucks them away while you read */}
+  <div class="comic-dock">
+    <slot name="head" />
+    {steps && <Stepper label="Pages" noun="Page" n={1} total={n} buttons keys beyond={beyond} />}
+    {/* the current page at full size; client/comic.ts keeps it pointing at the page shown */}
+    {pages[0] && responsive(pages[0].image) && (
+      <a class="full-size label" href={responsive(pages[0].image)?.full} target="_blank" rel="noopener" data-full-size>Full size<span class="sr"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
+    )}
+  </div>
 </section>
 {steps && <InlineScript src={comicSrc} name="comic.ts" />}
