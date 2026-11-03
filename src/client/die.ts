@@ -291,6 +291,54 @@
     return slot[picked[i] ?? 0] ?? "";
   }
 
+  // The likes line holds the height of its longest roll, so About never
+  // moves when a roll wraps it onto another line (or back). About is
+  // centred on the screen, so a line more or less would nudge everything in
+  // it. The tallest the line can be depends on the width and font, so it's
+  // measured, on a hidden copy, whenever the line's width changes: every
+  // combination of the slots' options, or the longest few per slot when
+  // there are too many to try.
+  const likesLine = likes[0]?.closest<HTMLElement>(".likes");
+  if (likesLine && LIKES.some((s) => s.length > 1)) {
+    const byLength = LIKES.map((s) => s.slice().sort((a, b) => b.length - a.length));
+    const all = byLength.reduce((n, s) => n * Math.max(s.length, 1), 1);
+    const options = all <= 400 ? byLength : byLength.map((s) => s.slice(0, 5));
+    let measuredAt = -1;
+    const reserve = () => {
+      const width = likesLine.clientWidth;
+      if (!width || width === measuredAt) return;
+      measuredAt = width;
+      const copy = likesLine.cloneNode(true) as HTMLElement;
+      copy.removeAttribute("id");
+      copy.setAttribute("aria-hidden", "true");
+      copy.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;width:${width}px;min-height:0;left:0;top:0`;
+      likesLine.after(copy);
+      const slots = Array.from(copy.querySelectorAll<HTMLElement>(".like"));
+      let tallest = 0;
+      const fill = (i: number) => {
+        if (i === slots.length) {
+          tallest = Math.max(tallest, copy.getBoundingClientRect().height);
+          return;
+        }
+        const slot = slots[i] as HTMLElement;
+        const opts = options[i]?.length ? (options[i] as string[]) : [slot.textContent ?? ""];
+        for (const o of opts) {
+          setText(slot, o);
+          fill(i + 1);
+        }
+      };
+      fill(0);
+      copy.remove();
+      likesLine.style.minHeight = `${Math.ceil(tallest)}px`;
+    };
+    new ResizeObserver(reserve).observe(likesLine);
+    // a web font arriving can change every width, so measure again
+    document.fonts?.ready.then(() => {
+      measuredAt = -1;
+      reserve();
+    });
+  }
+
   // The die's own reel: its 3x3 pips flick through random die faces, slowing
   // down, and land back on the favicon's "j".
   const FACES = [[4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8]];
