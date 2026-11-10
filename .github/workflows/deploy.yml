@@ -36,6 +36,8 @@ jobs:
     environment:
       name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
       url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -113,3 +115,37 @@ jobs:
           [ "$code" = "301" ] || echo "::warning::http://alxjrvs.com/ answered $code, not 301"
           curl -s "$base/sitemap.xml" | grep -oE '<loc>[^<]+</loc>' | sed -E 's#</?loc>##g' \
             | while read -r url; do curl -s -H 'Accept: text/html' -o /dev/null -w "warm %{http_code} $url\n" "$url"; done
+
+  # Opens a pull request's preview in a real browser: screenshots at a phone
+  # and a laptop size (kept as an artifact for two weeks), console errors,
+  # sideways overflow and an axe pass. See scripts/browser-check.mjs. Not a
+  # required check: it reads a preview that shares production's content, so
+  # an edit in the CMS can turn it red without the branch being at fault.
+  browser:
+    name: browser
+    needs: deploy
+    if: github.event_name == 'pull_request' && needs.deploy.outputs.url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Install Playwright + Chromium
+        run: |
+          bun add --no-save playwright@1.48.2 axe-core@4.10.2
+          bunx playwright install --with-deps chromium
+
+      - name: Check
+        env:
+          BASE_URL: ${{ needs.deploy.outputs.url }}
+        run: bun run check:browser
+
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-check
+          path: browser-check/
+          retention-days: 14
+          if-no-files-found: ignore
