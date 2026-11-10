@@ -21,7 +21,8 @@
     "check": "bun run format:check && bun run lint && bun run typecheck && bun run test",
     "check:full": "bun run check && bun run build && bun run check:links",
     "screenshots": "node scripts/screenshots.mjs",
-    "social-card": "node scripts/social-card.mjs"
+    "social-card": "node scripts/social-card.mjs",
+    "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.4.3",

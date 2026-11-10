@@ -43,6 +43,29 @@ describe("public host guard", () => {
   test("/_image at an allowed width for media is served", () => {
     const r = site("https://alxjrvs.com/_image?href=/_emdash/api/media/file/a.jpg&w=640");
     expect(r.url).toContain("w=640");
+    expect(r.image).toBe(true);
+    expect(site("https://alxjrvs.com/writing/").image).toBe(false);
+  });
+
+  test.each([
+    "https://alxjrvs.com/wp-login.php",
+    "https://alxjrvs.com/wp-admin/setup-config.php",
+    "https://alxjrvs.com/.env",
+    "https://alxjrvs.com/app/.git/config",
+    "https://alxjrvs.com/index.PHP",
+    "https://alxjrvs.com/backup.sql",
+  ])("%s is a scanner and gets the plain 404", (url) => {
+    expect(route(url).kind).toBe("not-found");
+  });
+
+  test.each([
+    "https://alxjrvs.com/writing/ajar/",
+    "https://alxjrvs.com/feed.xml",
+    "https://alxjrvs.com/llms.txt",
+    "https://alxjrvs.com/.well-known/security.txt",
+    "https://alxjrvs.com/some/typo",
+  ])("%s is not mistaken for a scanner", (url) => {
+    expect(route(url).kind).toBe("site");
   });
 });
 

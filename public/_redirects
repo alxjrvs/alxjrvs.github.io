@@ -6,6 +6,15 @@
 /rss.xml   /feed.xml 301
 /atom.xml  /feed.xml 301
 /rss       /feed.xml 301
+/feed      /feed.xml 301
+/feed/     /feed.xml 301
+/index.xml /feed.xml 301
+
+# Other names for the writing people guess at.
+/blog      /writing/ 301
+/blog/*    /writing/ 301
+/posts     /writing/ 301
+/posts/*   /writing/ 301
 
 # GitHub Pages project sites. While alxjrvs.com was served by GitHub Pages,
 # every repo's Pages site also appeared under it (alxjrvs.com/FulcrumWorks/…).

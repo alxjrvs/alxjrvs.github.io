@@ -612,6 +612,8 @@ h3 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.05; letter-spacin
   font: .75rem var(--mono);
   color: var(--fg-subtle);
 }
+/* the wordmark keeps its own face in the mono footer */
+.foot .alx, .foot .jrvs { font: 700 .875rem var(--sans); letter-spacing: -.04em; }
 .foot a { text-decoration: none; }
 .foot-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 20px; }
 .foot a:hover { color: var(--fg); }

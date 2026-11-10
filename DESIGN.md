@@ -136,8 +136,10 @@ Every text token clears AA (4.5:1). Keep it that way when re-skinning.
   12px from the top (8px on phones).
 - **Sections:** every home-page section is one screen tall (`100svh`), and
   its content must fit in it, or the snapping lets go of it. Writing shows as
-  many of the latest five as fit: three on phones, four under 760px tall,
-  three under 660px. Each is a ruled line like the archive's: the date as a mono
+  many pieces as fit: three on phones, four under 760px tall, three under
+  660px. Starting points come first (standalone pieces and a thread's first
+  part), then the other parts; the die deals a fresh hand from the whole
+  archive. Each is a ruled line like the archive's: the date as a mono
   label, title and dek, then the project dot (in its accent), the thread and
   the tags. Its
   padding clears the header (`bar-h + 40px`, or `+ 20px` on phones).
@@ -349,6 +351,25 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   comic's pages does the same, so a comic in a thread reads straight through
   from part to part.
 - **Back-to-top FAB:** round, 1px `line` border, `fg-muted` arrow.
+- **Carousel Hold:** a small round pause button under the carousel's arrow,
+  in the arrow's style, that stops the projects moving by themselves and
+  starts them again; its state lasts the session. Any swipe, press, key or
+  focus inside the carousel also stops it for the visit.
+- **Footer:** one mono line in `fg-subtle` over a `line` rule: the year and
+  the wordmark on the left, the email address and GitHub on the right. The
+  wordmark keeps its own face here too. The address is spelled out ("dm (at)
+  alxjrvs (dot) com") and made a link by script, so it is not harvested.
+- **404 encounter table:** the not-found page is a random encounter table: a
+  numbered list of places to go, each an ordinary link, under a mono heading
+  that names the die ("d8" for eight rows). A round "Roll d8" button, the one
+  pill on the site, runs a highlight down the rows, slowing like the other
+  reels, and lands on one. The header die still rolls only the tagline here.
+- **Roll for another piece:** at the foot of a piece, a text link to
+  `/writing/random`, which picks a different piece.
+- **Winks:** three, all outside the page a visitor sees. The page source opens
+  with an "I CAN SEE YOU" comment, `curl alxjrvs.com` gets a plain-text hello,
+  and the console prints a greeting in `brand` on `surface` and offers
+  `roll()`. They stay small and never appear in the rendered page.
 - **Favicon:** the die at rest, matching the on-page button: a `die`
   (`brand-2`) face with the four pips of the curved "j" in `surface`, the same
   in light and dark browsers. The stylesheet

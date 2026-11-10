@@ -85,7 +85,13 @@ const fetch = async (request: Request, env: unknown, ctx: GatewayContext): Promi
       if (r.hsts) out.headers.set("Strict-Transport-Security", HSTS);
       if (r.noindex) out.headers.set("X-Robots-Tag", "noindex");
       // Uploaded media is stored under a fresh id, so it never changes in place.
-      if (r.media && response.status === 200) out.headers.set("Cache-Control", MEDIA_CACHE);
+      // A resized copy (`/_image`) is made from that media at a fixed width,
+      // so it never changes either. This header is set out here, after the
+      // cached `Site` entry has answered, so only browsers keep the copy:
+      // Workers Cache still sees Astro's own uncacheable response.
+      if ((r.media || r.image) && response.status === 200) {
+        out.headers.set("Cache-Control", MEDIA_CACHE);
+      }
       return out;
     }
   }

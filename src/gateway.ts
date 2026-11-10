@@ -24,6 +24,12 @@ export const MEDIA_PREFIX = "/_emdash/api/media/file/";
 /** The widths `/_image` will make on the public site (the comic's srcset). */
 export const IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
 
+// Paths only a vulnerability scanner asks for. There is no PHP, WordPress or
+// dotfile here, so they get a plain 404 without rendering the 404 page (which
+// reads the database for its encounter table).
+const SCANNER =
+  /\.(php\d?|aspx?|jsp|cgi|env|sql|bak|ya?ml|ini)$|^\/(wp-|wordpress|cgi-bin|vendor\/|phpmyadmin)|\/\.(git|env|aws|ssh|svn|vscode|DS_Store)/i;
+
 const TRACKING = /^(utm_.+|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|igshid|_ga|_gl|ref)$/i;
 
 export type Route =
@@ -37,6 +43,8 @@ export type Route =
       url: string;
       /** uploaded media, which never changes in place */
       media: boolean;
+      /** a resized copy of uploaded media (`/_image`), which doesn't either */
+      image: boolean;
       /** a host other than alxjrvs.com (workers.dev, a PR preview) */
       noindex: boolean;
       /** alxjrvs.com over https, where HSTS belongs */
@@ -109,7 +117,9 @@ export function route(rawUrl: string): Route {
 
   const path = normalisePath(url.pathname);
   const lower = path.toLowerCase();
+  if (SCANNER.test(path)) return { kind: "not-found" };
   let media = false;
+  let image = false;
   let search = cleanSearch(url.search);
 
   if (lower.startsWith("/_")) {
@@ -120,6 +130,7 @@ export function route(rawUrl: string): Route {
     } else if (lower === "/_image" || lower === "/_image/") {
       if (!imageAllowed(url.search)) return { kind: "not-found" };
       search = url.search;
+      image = true;
     } else if (lower.startsWith("/_emdash")) {
       return {
         kind: "redirect",
@@ -135,6 +146,7 @@ export function route(rawUrl: string): Route {
     kind: "site",
     url: `${CANONICAL_ORIGIN}${path}${search}`,
     media,
+    image,
     noindex: !isApex,
     hsts: isApex,
   };
@@ -151,8 +163,8 @@ export const SECURITY_HEADERS: Record<string, string> = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
 };
 
-/** One day to start; raise it once the zone's DNS has been reviewed. No preload. */
-export const HSTS = "max-age=86400";
+/** Thirty days, on this host only (no includeSubDomains, no preload). */
+export const HSTS = "max-age=2592000";
 export const MEDIA_CACHE = "public, max-age=31536000, immutable";
 
 // A terminal asking for the home page (curl, Wget, HTTPie, xh) gets a short

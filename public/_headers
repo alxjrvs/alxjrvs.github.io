@@ -4,10 +4,10 @@
 https://:worker.:subdomain.workers.dev/*
   X-Robots-Tag: noindex
 
-# HTTPS only on the real site. One day to start (no subdomains, no preload)
-# until the zone's DNS has been reviewed; pages get it from src/worker.ts.
+# HTTPS only on the real site: thirty days, this host only (no subdomains, no
+# preload). Pages get the same from src/worker.ts.
 https://alxjrvs.com/*
-  Strict-Transport-Security: max-age=86400
+  Strict-Transport-Security: max-age=2592000
 
 /*
   X-Content-Type-Options: nosniff
@@ -24,4 +24,9 @@ https://alxjrvs.com/*
 /assets/favicon.svg
   Cache-Control: public, max-age=31536000, immutable
 /assets/work/*
+  Cache-Control: public, max-age=86400
+# The icons browsers and phones ask for by name (scripts/icons.mjs).
+/favicon.ico
+  Cache-Control: public, max-age=86400
+/apple-touch-icon.png
   Cache-Control: public, max-age=86400

@@ -4,7 +4,9 @@
 # runs them on its first request after the deploy.
 version: 2
 updates:
-  - package-ecosystem: npm
+  # "bun", not "npm": the lockfile is bun.lock, and the npm ecosystem can't
+  # update it, so its pull requests never arrived.
+  - package-ecosystem: bun
     directory: /
     schedule:
       interval: weekly

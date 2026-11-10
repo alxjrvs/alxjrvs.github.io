@@ -24,6 +24,9 @@ interface Props {
   /** more schema.org for the page (see Seo.astro) */
   ld?: Record<string, unknown> | undefined;
   noindex?: boolean | undefined;
+  /** false leaves the analytics beacon off (the 404, which is mostly crawlers
+      asking for pages that were never here) */
+  beacon?: boolean | undefined;
   /** on phones, once a piece's title fills the header, its controls wait in a
       floating menu (client/fab.ts): the nav, the die, Back and Next */
   menu?: { prev?: Step | undefined; next?: Step | undefined } | undefined;
@@ -37,7 +40,7 @@ interface Step {
 const isHome = Astro.url.pathname === "/";
 // Away from the home page, the nav link for the page's own section is current.
 const section = Astro.url.pathname.startsWith("/writing") ? "/#writing" : undefined;
-const { progress, menu, ...seo } = Astro.props;
+const { progress, menu, beacon = true, ...seo } = Astro.props;
 const [nav, rolls, text] = await Promise.all([getNav(Astro), getRolls(Astro), getSiteText(Astro)]);
 const { subjects, objects, likes } = rolls;
 const rollData = JSON.stringify({ subjects, objects, likes }).replace(/</g, "\\u003c");
@@ -56,6 +59,7 @@ const v = __BUILD_ID__;
   <InlineScript src={jsFlagSrc} name="js-flag.ts" />
 
   <link rel="icon" href={`/assets/favicon.svg?v=${v}`} type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/assets/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={`/assets/css/site.css?v=${v}`}>
   <link type="application/atom+xml" rel="alternate" href={`${site.url}/feed.xml`} title={text.title}>
@@ -126,7 +130,7 @@ const v = __BUILD_ID__;
   <InlineScript src={dieSrc} name="die.ts" />
   {menu && <InlineScript src={fabSrc} name="fab.ts" />}
   <slot name="scripts" />
-  {site.analyticsToken && (
+  {site.analyticsToken && beacon && (
     <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: site.analyticsToken })} />
   )}
 </body>

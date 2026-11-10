@@ -56,6 +56,45 @@ Access token itself (`access()` in `astro.config.ts`; the app's audience tag is
 Code changes deploy as before. Schema changes (a new field, say) go through `seed/seed.json`
 for fresh databases and the admin's Content Types screen for the live one.
 
+## When something goes wrong
+
+**The Canary workflow** (`.github/workflows/canary.yml`) checks once an hour that the home
+page, the feed and an uncached, database-backed page answer, that the certificate and the
+Cloudflare deploy token are not about to expire, and that the weekly backup ran. A failure opens
+an issue titled "Canary: alxjrvs.com needs a look", which GitHub emails; the next green run
+closes it.
+
+**Rolling back a bad deploy.** Code: `bunx wrangler rollback` puts the previous version of the
+Worker back at once (or pick one with `bunx wrangler versions list` and
+`bunx wrangler versions deploy`), then revert the commit on `main` so the next deploy doesn't
+bring it back. A rollback does not undo a database migration: if the bad deploy was an EmDash
+upgrade that migrated, restore the database too.
+
+### Restoring
+
+There are two copies of the database to go back to.
+
+- **The last 30 days, to the minute:** D1 Time Travel.
+  `bunx wrangler d1 time-travel restore alxjrvs-emdash --timestamp <ISO time>` rewinds the live
+  database in place. Use this for a bad edit or a bad migration.
+- **The weekly backup** (`backup.yml`, kept 90 days as an encrypted workflow artifact): for
+  losing the database or the account. A dump cannot be loaded over a database that already has
+  tables, so it goes into a new one:
+
+  ```sh
+  gh run download <run id> -n alxjrvs-emdash-<run number>     # or from the run's page
+  gpg --decrypt alxjrvs-emdash.sql.gz.gpg | gunzip > dump.sql  # passphrase: 1Password, "alxjrvs-d1-backup"
+  bunx wrangler d1 create alxjrvs-emdash-restored
+  bunx wrangler d1 execute alxjrvs-emdash-restored --remote --file dump.sql
+  bunx wrangler d1 execute alxjrvs-emdash-restored --remote --command "select count(*) from ec_posts"
+  ```
+
+  Then put the new database's id in `wrangler.jsonc` (`d1_databases`) and deploy. Uploaded
+  images live in the R2 bucket `alxjrvs-emdash-media`, which the backup does not cover.
+
+  These steps have not been run end to end yet. Rehearse them into a scratch database (and
+  delete it after) before relying on them, then remove this note.
+
 ## Structure
 
 | Path                         | What it is |
@@ -76,6 +115,8 @@ for fresh databases and the admin's Content Types screen for the live one.
 | `public/assets/css/site.css` | The whole design |
 | `public/assets/work/`        | Project screenshots (WebP, 1280×800 + 640×400), refreshed by the Screenshots workflow |
 | `public/_headers`, `_redirects` | Cloudflare response headers and path redirects |
+| `public/favicon.ico`, `apple-touch-icon.png` | The icons asked for by name, made from `assets/favicon.svg` by `bun run icons` |
+| `AGENTS.md`                  | Rules for coding agents, and the list of ideas already turned down |
 | `wrangler.jsonc`             | The Worker: route, assets, D1/R2/KV bindings, cron |
 
 ## Editing the site
