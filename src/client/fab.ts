@@ -47,6 +47,10 @@
     });
   });
 
+  // A keyboard reaching the button while it's tucked brings it back: focus
+  // must never sit on something off-screen.
+  fab.addEventListener("focusin", () => fab.classList.remove("tucked"));
+
   let lastY = scrollY;
   addEventListener(
     "scroll",

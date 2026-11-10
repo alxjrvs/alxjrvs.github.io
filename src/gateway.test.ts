@@ -110,6 +110,16 @@ describe("admin host and dev", () => {
     expect(route("https://admin.alxjrvs.com/").kind).toBe("admin-home");
     expect(route("https://admin.alxjrvs.com/_emdash/admin/").kind).toBe("admin");
   });
+  test("a preview link renders the page on the admin host only", () => {
+    expect(route("https://admin.alxjrvs.com/writing/a-draft?_preview=abc.def").kind).toBe(
+      "preview",
+    );
+    expect(route("https://admin.alxjrvs.com/writing/a-draft").kind).toBe("admin-home");
+    // on the public site the token is dropped: the published, cached page
+    expect(site("https://alxjrvs.com/writing/ajar/?_preview=abc.def").url).toBe(
+      "https://alxjrvs.com/writing/ajar/",
+    );
+  });
   test("localhost is left alone", () => {
     expect(route("http://localhost:4321/_emdash/admin").kind).toBe("dev");
   });

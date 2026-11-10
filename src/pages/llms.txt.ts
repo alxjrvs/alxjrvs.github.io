@@ -15,7 +15,7 @@ export const GET: APIRoute = async (context) => {
     "",
     `> ${text.description}`,
     "",
-    `The personal site of ${site.author}. Contact: ${site.email.user} (at) ${site.email.domain.replace(".", " (dot) ")}. Elsewhere: ${site.sameAs.join(", ")}.`,
+    `The personal site of ${site.author}, ${site.jobTitle}, based in ${site.location}. Résumé on request. Contact: ${site.email.user} (at) ${site.email.domain.replace(".", " (dot) ")}. Elsewhere: ${site.sameAs.join(", ")}.`,
     "",
     "## Projects",
     "",

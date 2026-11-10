@@ -1,7 +1,10 @@
 // The comic reader, on a comic piece. The pages arrive stacked (that's the
 // no-JS reading); this shows one at a time and drives the comic's stepper
 // (components/Stepper.astro): Back and Next turn the page, and past either end
-// they go to the neighbouring part of the comic's thread, if it's in one.
+// they go to the neighbouring part of the comic's thread, if it's in one. On
+// the last page of a comic with nowhere further to go, Next scrolls down to
+// what's under the reader (the note, the credits, the way onward), so the
+// comic has an ending and not a dead button.
 // Clicking or tapping a page goes on, or back on its left third.
 // client/stepper.ts adds ← → and swipes, the same as for a thread. The page
 // is kept in the URL as #page-N without adding history, and the header's
@@ -21,6 +24,10 @@
   const beyond = { "-1": nav.dataset.prevHref, "1": nav.dataset.nextHref };
   const line = document.getElementById("read-progress");
   const last = pages.length - 1;
+  // What's under the reader, where Next goes from the last page. Looked up
+  // when it's needed: this script runs before the rest of the page is parsed.
+  const after = () =>
+    document.querySelector<HTMLElement>(".post-body .comic-note, .post-body .fin");
   let at = 0;
 
   // A neighbour's images load ahead of time, so turning to it never waits.
@@ -41,9 +48,16 @@
     }
     const href = pages[at]?.dataset.full;
     if (full && href) full.href = href;
-    // aria-disabled, not disabled, so a focused button keeps focus at the end
-    back?.toggleAttribute("aria-disabled", at === 0 && !beyond["-1"]);
-    next?.toggleAttribute("aria-disabled", at === last && !beyond["1"]);
+    // aria-disabled, not disabled, so a focused button keeps focus at the end.
+    // It needs the value "true": an empty attribute isn't announced.
+    const dead = (el: HTMLElement | null, on: boolean) => {
+      if (on) el?.setAttribute("aria-disabled", "true");
+      else el?.removeAttribute("aria-disabled");
+    };
+    dead(back, at === 0 && !beyond["-1"]);
+    // Next is never a dead end: past the last page it goes on to the thread's
+    // next part, or down to what's under the reader.
+    dead(next, false);
     line?.style.setProperty("--read", String((at + 1) / pages.length));
     warm(at + 1);
     warm(at - 1);
@@ -57,6 +71,10 @@
   const step = (d: -1 | 1) => {
     if (pages[at + d]) show(at + d, true);
     else if (beyond[d]) location.href = beyond[d];
+    else if (d === 1) {
+      const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      after()?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+    }
   };
 
   const fromHash = () => {

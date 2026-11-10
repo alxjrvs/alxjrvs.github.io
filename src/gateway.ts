@@ -30,13 +30,18 @@ export const IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
 const SCANNER =
   /\.(php\d?|aspx?|jsp|cgi|env|sql|bak|ya?ml|ini)$|^\/(wp-|wordpress|cgi-bin|vendor\/|phpmyadmin)|\/\.(git|env|aws|ssh|svn|vscode|DS_Store)/i;
 
-const TRACKING = /^(utm_.+|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|igshid|_ga|_gl|ref)$/i;
+// `_preview` is here too: a draft's preview link only works on the admin
+// host (below), so on the public site the token is dropped and the page is
+// the ordinary, published, cached one.
+const TRACKING = /^(utm_.+|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|igshid|_ga|_gl|ref|_preview)$/i;
 
 export type Route =
   | { kind: "redirect"; location: string; status: 301 | 302 }
   | { kind: "not-found" }
   | { kind: "admin" }
   | { kind: "admin-home" }
+  /** a draft's preview link: a public page, rendered on the admin host */
+  | { kind: "preview" }
   | {
       kind: "site";
       /** the URL to hand to Astro: always on the canonical origin */
@@ -91,8 +96,12 @@ export function route(rawUrl: string): Route {
 
   if (host === ADMIN_HOST) {
     // EmDash and Astro's own endpoints all start with "/_"; anything else is
-    // a public page, which on this host means the admin.
-    return url.pathname.startsWith("/_") ? { kind: "admin" } : { kind: "admin-home" };
+    // a public page, which on this host means the admin. The one exception
+    // is the admin's Preview button, which opens the piece's own URL here
+    // with a signed `_preview` token: that page is rendered, behind Access
+    // like everything else on this host, and never cached.
+    if (url.pathname.startsWith("/_")) return { kind: "admin" };
+    return url.searchParams.has("_preview") ? { kind: "preview" } : { kind: "admin-home" };
   }
   if (host === CODE_HOST) {
     // 302, not 301: browsers keep a 301 forever, and the target may move.
