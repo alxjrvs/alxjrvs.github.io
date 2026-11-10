@@ -42,7 +42,7 @@ jobs:
           fi
 
       - if: steps.gate.outputs.skip != '1'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.head_ref || github.ref_name }}
           # A personal token (when set) makes the bot's pushes and PRs trigger
