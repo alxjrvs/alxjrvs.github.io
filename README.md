@@ -27,6 +27,7 @@ bun run dev          # → http://localhost:4321, admin at /_emdash/admin (local
 bun run check        # format, lint, typecheck (what CI's `check` job runs)
 bun run build        # → dist/ (dist/client: static assets, dist/server: the Worker)
 bun run check:links  # crawl a local `astro preview` and check every internal link (CI's `build` job)
+bun run check:browser  # a real browser on BASE_URL: screenshots, console errors, overflow, axe (CI runs it on each PR preview)
 bun run preview      # build, then run the Worker locally (wrangler dev)
 bun run format       # let Biome fix formatting
 ```
@@ -84,16 +85,19 @@ There are two copies of the database to go back to.
   ```sh
   gh run download <run id> -n alxjrvs-emdash-<run number>     # or from the run's page
   gpg --decrypt alxjrvs-emdash.sql.gz.gpg | gunzip > dump.sql  # passphrase: 1Password, "alxjrvs-d1-backup"
+  bun scripts/order-dump.ts dump.sql > ordered.sql             # an export does not load as written
   bunx wrangler d1 create alxjrvs-emdash-restored
-  bunx wrangler d1 execute alxjrvs-emdash-restored --remote --file dump.sql
+  bunx wrangler d1 execute alxjrvs-emdash-restored --remote --file ordered.sql
   bunx wrangler d1 execute alxjrvs-emdash-restored --remote --command "select count(*) from ec_posts"
   ```
 
   Then put the new database's id in `wrangler.jsonc` (`d1_databases`) and deploy. Uploaded
   images live in the R2 bucket `alxjrvs-emdash-media`, which the backup does not cover.
 
-  These steps have not been run end to end yet. Rehearse them into a scratch database (and
-  delete it after) before relying on them, then remove this note.
+  Rehearsed on 2026-11-10 with a fresh export, into a scratch database that was deleted after:
+  the export as written stopped at "no such table: main.media_folders", and the reordered one
+  loaded with the same row, table and index counts as production. The decrypt step was not part
+  of that rehearsal.
 
 ## Structure
 
