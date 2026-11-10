@@ -7,10 +7,9 @@ name: Back up the database
 #
 # The dump holds account data, and this repository is public, so it is
 # encrypted with BACKUP_PASSPHRASE (a repository secret, also kept in
-# 1Password, vault "Personal Site", item "alxjrvs-d1-backup"). Without it the
-# job skips. To restore:
-#   gpg --decrypt alxjrvs-emdash.sql.gz.gpg | gunzip > dump.sql
-#   bunx wrangler d1 execute alxjrvs-emdash --remote --file dump.sql
+# 1Password, vault "Personal Site", item "alxjrvs-d1-backup"). Without it, or
+# without the Cloudflare token, the job fails: a backup that quietly isn't
+# taken looks exactly like one that is. To restore: README, "Restoring".
 on:
   schedule:
     - cron: "17 6 * * 1"
@@ -36,10 +35,13 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${BACKUP_PASSPHRASE:-}" ] || [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            echo "::warning::BACKUP_PASSPHRASE or CLOUDFLARE_API_TOKEN isn't set; no backup taken."
-            exit 0
+            echo "::error::BACKUP_PASSPHRASE or CLOUDFLARE_API_TOKEN isn't set; no backup taken."
+            exit 1
           fi
           bunx wrangler d1 export alxjrvs-emdash --remote --output dump.sql
+          # A dump without the posts table is not a backup.
+          grep -q 'CREATE TABLE.*ec_posts' dump.sql || { echo "::error::The export has no ec_posts table."; exit 1; }
+          [ "$(wc -c < dump.sql)" -gt 100000 ] || { echo "::error::The export is under 100 KB."; exit 1; }
           gzip -9 dump.sql
           gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" \
             --symmetric --cipher-algo AES256 -o alxjrvs-emdash.sql.gz.gpg dump.sql.gz

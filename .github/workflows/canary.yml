@@ -1,0 +1,139 @@
+name: Canary
+
+# Looks at the things that would otherwise fail without anyone noticing, once
+# an hour, and opens an issue (which GitHub emails) when one does:
+#
+#   - the home page, the feed and a page that is never cached and reads the
+#     database (/writing/random) all answer;
+#   - the certificate has more than two weeks left;
+#   - the weekly database backup (backup.yml) last succeeded within nine days;
+#   - the Cloudflare token that deploys and backs up has more than 30 days left.
+#
+# One issue at a time: a second failure adds a comment to the open one, and
+# the first green run after it closes it.
+on:
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read # to read backup.yml's last run
+  issues: write
+
+concurrency:
+  group: canary
+  cancel-in-progress: true
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -uo pipefail
+          base=https://alxjrvs.com
+          problems=""
+          fail() { echo "::error::$1"; problems="${problems}- $1"$'\n'; }
+          # One retry, so a single dropped connection doesn't open an issue.
+          get() { curl -sS --retry 2 --retry-delay 5 --max-time 20 "$@"; }
+
+          # The site answers.
+          code=$(get -H 'Accept: text/html' -o home.html -w '%{http_code}' "$base/")
+          [ "$code" = "200" ] || fail "The home page answered $code."
+          grep -q 'id="projects"' home.html 2>/dev/null || fail "The home page has no Projects section (the database may be unreachable)."
+
+          code=$(get -o feed.xml -w '%{http_code}' "$base/feed.xml")
+          [ "$code" = "200" ] || fail "The feed answered $code."
+          grep -q '<entry>' feed.xml 2>/dev/null || fail "The feed has no entries."
+
+          # Never cached, and it reads the database to pick a piece.
+          code=$(get -o /dev/null -w '%{http_code}' "$base/writing/random")
+          case "$code" in 301|302|303|307|308) ;; *) fail "/writing/random answered $code, not a redirect (the Worker or D1 is unwell).";; esac
+
+          # The admin stays off the public host.
+          code=$(get -o /dev/null -w '%{http_code}' "$base//_emdash/api/health")
+          [ "$code" != "200" ] || fail "EmDash's API answered on the public host."
+
+          # The certificate.
+          end=$(echo | openssl s_client -servername alxjrvs.com -connect alxjrvs.com:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          if [ -n "$end" ]; then
+            days=$(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 ))
+            echo "certificate: $days days left"
+            [ "$days" -gt 14 ] || fail "The certificate expires in $days days."
+          else
+            fail "Couldn't read the certificate."
+          fi
+
+          # The backup.
+          last=$(gh run list --repo "$REPO" --workflow backup.yml --status success --limit 1 --json createdAt --jq '.[0].createdAt // empty')
+          if [ -n "$last" ]; then
+            age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 86400 ))
+            echo "backup: $age days old"
+            [ "$age" -le 9 ] || fail "The last successful database backup is $age days old."
+          else
+            fail "No successful database backup run was found."
+          fi
+
+          # The deploy token. A user token and an account token verify at
+          # different addresses; try both.
+          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            verify=$(get -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify)
+            if [ "$(echo "$verify" | jq -r '.success')" != "true" ]; then
+              verify=$(get -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/verify")
+            fi
+            if [ "$(echo "$verify" | jq -r '.success')" != "true" ]; then
+              fail "Cloudflare no longer accepts the deploy token (CLOUDFLARE_API_TOKEN)."
+            else
+              expires=$(echo "$verify" | jq -r '.result.expires_on // empty')
+              if [ -n "$expires" ]; then
+                days=$(( ($(date -d "$expires" +%s) - $(date +%s)) / 86400 ))
+                echo "deploy token: $days days left"
+                [ "$days" -gt 30 ] || fail "The Cloudflare deploy token expires in $days days."
+              else
+                echo "deploy token: no expiry"
+              fi
+            fi
+          fi
+
+          {
+            echo "problems<<CANARY_EOF"
+            printf '%s' "$problems"
+            echo "CANARY_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open, update or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PROBLEMS: ${{ steps.check.outputs.problems }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="Canary: alxjrvs.com needs a look"
+          open=$(gh issue list --repo "$REPO" --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -z "$PROBLEMS" ]; then
+            if [ -n "$open" ]; then
+              gh issue close "$open" --repo "$REPO" --comment "All green again ($RUN_URL)."
+            fi
+            exit 0
+          fi
+          body=$(printf '%s\n\n%s\n' "$PROBLEMS" "Run: $RUN_URL")
+          if [ -n "$open" ]; then
+            # Say it again at most once a day, not once an hour.
+            recent=$(gh issue view "$open" --repo "$REPO" --json comments,createdAt \
+              --jq '[.createdAt, .comments[].createdAt] | max')
+            if [ $(( $(date +%s) - $(date -d "$recent" +%s) )) -gt 86400 ]; then
+              gh issue comment "$open" --repo "$REPO" --body "Still failing:"$'\n\n'"$body"
+            fi
+          else
+            gh issue create --repo "$REPO" --title "$title" --body "$body"
+          fi
+          exit 1

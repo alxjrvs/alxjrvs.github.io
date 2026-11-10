@@ -433,7 +433,7 @@
   };
   console.log(
     "%calxjrvs%c  I CAN SEE YOU poking around. Hi! Type roll() to roll the die.\nThe source: https://github.com/alxjrvs/alxjrvs.github.io",
-    "font: 700 16px system-ui; color: #f5d547; background: #14161f; padding: 2px 6px; border-radius: 4px",
+    "font: 700 16px system-ui; color: #ffe45c; background: #14161f; padding: 2px 6px; border-radius: 4px",
     "font: 13px system-ui",
   );
 

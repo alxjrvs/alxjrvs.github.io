@@ -12,7 +12,7 @@ const [page, encounters] = await Promise.all([getSection(Astro, "not-found"), ge
 const { lead, rows } = encounters;
 Astro.response.status = 404;
 ---
-<Base title={page?.title ?? "Not found"} noindex>
+<Base title={page?.title ?? "Not found"} noindex beacon={false}>
 <section class="notfound wrap">
   <h1>{page?.kicker ?? "404"}</h1>
   {page && <Prose value={page.body} />}
