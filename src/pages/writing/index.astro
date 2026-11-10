@@ -44,7 +44,7 @@ const count = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"}`;
   {(page?.dek || lead) && (
     <div class="writing-aside">
       {page?.dek && <p class="dek">{page.dek}</p>}
-      {lead && oldest && <p class="label">{count} · since {year(oldest.date)}</p>}
+      {lead && oldest && <p class="label">{count} · since {year(oldest.date)} · <a class="feed-link" href="/feed.xml">Feed</a></p>}
     </div>
   )}
 </header>

@@ -46,6 +46,14 @@ describe("portableTextToHtml", () => {
     expect(html).toContain("<ul><li>one</li><li>two</li></ul>");
     expect(html).toContain("<pre><code>&lt;b&gt;</code></pre>");
   });
+  test("a scene break is a rule", () => {
+    const html = portableTextToHtml([
+      { _type: "block", _key: "a", style: "normal", markDefs: [], children: [span("before")] },
+      { _type: "break", _key: "b", style: "dots" },
+      { _type: "block", _key: "c", style: "normal", markDefs: [], children: [span("after")] },
+    ]);
+    expect(html).toBe("<p>before</p>\n<hr>\n<p>after</p>");
+  });
   test("nothing for non-arrays", () => {
     expect(portableTextToHtml(undefined)).toBe("");
   });

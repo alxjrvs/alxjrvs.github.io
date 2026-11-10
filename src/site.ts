@@ -4,6 +4,11 @@
 export const site = {
   /** the person behind it, by name (the site's title, "alxjrvs", is the handle) */
   author: "Alex Jarvis",
+  /** what he does and where, for search engines and language models
+      (schema.org jobTitle and homeLocation, and llms.txt); the sentence a
+      person reads is the first line of About, in EmDash */
+  jobTitle: "Software & Agentic Engineer",
+  location: "New England",
   url: "https://alxjrvs.com",
   lang: "en",
   /** Open Graph wants a territory too */
@@ -22,7 +27,7 @@ export const site = {
     path: "/assets/social.png",
     width: 1200,
     height: 630,
-    alt: "alxjrvs, over a field of dice: Enthusiast. I make stuff.",
+    alt: "Alex Jarvis, Software & Agentic Engineer. alxjrvs, over a field of dice: Enthusiast. I make stuff.",
   },
 
   // Cloudflare Web Analytics site token (Web Analytics → the alxjrvs.com site

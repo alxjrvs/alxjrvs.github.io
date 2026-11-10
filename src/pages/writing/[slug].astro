@@ -11,7 +11,7 @@ import stepperSrc from "../../client/stepper.ts?inline-script";
 import titleSrc from "../../client/title.ts?inline-script";
 import InlineScript from "../../components/InlineScript.astro";
 import Base from "../../layouts/Base.astro";
-import { getPlace, getPosts, getProjects, longDate, measure, type Post, shortDate, year } from "../../lib/content";
+import { getDraft, getEntryPoints, getPlace, getPosts, getProjects, longDate, measure, type Post, shortDate, year } from "../../lib/content";
 import { mediaPath } from "../../lib/media";
 import { absoluteUrl, site } from "../../site";
 
@@ -27,10 +27,16 @@ import { absoluteUrl, site } from "../../site";
 const slug = decodeSlug(Astro.params.slug);
 const posts = await getPosts(Astro);
 const i = posts.findIndex((p) => p.id === slug);
-const post = posts[i];
+// A piece that isn't published yet shows only through its preview link.
+const post = posts[i] ?? (Astro.url.searchParams.has("_preview") && slug ? await getDraft(slug) : undefined);
 if (!post) return Astro.rewrite("/404");
-const older = posts[i + 1];
-const newer = posts[i - 1];
+// Older and Newer, for a piece outside a thread, walk the places a reader can
+// start: other standalone pieces and each thread's first part. By date alone,
+// the piece after a comic could be the last chapter of a serial.
+const starts = await getEntryPoints(Astro);
+const j = starts.findIndex((p) => p.id === slug);
+const older = i < 0 ? undefined : j < 0 ? posts[i + 1] : starts[j + 1];
+const newer = i < 0 ? undefined : j < 0 ? posts[i - 1] : starts[j - 1];
 const proj = post.project
   ? (await getProjects(Astro)).find((p) => p.id === post.project)
   : undefined;

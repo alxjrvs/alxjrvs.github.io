@@ -55,6 +55,7 @@ const fetch = async (request: Request, env: unknown, ctx: GatewayContext): Promi
     case "admin-home":
       return noStore(Response.redirect(`https://${ADMIN_HOST}/_emdash/admin/`, 302));
     case "admin":
+    case "preview":
       return noStore(await astro(request, env, ctx));
     case "dev":
       return ctx.exports.Site.fetch(request);

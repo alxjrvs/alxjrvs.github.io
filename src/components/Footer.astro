@@ -4,14 +4,18 @@ import Wordmark from "./Wordmark.astro";
 
 interface Props {
   class: string;
+  /** false where the address and GitHub are already on the page (About, on
+      the home page, which has its own contact line) */
+  links?: boolean | undefined;
 }
+const { links = true } = Astro.props;
 const year = new Date().getFullYear();
 ---
 <footer class={Astro.props.class} role="contentinfo">
   <span>© {year} <Wordmark /></span>
-  <span class="foot-links">
+  {links && <span class="foot-links">
     {/* spelled out for people, not bots; client/chrome.ts turns it into a mailto: link */}
     <span class="mail" data-user={site.email.user} data-domain={site.email.domain}>{site.email.user} (at) {site.email.domain.replace(".", " (dot) ")}</span>
     <a href="https://github.com/alxjrvs" rel="me">GitHub <span aria-hidden="true">↗</span></a>
-  </span>
+  </span>}
 </footer>

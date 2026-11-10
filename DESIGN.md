@@ -229,8 +229,11 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   recedes into it.
 - **Project card:** screenshot (16:10, or 4:3 on phones; a WebP at 1280 and
   640 wide, picked with `srcset`, lazy-loaded), title, summary in
-  `fg-muted`, and a "Visit … ↗" link with an accent underline. No category
-  label above the title.
+  `fg-muted`, what it's built with as a mono label ("TypeScript · Bun"), and
+  the two ways out on one line: a "Visit … ↗" link with an accent underline
+  and a quieter mono "Source ↗" to its repository. No category label above
+  the title. On a short phone (under 700px tall) the built-with label is
+  dropped so the card still fits.
 - **Writing index (`/writing/`):** ruled like a legal pad. The page head puts
   the dek and a mono count ("4 pieces · since 2025") on the right. Below it, a
   11rem margin column, a 4px double `margin-rule`, then the words. The newest
@@ -271,8 +274,10 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   header then reads "alxjrvs · tagline … ← Title → · die", the title in `fg`
   at 17px, one line of at most 34ch with an ellipsis, between a compact
   stepper's arrow-only Back and Next (36px header buttons). They walk the
-  thread's parts on a piece in a thread, otherwise the neighbouring pieces by
-  date (newer on the left, like the pager). The nav links step aside while
+  thread's parts on a piece in a thread, otherwise the neighbouring places to
+  start by date (other standalone pieces and each thread's first part, newer
+  on the left, like the pager), so a piece never leads into the middle of a
+  thread. The nav links step aside while
   it's docked; the tagline, the die and the `progress` line stay. Tapping the
   docked title goes back to the top, like a phone's status bar.
   On phones (760px and under) the docked title takes the whole header: 16px,
@@ -344,7 +349,9 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
 - **Stepper:** the one control for stepping through a sequence, used for
   both a comic's pages (buttons, inside one piece) and a thread's parts
   (links to other pieces). Back and Next in header-button style (1px `line`
-  border, 10px radius, `fg-muted`, `fg` on hover, dimmed at a dead end)
+  border, 10px radius, `fg-muted`, `fg` on hover, dimmed at a dead end; a
+  comic's Next is never one, since past the last page it scrolls down to the
+  note and the way onward)
   around a mono count with the number you're on in `fg`. It stays on one
   line; the count wraps if it must. ← and → press the page's main stepper
   (the comic's on a comic, the thread's otherwise), and a sideways swipe on a
@@ -359,6 +366,14 @@ animations, the pip flicker, the carousel spin and the grid pulse (the grid's fa
   the wordmark on the left, the email address and GitHub on the right. The
   wordmark keeps its own face here too. The address is spelled out ("dm (at)
   alxjrvs (dot) com") and made a link by script, so it is not harvested.
+- **About:** the bio opens with one plain sentence saying who this is and
+  what he does, then the story, then the "I like" line. Under it, the contact
+  line in mono: the address and GitHub as underlined links in `fg`, then a
+  note in `fg-subtle` ("Résumé on request."). Because the links are here, the
+  home page's footer is only the year and the wordmark, and on a short phone
+  (under 700px tall) that row is dropped so About fits one screen. On a
+  laptop-height screen (under 820px tall) the bio's type tightens a step for
+  the same reason.
 - **404 encounter table:** the not-found page is a random encounter table: a
   numbered list of places to go, each an ordinary link, under a mono heading
   that names the die ("d8" for eight rows). A round "Roll d8" button, the one

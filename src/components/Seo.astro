@@ -57,6 +57,8 @@ const graph = [
     "@id": personId,
     name: site.author,
     alternateName: text.title,
+    jobTitle: site.jobTitle,
+    homeLocation: { "@type": "Place", name: site.location },
     url: `${site.url}/`,
     sameAs: site.sameAs,
   },

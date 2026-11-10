@@ -1,8 +1,8 @@
 // EmDash rich text (Portable Text) as plain HTML, for the Atom feed's full
 // content, where the Astro components (components/Prose.astro) can't run.
 // It covers what the site's posts use: paragraphs, headings, quotes, lists,
-// bold/italic/code/strike/links, code blocks and images. Anything else is
-// dropped rather than guessed at.
+// bold/italic/code/strike/links, code blocks, images and scene breaks.
+// Anything else is dropped rather than guessed at.
 import {
   buildMarksTree,
   isPortableTextBlock,
@@ -87,6 +87,8 @@ export function portableTextToHtml(value: unknown): string {
       if (isPortableTextToolkitList(node)) return list(node as never);
       if (isPortableTextBlock(node)) return block(node);
       const n = node as { _type: string; code?: string; asset?: { url?: string }; alt?: string };
+      // a scene break: without it, a feed reader runs two scenes together
+      if (n._type === "break") return "<hr>";
       if (n._type === "code" && n.code) return `<pre><code>${esc(n.code)}</code></pre>`;
       if (n._type === "image") {
         const url = n.asset?.url;

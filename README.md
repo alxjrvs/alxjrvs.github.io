@@ -136,16 +136,22 @@ press **Publish**; publishing shows up on the site within seconds.
   unpublished ones never do. A piece lands at `/writing/<slug>/`, dated when it was
   first published; scheduling works too. Until the first piece is published, the Writing nav link
   and the home-page writing section stay hidden and `/writing/` shows the empty state.
-- **Projects**: one entry per card, in `order`. Unpublish one to hide its card. Screenshots
+- **Projects**: one entry per card, in `order`. Unpublish one to hide its card. The **Kicker**
+  is the card's built-with line and its Source link, separated by a bar:
+  `TypeScript · Bun | https://github.com/RANDSUM/randsum` (either half can be left out). Screenshots
   are files: the Screenshots workflow captures `public/assets/work/<slug>.webp` for every
   published project each night, and the card shows it once **Screenshot name** is set.
-- **Sections**: `about` (the bio), `projects` and `writing` (home-page headings; a nav label
+- **Sections**: `about` (the bio; its first paragraph is the one plain sentence about who
+  this is, and its **Dek** is the note beside the contact line, "Résumé on request."), `projects` and `writing` (home-page headings; a nav label
   puts them in the header), `writing-archive` (the `/writing/` page and its empty state), `threads-archive` (the `/writing/threads/` heading and blurb) and
   `not-found` (the 404 page).
 - **Randomizers**: the die's lists, one item per line, the first line being what shows before
   any roll: `tagline-subjects`, `tagline-objects` (its lead-in
   is the "I make"), and `likes-1` to `likes-3` (the first one's lead-in is "I like").
 - **Settings**: the site title, and the tagline field, which is the meta description.
+- **Preview**: the editor's Preview button opens the piece as it will look, drafts included, at
+  `admin.alxjrvs.com/writing/<slug>?_preview=…`. It works only there, behind the sign-in; the
+  public site ignores the token.
 
 ## Design notes
 

@@ -9,6 +9,7 @@ import InlineScript from "../components/InlineScript.astro";
 import PostList from "../components/PostList.astro";
 import Prose from "../components/Prose.astro";
 import Base from "../layouts/Base.astro";
+import { site } from "../site";
 import { getFrontPage, getPlaces, getProjects, getRolls, getSection } from "../lib/content";
 
 const [projects, posts, rolls, projectsHead, writingHead, about, places] = await Promise.all([
@@ -36,7 +37,7 @@ const ld = {
   <Die class="die-corner" />
   <h1 class="mark" id="mark" aria-label="alex jarvis"><span class="alx">al<span class="ghost">e</span>x</span><span class="ghost">&nbsp;</span><span class="jrvs">j<span class="ghost">a</span>rv<span class="ghost">i</span>s</span></h1>
   <p class="tagline" id="tagline"><span class="tag-a"><span class="roll roll-subject" data-suffix=".">{subjects[0]}.</span></span> <span class="tag-b">{lead} <em class="roll roll-object" data-suffix=".">{objects[0]}.</em></span></p>
-  <a class="scroll-cue" href="#projects" aria-label="Scroll to projects"><span class="scroll-cue-label" aria-hidden="true">Scroll down</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></a>
+  <a class="scroll-cue" href="#projects" aria-label="Scroll down to projects"><span class="scroll-cue-label" aria-hidden="true">Scroll down</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></a>
 </section>
 
 <section class="screen wrap" id="projects" aria-labelledby="projects-head" aria-roledescription="carousel">
@@ -51,7 +52,11 @@ const ld = {
           <div class="card-body">
             <h3>{p.title}</h3>
             <p class="summary">{p.summary}</p>
-            <a class="visit" href={p.link}>Visit {p.link_label ?? p.title} <span aria-hidden="true">↗</span></a>
+            {p.built && <p class="built label">{p.built}</p>}
+            <p class="card-links">
+              <a class="visit" href={p.link}>Visit {p.link_label ?? p.title} <span aria-hidden="true">↗</span></a>
+              {p.source && <a class="source" href={p.source} aria-label={`Source: ${p.title} on GitHub`}>Source <span aria-hidden="true">↗</span></a>}
+            </p>
           </div>
         </article>
       );
@@ -81,9 +86,16 @@ const ld = {
     <div class="bio">
       {about && <Prose value={about.body} />}
       <p class="likes">{likesLead} <span id="likes"><span class="like">{likes[0][0]}</span>, <span class="like">{likes[1][0]}</span>, and <span class="like">{likes[2][0]}</span></span>.</p>
+      {/* how to reach me, in the bio and not only the footer; the section's
+          dek is the note beside it ("Résumé on request.") */}
+      <p class="contact">
+        <span class="mail" data-user={site.email.user} data-domain={site.email.domain}>{site.email.user} (at) {site.email.domain.replace(".", " (dot) ")}</span>
+        <a href={site.sameAs[0]} rel="me">GitHub <span aria-hidden="true">↗</span></a>
+        {about?.dek && <span class="contact-note">{about.dek}</span>}
+      </p>
     </div>
   </div>
-  <Footer class="foot" />
+  <Footer class="foot" links={false} />
 </section>
 
 <Fragment slot="scripts">

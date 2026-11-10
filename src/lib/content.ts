@@ -7,6 +7,7 @@ import {
   type CacheHint,
   extractPlainText,
   getEmDashCollection,
+  getEmDashEntry,
   getSiteSettingsWithCacheHint,
   getTaxonomyTermsWithCacheHint,
   type ImageValue,
@@ -75,7 +76,10 @@ export interface Project {
   link_label?: string | undefined;
   /** public/assets/work/<shot>.webp (+ -640), captured by the Screenshots workflow */
   shot?: string | undefined;
-  kicker?: string | undefined;
+  /** what it's made with, from the kicker ("TypeScript · Bun") */
+  built?: string | undefined;
+  /** its source, from the kicker's second half (a repository URL) */
+  source?: string | undefined;
   accent: string;
   accent_dark: string;
 }
@@ -83,17 +87,23 @@ export interface Project {
 /** The project cards, in their `order`. */
 export async function getProjects(astro: AstroLike): Promise<Project[]> {
   const all = await entries(astro, "projects", { order: "asc" });
-  return all.map(({ slug, data }) => ({
-    id: slug,
-    title: str(data.title) ?? slug,
-    summary: str(data.summary) ?? "",
-    link: str(data.link) ?? "#",
-    link_label: str(data.link_label),
-    shot: str(data.shot),
-    kicker: str(data.kicker),
-    accent: str(data.accent) ?? "currentColor",
-    accent_dark: str(data.accent_dark) ?? "currentColor",
-  }));
+  return all.map(({ slug, data }) => {
+    // The kicker is "what it's built with | where its source is", either half
+    // optional: "TypeScript · Bun | https://github.com/RANDSUM/randsum".
+    const [built, source] = (str(data.kicker) ?? "").split("|").map((s) => s.trim());
+    return {
+      id: slug,
+      title: str(data.title) ?? slug,
+      summary: str(data.summary) ?? "",
+      link: str(data.link) ?? "#",
+      link_label: str(data.link_label),
+      shot: str(data.shot),
+      built: built || undefined,
+      source: source && /^https:\/\//.test(source) ? source : undefined,
+      accent: str(data.accent) ?? "currentColor",
+      accent_dark: str(data.accent_dark) ?? "currentColor",
+    };
+  });
 }
 
 // --- Sections ---------------------------------------------------------------
@@ -291,25 +301,39 @@ function termsOf(data: Data, taxonomy: string): Tag[] {
   });
 }
 
+function toPost(slug: string, data: Data): Post {
+  const date = data.publishedAt ?? data.createdAt ?? new Date();
+  return {
+    id: slug,
+    title: str(data.title) ?? slug,
+    description: str(data.description),
+    project: str(data.project),
+    date: date instanceof Date ? date : new Date(String(date)),
+    content: data.content,
+    tags: termsOf(data, "tag"),
+    pages: pagesOf(data),
+    thread: termsOf(data, "thread")[0],
+    part: typeof data.part === "number" ? data.part : undefined,
+    credits: creditsOf(data),
+  };
+}
+
 /** Every published post, newest first. */
 export async function getPosts(astro: AstroLike): Promise<Post[]> {
   const all = await entries(astro, "posts", { published_at: "desc" });
-  return all.map(({ slug, data }) => {
-    const date = data.publishedAt ?? data.createdAt;
-    return {
-      id: slug,
-      title: str(data.title) ?? slug,
-      description: str(data.description),
-      project: str(data.project),
-      date: date instanceof Date ? date : new Date(String(date)),
-      content: data.content,
-      tags: termsOf(data, "tag"),
-      pages: pagesOf(data),
-      thread: termsOf(data, "thread")[0],
-      part: typeof data.part === "number" ? data.part : undefined,
-      credits: creditsOf(data),
-    };
-  });
+  return all.map(({ slug, data }) => toPost(slug, data));
+}
+
+/**
+ * A piece that has never been published, for its own preview link only. The
+ * admin's Preview button opens the piece's URL with a signed `_preview` token;
+ * EmDash checks it and then serves that one draft. Without a valid token for
+ * this very piece, this returns undefined and the page is the 404.
+ */
+export async function getDraft(slug: string): Promise<Post | undefined> {
+  const { entry, isPreview } = await getEmDashEntry("posts", slug);
+  if (!entry || !isPreview) return undefined;
+  return toPost(slug, entry.data as unknown as Data);
 }
 
 /** Every tag on at least one published piece, by label, with its count. */
