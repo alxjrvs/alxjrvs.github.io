@@ -26,13 +26,13 @@
     "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "14.4.3",
-    "@astrojs/react": "7.1.2",
-    "@emdash-cms/cloudflare": "1.4.0",
+    "@astrojs/cloudflare": "14.4.7",
+    "@astrojs/react": "7.1.8",
+    "@emdash-cms/cloudflare": "1.5.0",
     "@portabletext/toolkit": "5.0.2",
     "@portabletext/types": "4.0.2",
-    "astro": "7.4.4",
-    "emdash": "1.4.0",
+    "astro": "7.4.11",
+    "emdash": "1.5.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
